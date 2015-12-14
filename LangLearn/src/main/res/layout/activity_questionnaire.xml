@@ -10,11 +10,8 @@
 			android:id="@+id/question_label"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:textSize="30sp"
 			/>
-	<EditText
-			android:id="@+id/answer_input"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"/>
 	<Button
 			android:id="@+id/submit_button"
 			android:layout_width="wrap_content"
@@ -23,7 +20,9 @@
 	<TextView
 			android:id="@+id/correct_answer"
 			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"/>
+			android:layout_height="wrap_content"
+			android:textSize="30sp"
+			/>
 	<Button
 			android:id="@+id/next_question"
 			android:layout_width="wrap_content"
