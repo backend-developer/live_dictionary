@@ -3,5 +3,7 @@
 
     <string name="app_name">LangLearn</string>
     <string name="hello_world">Hello world!</string>
+	<string name="show_answer">Show Answer</string>
+	<string name="jump_to_next_question">Next Question</string>
 
 </resources>

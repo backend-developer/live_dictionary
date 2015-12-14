@@ -26,11 +26,12 @@ public class QuestionnaireActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
 
+        final TextView correctAnswerView = (TextView) findViewById(R.id.correct_answer);
         final MutableObject<Translation> currentWord = new MutableObject<>(new Translation("defaultWord", "defaultTranslation"));
         final TextView questionLabel = (TextView) findViewById(R.id.question_label);
-        publishNextWord(currentWord, questionLabel);
+        publishNextWord(currentWord, questionLabel, correctAnswerView);
 
-        final TextView correctAnswerView = (TextView) findViewById(R.id.correct_answer);
+
         Button button = (Button) findViewById(R.id.submit_button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,17 +44,18 @@ public class QuestionnaireActivity extends BaseActivity {
         nextQuestionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                publishNextWord(currentWord, questionLabel);
+                publishNextWord(currentWord, questionLabel, correctAnswerView);
             }
         });
     }
 
-    private void publishNextWord(MutableObject<Translation> currentWord, TextView questionLabel) {
+    private void publishNextWord(MutableObject<Translation> currentWord, TextView questionLabel, TextView correctAnswerView) {
         try {
             List<Translation> translations = new ArrayList<>(questionsStorage.getQuestions().keySet());
             Translation translation = translations.get(new Random().nextInt(translations.size()));
             currentWord.setValue(translation);
             questionLabel.setText(currentWord.getValue().getOriginalWord());
+            correctAnswerView.setText("");
         } catch (RuntimeException e) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("LangLearn")
