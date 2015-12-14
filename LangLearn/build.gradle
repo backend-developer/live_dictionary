@@ -47,20 +47,14 @@ android {
 
 
 task printDependencies << {
-
-
     configurations.all(new Action<Configuration>() {
-
         @Override
         void execute(Configuration cfg) {
             cfg.each { dependency ->
                 println dependency
             }
         }
-
     })
-
-
 }
 
 dependencies {

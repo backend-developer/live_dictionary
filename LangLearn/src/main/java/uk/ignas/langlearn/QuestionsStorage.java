@@ -32,12 +32,11 @@ public class QuestionsStorage {
             csvReader.readNext();
 
             while ((line = csvReader.readNext()) != null) {
-                questionList.put(new Translation(line[0], "anything"), Difficulty.EASY);
+                questionList.put(new Translation(line[0], line[1]), Difficulty.EASY);
             }
         } catch (IOException e) {
             throw new RuntimeException("asd");
         }
-
 
         return questionList;
     }

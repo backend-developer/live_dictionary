@@ -18,5 +18,8 @@
 			android:id="@+id/submit_button"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"/>
-
+	<TextView
+			android:id="@+id/correct_answer"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"/>
 </LinearLayout>

@@ -3,6 +3,8 @@ package uk.ignas.langlearn;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import javax.inject.Inject;
@@ -39,6 +41,15 @@ public class QuestionnaireActivity extends BaseActivity {
             AlertDialog dialog = builder.create();
             dialog.show();
         }
+
+        final TextView correctAnswerView = (TextView) findViewById(R.id.correct_answer);
+        Button button = (Button) findViewById(R.id.submit_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                correctAnswerView.setText(questionsStorage.getQuestions().keySet().iterator().next().getTranslatedWord());
+            }
+        });
 
         TextView answerInput = (TextView) findViewById(R.id.answer_input);
     //    answerInput.setText("");
