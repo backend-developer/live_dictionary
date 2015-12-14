@@ -1,0 +1,25 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        //classpath 'com.android.tools.build:gradle:0.12.2'
+        //classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+        classpath fileTree(dir: "${System.properties['user.home']}/libs/build", include: '*.jar')
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+task copyDependenciesToLocalDir(type: Copy) {
+    from buildscript.configurations.classpath.asFileTree
+    into "${System.properties['user.home']}/libs/build"
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
