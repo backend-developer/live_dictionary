@@ -22,4 +22,8 @@
 			android:id="@+id/correct_answer"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"/>
+	<Button
+			android:id="@+id/next_question"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"/>
 </LinearLayout>

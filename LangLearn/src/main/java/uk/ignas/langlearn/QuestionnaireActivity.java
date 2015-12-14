@@ -6,8 +6,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import org.apache.commons.lang3.mutable.MutableObject;
 
 import javax.inject.Inject;
+import java.util.*;
 
 public class QuestionnaireActivity extends BaseActivity {
 
@@ -23,11 +25,35 @@ public class QuestionnaireActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        QuestionnaireApplication application = (QuestionnaireApplication) getApplication();
 
-        TextView questionLabel = (TextView) findViewById(R.id.question_label);
+        final MutableObject<Translation> currentWord = new MutableObject<>(new Translation("defaultWord", "defaultTranslation"));
+        final TextView questionLabel = (TextView) findViewById(R.id.question_label);
+        publishNextWord(currentWord, questionLabel);
+
+        final TextView correctAnswerView = (TextView) findViewById(R.id.correct_answer);
+        Button button = (Button) findViewById(R.id.submit_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                correctAnswerView.setText(currentWord.getValue().getTranslatedWord());
+            }
+        });
+
+        Button nextQuestionButton = (Button) findViewById(R.id.next_question);
+        nextQuestionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                publishNextWord(currentWord, questionLabel);
+            }
+        });
+    }
+
+    private void publishNextWord(MutableObject<Translation> currentWord, TextView questionLabel) {
         try {
-            questionLabel.setText(questionsStorage.getQuestions().keySet().iterator().next().getOriginalWord());
+            List<Translation> translations = new ArrayList<>(questionsStorage.getQuestions().keySet());
+            Translation translation = translations.get(new Random().nextInt(translations.size()));
+            currentWord.setValue(translation);
+            questionLabel.setText(currentWord.getValue().getOriginalWord());
         } catch (RuntimeException e) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("LangLearn")
@@ -41,17 +67,5 @@ public class QuestionnaireActivity extends BaseActivity {
             AlertDialog dialog = builder.create();
             dialog.show();
         }
-
-        final TextView correctAnswerView = (TextView) findViewById(R.id.correct_answer);
-        Button button = (Button) findViewById(R.id.submit_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                correctAnswerView.setText(questionsStorage.getQuestions().keySet().iterator().next().getTranslatedWord());
-            }
-        });
-
-        TextView answerInput = (TextView) findViewById(R.id.answer_input);
-    //    answerInput.setText("");
     }
 }
