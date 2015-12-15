@@ -16,6 +16,6 @@ public class TranslationParser {
         if (wordAndTranslation.get(0).isEmpty() || wordAndTranslation.get(1).isEmpty()) {
             return null;
         }
-        return new Translation(wordAndTranslation.get(0), wordAndTranslation.get(1));
+        return new Translation(wordAndTranslation.get(1), wordAndTranslation.get(0));
     }
 }

@@ -21,14 +21,14 @@ public class TranslationParserTest {
 
     public void shouldParseHappyPathData() {
         Translation translation = translationParser.parse("Modo Feliz-happy Path");
-        Assert.assertEquals(translation.getOriginalWord(), "Modo Feliz");
-        Assert.assertEquals(translation.getTranslatedWord(), "happy Path");
+        Assert.assertEquals(translation.getOriginalWord(), "happy Path");
+        Assert.assertEquals(translation.getTranslatedWord(), "Modo Feliz");
     }
 
-    public void shouldTrimResultsAfterParsin() {
+    public void shouldTrimResultsAfterParsing() {
         Translation translation = translationParser.parse("  Modo Feliz -     happy Path  ");
-        Assert.assertEquals(translation.getOriginalWord(), "Modo Feliz");
-        Assert.assertEquals(translation.getTranslatedWord(), "happy Path");
+        Assert.assertEquals(translation.getOriginalWord(), "happy Path");
+        Assert.assertEquals(translation.getTranslatedWord(), "Modo Feliz");
     }
 
     public void shouldNotParseStringWithoutTranslation() {
