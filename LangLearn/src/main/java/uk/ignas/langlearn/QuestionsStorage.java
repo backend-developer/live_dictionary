@@ -23,24 +23,11 @@ public class QuestionsStorage {
             Assert.fail();
         }
 
-        Map<Translation, Difficulty> questionList = new HashMap<>();
+        Map<Translation, Difficulty> questionList;
 
         try {
             new CsvUtils().buildScvFromPlainTextFile(planeTextFileDir.getAbsolutePath(), translations.getAbsolutePath());
-
-            InputStream csvStream = new FileInputStream(translations);
-            InputStreamReader csvStreamReader = new InputStreamReader(csvStream);
-            CSVReader csvReader = new CSVReader(csvStreamReader, '|');
-
-            String[] line;
-
-            // throw away the header
-            csvReader.readNext();
-
-
-            while ((line = csvReader.readNext()) != null) {
-                questionList.put(new Translation(line[0], line[1]), Difficulty.EASY);
-            }
+            questionList = new CsvUtils().getTranslationsFromCsv(translations);
         } catch (IOException e) {
             throw new RuntimeException("asd");
         }

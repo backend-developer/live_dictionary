@@ -1,18 +1,38 @@
 package uk.ignas.langlearn.parser;
 
+import com.opencsv.CSVReader;
+import uk.ignas.langlearn.Difficulty;
 import uk.ignas.langlearn.Translation;
 
 import java.io.*;
+import java.lang.String;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CsvUtils {
 
-    public static final String SCV_HEADER = "Word|Translation";
+    public static final char ENTRY_SEPARATOR = '|';
+    public static final String SCV_HEADER = "Word" + ENTRY_SEPARATOR + "Translation";
     private TranslationParser translationParser = new TranslationParser();
 
-    public static void main(String[] args) throws IOException {
-        new CsvUtils().buildScvFromPlainTextFile("/home/ignas/SpanishWords.txt", "/home/ignas/parsed.txt");
+    public Map<Translation, Difficulty> getTranslationsFromCsv(File translations) throws IOException {
+        Map<Translation, Difficulty> questionList = new HashMap<>();
+        InputStream csvStream = new FileInputStream(translations);
+        InputStreamReader csvStreamReader = new InputStreamReader(csvStream);
+        CSVReader csvReader = new CSVReader(csvStreamReader, ENTRY_SEPARATOR);
+
+        String[] line;
+
+        // throw away the header
+        csvReader.readNext();
+
+
+        while ((line = csvReader.readNext()) != null) {
+            questionList.put(new Translation(line[0], line[1]), Difficulty.EASY);
+        }
+        return questionList;
     }
 
     public void buildScvFromPlainTextFile(String planeTextFilePath, String csvFilePath) throws IOException {
@@ -22,7 +42,7 @@ public class CsvUtils {
         for (String planeTextLine: planeText) {
             Translation parsed = translationParser.parse(planeTextLine);
             if (parsed != null) {
-                csvText.add(parsed.getOriginalWord() + "|" + parsed.getTranslatedWord());
+                csvText.add(parsed.getOriginalWord() + ENTRY_SEPARATOR + parsed.getTranslatedWord());
             }
         }
         writeLines(csvFilePath, csvText);
