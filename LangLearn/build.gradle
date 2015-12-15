@@ -1,18 +1,18 @@
+
 apply plugin: 'com.android.application'
 
-repositories {
-        jcenter()
-}
+//repositories {
+//        jcenter()
+//}
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "23.0.0 rc2"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
 
     defaultConfig {
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         applicationId "uk.ignas.langlearn"
-        minSdkVersion 21
-        targetSdkVersion 21
+        minSdkVersion 8
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
@@ -23,24 +23,13 @@ android {
     }
     buildTypes {
         release {
-            runProguard false
+//            runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
     packagingOptions {
         exclude 'LICENSE.txt'
     }
-}
-
-task printDependencies << {
-    configurations.all(new Action<Configuration>() {
-        @Override
-        void execute(Configuration cfg) {
-            cfg.each { dependency ->
-                println dependency
-            }
-        }
-    })
 }
 
 dependencies {
