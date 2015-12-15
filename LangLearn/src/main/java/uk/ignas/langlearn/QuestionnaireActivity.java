@@ -8,13 +8,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import org.apache.commons.lang3.mutable.MutableObject;
 
-import javax.inject.Inject;
+
 import java.util.*;
 
 public class QuestionnaireActivity extends BaseActivity {
 
-    @Inject
-    QuestionsStorage questionsStorage;
+    QuestionsStorage questionsStorage = new QuestionsStorage();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

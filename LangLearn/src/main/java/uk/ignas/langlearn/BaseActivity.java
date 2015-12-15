@@ -7,6 +7,5 @@ public class BaseActivity extends Activity {
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        ((QuestionnaireApplication) getApplication()).getComponent().inject(this);
     }
 }
