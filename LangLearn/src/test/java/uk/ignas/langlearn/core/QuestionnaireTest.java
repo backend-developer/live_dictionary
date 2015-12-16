@@ -19,7 +19,7 @@ public class QuestionnaireTest {
 
     @Test
     public void shouldThrowWhenGeneratingQuestionIfQuestionBaseIsEmpty() {
-        Questionnaire questionnaire = new Questionnaire(new QuestionBase());
+        Questionnaire questionnaire = new Questionnaire(ImmutableMap.<Translation, Difficulty>of());
         try {
             questionnaire.drawQuestion();
             fail();
@@ -37,7 +37,7 @@ public class QuestionnaireTest {
                 .build();
         Random random = mock(Random.class);
         when(random.nextInt(questions.size())).thenReturn(1);
-        Questionnaire questionnaire = new Questionnaire(new QuestionBase(questions), random);
+        Questionnaire questionnaire = new Questionnaire(questions, random);
 
         String question = questionnaire.drawQuestion();
 
@@ -49,7 +49,7 @@ public class QuestionnaireTest {
         Map<Translation, Difficulty> questions = createEasyTranslations(4);
         Random random = mock(Random.class);
         when(random.nextInt(questions.size())).thenReturn(0, 1, 2, 3);
-        Questionnaire questionnaire = new Questionnaire(new QuestionBase(questions), random);
+        Questionnaire questionnaire = new Questionnaire(questions, random);
 
         String q1 = questionnaire.drawQuestion();
         String q2 = questionnaire.drawQuestion();
