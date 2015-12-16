@@ -3,6 +3,8 @@ package uk.ignas.langlearn.core;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.allOf;
@@ -17,7 +19,7 @@ public class QuestionnaireTest {
 
     @Test
     public void shouldThrowWhenGeneratingQuestionIfQuestionBaseIsEmpty() {
-        Questionnaire questionnaire = new Questionnaire(ImmutableMap.<Translation, Difficulty>of());
+        Questionnaire questionnaire = new Questionnaire(new LinkedHashMap<Translation, Difficulty>());
         try {
             questionnaire.drawQuestion();
             fail();
@@ -27,9 +29,9 @@ public class QuestionnaireTest {
     }
 
     @Test
-    public void shouldGetFirst100QuestionsWith80PercentProbability() {
-        Map<Translation, Difficulty> words = ImmutableMap.<Translation, Difficulty>of(
-                new Translation("word", "translation"), Difficulty.EASY);
+    public void shouldNotCrashWhenThereAreFewWords() {
+        LinkedHashMap<Translation, Difficulty> words = new LinkedHashMap<>();
+        words.put(new Translation("word", "translation"), Difficulty.EASY);
 
         Questionnaire questionnaire = new Questionnaire(words);
         Translation translation = questionnaire.getRandomTranslation();
@@ -37,7 +39,7 @@ public class QuestionnaireTest {
     }
 
     @Test
-    public void shouldNotCrashWhenThereAreFewWords() {
+    public void shouldGetFirst100QuestionsWith80PercentProbability() {
         Questionnaire questionnaire = new Questionnaire(get200QuestionsOutOfWhich100StartsWith("FirstQ"));
         int counter = 0;
         for (int i = 0; i < 1000; i++) {
@@ -49,14 +51,14 @@ public class QuestionnaireTest {
         assertThat(counter, allOf(greaterThan(750), lessThan(850)));
     }
 
-    public Map<Translation, Difficulty> get200QuestionsOutOfWhich100StartsWith(String prefixForFirst100Questions) {
-        ImmutableMap.Builder<Translation, Difficulty> builder = ImmutableMap.<Translation, Difficulty>builder();
+    public LinkedHashMap<Translation, Difficulty> get200QuestionsOutOfWhich100StartsWith(String prefixForFirst100Questions) {
+        LinkedHashMap<Translation, Difficulty> translations = new LinkedHashMap<>();
         for (int i = 0; i < 100; i++) {
-            builder.put(new Translation(prefixForFirst100Questions + i, "t" + i), Difficulty.EASY);
+            translations.put(new Translation(prefixForFirst100Questions + i, "t" + i), Difficulty.EASY);
         }
         for (int i = 100; i < 200; i++) {
-            builder.put(new Translation("B" + i, "t" + i), Difficulty.EASY);
+            translations.put(new Translation("B" + i, "t" + i), Difficulty.EASY);
         }
-        return builder.build();
+        return translations;
     }
 }

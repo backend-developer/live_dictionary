@@ -49,15 +49,15 @@ public class QuestionnaireActivity extends BaseActivity {
 
     private void publishNextWord(MutableObject<Translation> currentWord, TextView questionLabel, TextView correctAnswerView) {
         try {
-            QuestionBase base = new QuestionBase(questionsStorage.getQuestions());
-            Questionnaire q = new Questionnaire(base.getQuestions());
+
+            Questionnaire q = new Questionnaire(questionsStorage.getQuestions());
             currentWord.setValue(q.getRandomTranslation());
             questionLabel.setText(currentWord.getValue().getOriginalWord());
             correctAnswerView.setText("");
         } catch (RuntimeException e) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("LangLearn")
-                    .setMessage("Invalid CSV format: No Title")
+                    .setMessage("Error occured:" + e.getMessage())
                     .setPositiveButton("button", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {

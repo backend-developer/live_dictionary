@@ -1,23 +1,22 @@
 package uk.ignas.langlearn.core;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class Questionnaire {
     private final List<Translation> questions ;
     private final Random random;
 
-    public Questionnaire(Map<Translation, Difficulty> q, Random random) {
-        this.random = random;
-        this.questions = new ArrayList<>(q.keySet());
-    }
-
-    public Questionnaire(Map<Translation, Difficulty> q) {
+    public Questionnaire(LinkedHashMap<Translation, Difficulty> q) {
         this(q, new Random());
     }
 
+    public Questionnaire(Map<Translation, Difficulty> q, Random random) {
+        if (!(q instanceof LinkedHashMap)){
+            throw new RuntimeException("words containing data structure does not preserve order: " + q.getClass().getName());
+        }
+        this.random = random;
+        this.questions = new ArrayList<>(q.keySet());
+    }
 
     public Translation getRandomTranslation() {
         int size = questions.size();

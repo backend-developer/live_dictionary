@@ -7,10 +7,7 @@ import uk.ignas.langlearn.core.Translation;
 
 import java.io.*;
 import java.lang.String;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CsvUtils {
 
@@ -18,8 +15,8 @@ public class CsvUtils {
     public static final String SCV_HEADER = "Word" + ENTRY_SEPARATOR + "Translation";
     private TranslationParser translationParser = new TranslationParser();
 
-    public Map<Translation, Difficulty> getTranslationsFromCsv(File translations) throws IOException {
-        Map<Translation, Difficulty> questionList = new HashMap<>();
+    public LinkedHashMap<Translation, Difficulty> getTranslationsFromCsv(File translations) throws IOException {
+        LinkedHashMap<Translation, Difficulty> questionList = new LinkedHashMap<>();
         InputStream csvStream = new FileInputStream(translations);
         InputStreamReader csvStreamReader = new InputStreamReader(csvStream);
         CSVReader csvReader = new CSVReader(csvStreamReader, ENTRY_SEPARATOR);
