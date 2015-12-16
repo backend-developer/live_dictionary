@@ -1,17 +1,13 @@
 package uk.ignas.langlearn;
 
 import android.os.Environment;
-import junit.framework.Assert;
 import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Translation;
 import uk.ignas.langlearn.core.parser.CsvUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public class QuestionsStorage {
 
