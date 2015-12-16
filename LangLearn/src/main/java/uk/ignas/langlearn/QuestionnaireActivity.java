@@ -7,13 +7,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import org.apache.commons.lang3.mutable.MutableObject;
+import uk.ignas.langlearn.core.QuestionBase;
+import uk.ignas.langlearn.core.Questionnaire;
 import uk.ignas.langlearn.core.Translation;
 
 
-import java.util.*;
-
 public class QuestionnaireActivity extends BaseActivity {
-
     QuestionsStorage questionsStorage = new QuestionsStorage();
 
     @Override
@@ -50,9 +49,9 @@ public class QuestionnaireActivity extends BaseActivity {
 
     private void publishNextWord(MutableObject<Translation> currentWord, TextView questionLabel, TextView correctAnswerView) {
         try {
-            List<Translation> translations = new ArrayList<>(questionsStorage.getQuestions().keySet());
-            Translation translation = translations.get(new Random().nextInt(translations.size()));
-            currentWord.setValue(translation);
+            QuestionBase base = new QuestionBase(questionsStorage.getQuestions());
+            Questionnaire q = new Questionnaire(base.getQuestions());
+            currentWord.setValue(q.getRandomTranslation());
             questionLabel.setText(currentWord.getValue().getOriginalWord());
             correctAnswerView.setText("");
         } catch (RuntimeException e) {

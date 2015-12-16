@@ -1,39 +1,48 @@
 package uk.ignas.langlearn;
 
 import android.os.Environment;
-import com.opencsv.CSVReader;
 import junit.framework.Assert;
 import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Translation;
 import uk.ignas.langlearn.core.parser.CsvUtils;
 
-
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class QuestionsStorage {
 
+    private Map<Translation, Difficulty> questionsList;
+
+
     public Map<Translation, Difficulty> getQuestions()  {
+        if (questionsList == null) {
+            this.questionsList = loadQuestions();
+        }
+        return questionsList;
+    }
+
+    private Map<Translation, Difficulty> loadQuestions() {
+        Map<Translation, Difficulty> questionsList;
         File externalDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
         File applicationDir = new File(externalDir, "LangLearn");
         File planeTextFileDir = new File(externalDir, "SpanishWords.txt");
         File translations = new File(applicationDir, "translations");
 
-        applicationDir.mkdirs();
-        boolean isDirExists = externalDir.exists();
-        if (!isDirExists) {
-            Assert.fail();
-        }
-
-        Map<Translation, Difficulty> questionList;
-
         try {
+            boolean mkdirs = applicationDir.mkdirs();
+            boolean isDirExists = externalDir.exists();
+            if (mkdirs || isDirExists) {
+                throw new RuntimeException("file operation failed");
+            }
             new CsvUtils().buildScvFromPlainTextFile(planeTextFileDir.getAbsolutePath(), translations.getAbsolutePath());
-            questionList = new CsvUtils().getTranslationsFromCsv(translations);
+            questionsList = new CsvUtils().getTranslationsFromCsv(translations);
         } catch (IOException e) {
             throw new RuntimeException("asd");
         }
-
-        return questionList;
+        return questionsList;
     }
 }
