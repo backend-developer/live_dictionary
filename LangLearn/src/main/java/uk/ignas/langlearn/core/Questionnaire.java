@@ -1,7 +1,5 @@
 package uk.ignas.langlearn.core;
 
-import com.google.common.collect.ImmutableMap;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +28,7 @@ public class Questionnaire {
             if (random.nextInt(100) < 80) {
                 return questions.get(random.nextInt(100));
             } else {
-                return questions.get(random.nextInt(size));
+                return questions.get(random.nextInt(size - 100) + 100);
             }
         }
     }

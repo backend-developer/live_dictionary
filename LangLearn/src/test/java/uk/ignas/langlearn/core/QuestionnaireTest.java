@@ -3,16 +3,14 @@ package uk.ignas.langlearn.core;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 
-
 import java.util.Map;
-import java.util.Random;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThan;
+import static org.junit.Assert.*;
 
 
 public class QuestionnaireTest {
@@ -29,44 +27,36 @@ public class QuestionnaireTest {
     }
 
     @Test
-    public void shouldChooseRandomlyOneOutOfMultipleQuestionsProvided() {
-        Map<Translation, Difficulty> questions = ImmutableMap.<Translation, Difficulty>builder()
-                .put(new Translation("w1", "t1"), Difficulty.EASY)
-                .put(new Translation("randomlyChosen", "t2"), Difficulty.EASY)
-                .put(new Translation("w3", "t3"), Difficulty.EASY)
-                .build();
-        Random random = mock(Random.class);
-        when(random.nextInt(questions.size())).thenReturn(1);
-        Questionnaire questionnaire = new Questionnaire(questions, random);
+    public void shouldGetFirst100QuestionsWith80PercentProbability() {
+        Map<Translation, Difficulty> words = ImmutableMap.<Translation, Difficulty>of(
+                new Translation("word", "translation"), Difficulty.EASY);
 
-        String question = questionnaire.drawQuestion();
-
-        assertThat(question, equalTo("randomlyChosen"));
+        Questionnaire questionnaire = new Questionnaire(words);
+        Translation translation = questionnaire.getRandomTranslation();
+        assertThat(translation.getOriginalWord(), is(equalTo("word")));
     }
 
     @Test
-    public void shouldChooseKnownWordsWithEqualProbability() {
-        Map<Translation, Difficulty> questions = createEasyTranslations(4);
-        Random random = mock(Random.class);
-        when(random.nextInt(questions.size())).thenReturn(0, 1, 2, 3);
-        Questionnaire questionnaire = new Questionnaire(questions, random);
-
-        String q1 = questionnaire.drawQuestion();
-        String q2 = questionnaire.drawQuestion();
-        String q3 = questionnaire.drawQuestion();
-        String q4 = questionnaire.drawQuestion();
-
-        assertThat(q1, equalTo("w1"));
-        assertThat(q2, equalTo("w2"));
-        assertThat(q3, equalTo("w3"));
-        assertThat(q4, equalTo("w4"));
+    public void shouldNotCrashWhenThereAreFewWords() {
+        Questionnaire questionnaire = new Questionnaire(get200QuestionsOutOfWhich100StartsWith("FirstQ"));
+        int counter = 0;
+        for (int i = 0; i < 1000; i++) {
+            String originalWord = questionnaire.getRandomTranslation().getOriginalWord();
+            if (originalWord.contains("FirstQ")) {
+                counter++;
+            }
+        }
+        assertThat(counter, allOf(greaterThan(750), lessThan(850)));
     }
 
-    private Map<Translation, Difficulty> createEasyTranslations(int n) {
-        ImmutableMap.Builder<Translation, Difficulty> easyTranslations = ImmutableMap.builder();
-        for (int i = 0; i < n; i++) {
-            easyTranslations.put(new Translation("w" + (i + 1), "t" + (i + 1)), Difficulty.EASY);
+    public Map<Translation, Difficulty> get200QuestionsOutOfWhich100StartsWith(String prefixForFirst100Questions) {
+        ImmutableMap.Builder<Translation, Difficulty> builder = ImmutableMap.<Translation, Difficulty>builder();
+        for (int i = 0; i < 100; i++) {
+            builder.put(new Translation(prefixForFirst100Questions + i, "t" + i), Difficulty.EASY);
         }
-        return easyTranslations.build();
+        for (int i = 100; i < 200; i++) {
+            builder.put(new Translation("B" + i, "t" + i), Difficulty.EASY);
+        }
+        return builder.build();
     }
 }

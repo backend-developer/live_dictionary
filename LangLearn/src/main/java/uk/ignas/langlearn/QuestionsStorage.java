@@ -32,14 +32,14 @@ public class QuestionsStorage {
         File planeTextFileDir = new File(externalDir, "SpanishWords.txt");
         File translations = new File(applicationDir, "translations");
 
+        boolean mkdirs = applicationDir.mkdirs();
+        boolean isDirExists = externalDir.exists();
+
         try {
-            boolean mkdirs = applicationDir.mkdirs();
-            boolean isDirExists = externalDir.exists();
-            if (mkdirs || isDirExists) {
-                throw new RuntimeException("file operation failed");
-            }
+
             new CsvUtils().buildScvFromPlainTextFile(planeTextFileDir.getAbsolutePath(), translations.getAbsolutePath());
             questionsList = new CsvUtils().getTranslationsFromCsv(translations);
+
         } catch (IOException e) {
             throw new RuntimeException("asd");
         }
