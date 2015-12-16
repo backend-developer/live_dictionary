@@ -1,26 +1,34 @@
-package uk.ignas.langlearn;
+package uk.ignas.langlearn.core;
 
 import com.google.common.collect.ImmutableMap;
-import org.testng.annotations.Test;
+import org.junit.Test;
+
 
 import java.util.Map;
 import java.util.Random;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@Test
+
 public class QuestionnaireTest {
 
-    @Test(expectedExceptions = QuestionnaireException.class, expectedExceptionsMessageRegExp = "no questions found")
+    @Test
     public void shouldThrowWhenGeneratingQuestionIfQuestionBaseIsEmpty() {
         Questionnaire questionnaire = new Questionnaire(new QuestionBase());
-
-        questionnaire.drawQuestion();
+        try {
+            questionnaire.drawQuestion();
+            fail();
+        } catch (QuestionnaireException e) {
+            assertTrue(e.getMessage().contains("no questions found"));
+        }
     }
 
+    @Test
     public void shouldChooseRandomlyOneOutOfMultipleQuestionsProvided() {
         Map<Translation, Difficulty> questions = ImmutableMap.<Translation, Difficulty>builder()
                 .put(new Translation("w1", "t1"), Difficulty.EASY)
@@ -36,6 +44,7 @@ public class QuestionnaireTest {
         assertThat(question, equalTo("randomlyChosen"));
     }
 
+    @Test
     public void shouldChooseKnownWordsWithEqualProbability() {
         Map<Translation, Difficulty> questions = createEasyTranslations(4);
         Random random = mock(Random.class);

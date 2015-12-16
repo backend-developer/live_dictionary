@@ -3,10 +3,12 @@ package uk.ignas.langlearn;
 import android.os.Environment;
 import com.opencsv.CSVReader;
 import junit.framework.Assert;
-import uk.ignas.langlearn.parser.CsvUtils;
+import uk.ignas.langlearn.core.Difficulty;
+import uk.ignas.langlearn.core.Translation;
+import uk.ignas.langlearn.core.parser.CsvUtils;
+
 
 import java.io.*;
-import java.util.HashMap;
 import java.util.Map;
 
 public class QuestionsStorage {

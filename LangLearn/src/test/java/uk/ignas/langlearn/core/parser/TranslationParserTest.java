@@ -1,46 +1,54 @@
-package uk.ignas.langlearn.parser;
+package uk.ignas.langlearn.core.parser;
 
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import uk.ignas.langlearn.Translation;
 
-@org.testng.annotations.Test
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import uk.ignas.langlearn.core.Translation;
+
+
 public class TranslationParserTest {
 
     private TranslationParser translationParser;
 
-    @BeforeMethod
+    @Before
     public void setup() {
         translationParser = new TranslationParser();
     }
 
+    @Test
     public void shouldNotParseEmptyString() {
         Translation translation = translationParser.parse("");
         Assert.assertNull(translation);
     }
 
+    @Test
     public void shouldParseHappyPathData() {
         Translation translation = translationParser.parse("Modo Feliz-happy Path");
         Assert.assertEquals(translation.getOriginalWord(), "happy Path");
         Assert.assertEquals(translation.getTranslatedWord(), "Modo Feliz");
     }
 
+    @Test
     public void shouldTrimResultsAfterParsing() {
         Translation translation = translationParser.parse("  Modo Feliz -     happy Path  ");
         Assert.assertEquals(translation.getOriginalWord(), "happy Path");
         Assert.assertEquals(translation.getTranslatedWord(), "Modo Feliz");
     }
 
+    @Test
     public void shouldNotParseStringWithoutTranslation() {
         Translation translation = translationParser.parse("no traducido-");
         Assert.assertNull(translation);
     }
 
+    @Test
     public void shouldNotParseStringWithoutOrigWord() {
         Translation translation = translationParser.parse("-translation WithoutOriginal");
         Assert.assertNull(translation);
     }
 
+    @Test
     public void shouldNotParseAmbiguousTranslation() {
         Translation translation = translationParser.parse("word1 - word2 - word3");
         Assert.assertNull(translation);

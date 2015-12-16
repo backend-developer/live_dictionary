@@ -1,4 +1,4 @@
-package uk.ignas.langlearn;
+package uk.ignas.langlearn.core;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ public class Questionnaire {
     }
 
     public Questionnaire(QuestionBase questions) {
-        this.questions = new ArrayList(questions.getQuestions().keySet());
+        this.questions = new ArrayList<>(questions.getQuestions().keySet());
     }
 
     public String drawQuestion() {

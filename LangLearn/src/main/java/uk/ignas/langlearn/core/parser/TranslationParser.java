@@ -1,7 +1,8 @@
-package uk.ignas.langlearn.parser;
+package uk.ignas.langlearn.core.parser;
 
 import com.google.common.base.Splitter;
-import uk.ignas.langlearn.Translation;
+import uk.ignas.langlearn.core.Translation;
+
 
 import java.util.List;
 

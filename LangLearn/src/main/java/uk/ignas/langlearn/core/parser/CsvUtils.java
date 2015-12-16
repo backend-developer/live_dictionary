@@ -1,8 +1,9 @@
-package uk.ignas.langlearn.parser;
+package uk.ignas.langlearn.core.parser;
 
 import com.opencsv.CSVReader;
-import uk.ignas.langlearn.Difficulty;
-import uk.ignas.langlearn.Translation;
+import uk.ignas.langlearn.core.Difficulty;
+import uk.ignas.langlearn.core.Translation;
+
 
 import java.io.*;
 import java.lang.String;

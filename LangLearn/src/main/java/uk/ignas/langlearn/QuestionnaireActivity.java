@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import org.apache.commons.lang3.mutable.MutableObject;
+import uk.ignas.langlearn.core.Translation;
 
 
 import java.util.*;
@@ -29,7 +30,6 @@ public class QuestionnaireActivity extends BaseActivity {
         final MutableObject<Translation> currentWord = new MutableObject<>(new Translation("defaultWord", "defaultTranslation"));
         final TextView questionLabel = (TextView) findViewById(R.id.question_label);
         publishNextWord(currentWord, questionLabel, correctAnswerView);
-
 
         Button button = (Button) findViewById(R.id.submit_button);
         button.setOnClickListener(new View.OnClickListener() {
