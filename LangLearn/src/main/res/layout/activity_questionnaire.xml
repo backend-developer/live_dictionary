@@ -28,11 +28,15 @@
 			android:id="@+id/known_word_submision_button"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="@string/known_word"/>
+			android:text="@string/known_word"
+	        android:textColor="@android:color/holo_green_dark"
+	/>
 	<Button
 			android:id="@+id/unknown_word_submision_button"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="@string/unknown_word"/>
+			android:text="@string/unknown_word"
+			android:textColor="@android:color/holo_red_dark"
+	/>
 
 </LinearLayout>

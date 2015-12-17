@@ -68,10 +68,11 @@ public class QuestionnaireActivity extends Activity {
         });
     }
 
-    private void enableTranslationAndNotSubmittionButtons(boolean enabled) {
-        translationButton.setEnabled(enabled);
-        knownWordButton.setEnabled(!enabled);
-        unknownWordButton.setEnabled(!enabled);
+    private void enableTranslationAndNotSubmittionButtons(boolean isTranslationPhase) {
+        final boolean isSubmittionPhase = !isTranslationPhase;
+        translationButton.setEnabled(isTranslationPhase);
+        knownWordButton.setEnabled(isSubmittionPhase);
+        unknownWordButton.setEnabled(isSubmittionPhase);
     }
 
     private void publishNextWord(MutableObject<Translation> currentWord, TextView questionLabel, TextView correctAnswerView) {
