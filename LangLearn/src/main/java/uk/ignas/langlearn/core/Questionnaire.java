@@ -4,6 +4,7 @@ import java.util.*;
 
 public class Questionnaire {
     private final List<Translation> questions ;
+    private final Set<Translation> unknownQuestions = new HashSet<>();
     private final Random random;
 
     public Questionnaire(LinkedHashMap<Translation, Difficulty> q) {
@@ -23,6 +24,9 @@ public class Questionnaire {
         if (questions.size() == 0) {
             throw new QuestionnaireException("no questions found");
         }
+        if (unknownQuestions.size() == 20) {
+            return getRandomUnknownQuestion();
+        }
         if (size < 100) {
             return questions.get(random.nextInt(size));
         } else {
@@ -34,11 +38,17 @@ public class Questionnaire {
         }
     }
 
+    private Translation getRandomUnknownQuestion() {
+        ArrayList<Translation> translations = new ArrayList<>(unknownQuestions);
+        Collections.shuffle(translations);
+        return translations.get(0);
+    }
+
     public void markKnown(Translation translation) {
 
     }
 
     public void markUnknown(Translation translation) {
-
+        unknownQuestions.add(translation);
     }
 }
