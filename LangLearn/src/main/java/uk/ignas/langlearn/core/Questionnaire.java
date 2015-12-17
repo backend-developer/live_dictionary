@@ -20,7 +20,9 @@ public class Questionnaire {
 
     public Translation getRandomTranslation() {
         int size = questions.size();
-
+        if (questions.size() == 0) {
+            throw new QuestionnaireException("no questions found");
+        }
         if (size < 100) {
             return questions.get(random.nextInt(size));
         } else {
@@ -30,13 +32,6 @@ public class Questionnaire {
                 return questions.get(random.nextInt(size - 100) + 100);
             }
         }
-    }
-
-    public String drawQuestion() {
-        if (questions.size() == 0) {
-            throw new QuestionnaireException("no questions found");
-        }
-        return questions.get(random.nextInt(questions.size())).getOriginalWord();
     }
 
     public void markKnown(Translation translation) {

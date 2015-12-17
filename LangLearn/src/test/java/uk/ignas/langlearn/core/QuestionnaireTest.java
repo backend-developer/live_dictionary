@@ -16,7 +16,7 @@ public class QuestionnaireTest {
     public void shouldThrowWhenGeneratingQuestionIfQuestionBaseIsEmpty() {
         Questionnaire questionnaire = new Questionnaire(new LinkedHashMap<Translation, Difficulty>());
         try {
-            questionnaire.drawQuestion();
+            questionnaire.getRandomTranslation();
             fail();
         } catch (QuestionnaireException e) {
             assertTrue(e.getMessage().contains("no questions found"));
