@@ -13,6 +13,10 @@ import uk.ignas.langlearn.core.Translation;
 
 
 public class QuestionnaireActivity extends Activity {
+    private Button translationButton;
+    private Button knownWordButton;
+    private Button unknownWordButton;
+
     private QuestionsStorage questionsStorage = new QuestionsStorage();
 
     @Override
@@ -30,28 +34,40 @@ public class QuestionnaireActivity extends Activity {
         final TextView questionLabel = (TextView) findViewById(R.id.question_label);
         publishNextWord(currentWord, questionLabel, correctAnswerView);
 
-        Button button = (Button) findViewById(R.id.submit_button);
-        button.setOnClickListener(new View.OnClickListener() {
+        translationButton = (Button) findViewById(R.id.show_translation_button);
+        knownWordButton = (Button) findViewById(R.id.known_word_submision_button);
+        unknownWordButton = (Button) findViewById(R.id.unknown_word_submision_button);
+
+        enableTranslationAndNotSubmittionButtons(true);
+        translationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 correctAnswerView.setText(currentWord.getValue().getTranslatedWord());
+                enableTranslationAndNotSubmittionButtons(false);
             }
         });
 
-        Button knownWordButton = (Button) findViewById(R.id.known_word_submision_button);
         knownWordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 publishNextWord(currentWord, questionLabel, correctAnswerView);
+                enableTranslationAndNotSubmittionButtons(true);
             }
         });
-        Button unknownWordButton = (Button) findViewById(R.id.unknown_word_submision_button);
+
         unknownWordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 publishNextWord(currentWord, questionLabel, correctAnswerView);
+                enableTranslationAndNotSubmittionButtons(true);
             }
         });
+    }
+
+    private void enableTranslationAndNotSubmittionButtons(boolean enabled) {
+        translationButton.setEnabled(enabled);
+        knownWordButton.setEnabled(!enabled);
+        unknownWordButton.setEnabled(!enabled);
     }
 
     private void publishNextWord(MutableObject<Translation> currentWord, TextView questionLabel, TextView correctAnswerView) {

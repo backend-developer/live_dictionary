@@ -13,6 +13,17 @@
 			android:textSize="30sp"
 			/>
 
+	<TextView
+			android:id="@+id/correct_answer"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="30sp"
+			/>
+	<Button
+			android:id="@+id/show_translation_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/show_answer"/>
 	<Button
 			android:id="@+id/known_word_submision_button"
 			android:layout_width="wrap_content"
@@ -23,16 +34,5 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:text="@string/unknown_word"/>
-	<TextView
-			android:id="@+id/correct_answer"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:textSize="30sp"
-			/>
-	<Button
-			android:id="@+id/submit_button"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="@string/show_answer"/>
 
 </LinearLayout>
