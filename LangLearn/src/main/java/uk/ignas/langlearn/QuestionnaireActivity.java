@@ -1,5 +1,6 @@
 package uk.ignas.langlearn;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -7,12 +8,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import org.apache.commons.lang3.mutable.MutableObject;
-import uk.ignas.langlearn.core.QuestionBase;
 import uk.ignas.langlearn.core.Questionnaire;
 import uk.ignas.langlearn.core.Translation;
 
 
-public class QuestionnaireActivity extends BaseActivity {
+public class QuestionnaireActivity extends Activity {
     QuestionsStorage questionsStorage = new QuestionsStorage();
 
     @Override

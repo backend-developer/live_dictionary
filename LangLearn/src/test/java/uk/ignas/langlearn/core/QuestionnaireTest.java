@@ -1,15 +1,10 @@
 package uk.ignas.langlearn.core;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.*;
