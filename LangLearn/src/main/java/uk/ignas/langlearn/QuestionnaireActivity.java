@@ -13,7 +13,7 @@ import uk.ignas.langlearn.core.Translation;
 
 
 public class QuestionnaireActivity extends Activity {
-    QuestionsStorage questionsStorage = new QuestionsStorage();
+    private QuestionsStorage questionsStorage = new QuestionsStorage();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
