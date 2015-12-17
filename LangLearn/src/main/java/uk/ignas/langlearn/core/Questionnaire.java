@@ -24,9 +24,6 @@ public class Questionnaire {
         if (questions.size() == 0) {
             throw new QuestionnaireException("no questions found");
         }
-        if (unknownQuestions.size() == 20) {
-            return getRandomUnknownQuestion();
-        }
         if (unknownQuestions.size() > 0) {
             if (unknownQuestions.size() >= random.nextInt(20) + 1) {
                 return getRandomUnknownQuestion();
