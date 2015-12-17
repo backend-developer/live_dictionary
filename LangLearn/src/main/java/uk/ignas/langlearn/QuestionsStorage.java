@@ -1,5 +1,6 @@
 package uk.ignas.langlearn;
 
+import android.content.Context;
 import android.os.Environment;
 import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Translation;
@@ -13,14 +14,15 @@ public class QuestionsStorage {
 
     private LinkedHashMap<Translation, Difficulty> questionsList;
 
-    public LinkedHashMap<Translation, Difficulty> getQuestions()  {
+
+    public LinkedHashMap<Translation, Difficulty> getQuestions(Context context) {
         if (questionsList == null) {
-            this.questionsList = loadQuestions();
+            this.questionsList = loadQuestions(context);
         }
         return questionsList;
     }
 
-    private LinkedHashMap<Translation, Difficulty> loadQuestions() {
+    private LinkedHashMap<Translation, Difficulty> loadQuestions(Context context) {
         LinkedHashMap<Translation, Difficulty> questionsList;
         File externalDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
         File applicationDir = new File(externalDir, "LangLearn");
@@ -32,9 +34,8 @@ public class QuestionsStorage {
         }
 
         try {
-
-            new CsvUtils().buildScvFromPlainTextFile(planeTextFileDir.getAbsolutePath(), translations.getAbsolutePath());
-            questionsList = new CsvUtils().getTranslationsFromCsv(translations);
+            new CsvUtils(context).buildScvFromPlainTextFile(planeTextFileDir.getAbsolutePath(), translations.getAbsolutePath());
+            questionsList = new CsvUtils(context).getTranslationsFromCsv(translations);
 
         } catch (IOException e) {
             throw new RuntimeException("asd");

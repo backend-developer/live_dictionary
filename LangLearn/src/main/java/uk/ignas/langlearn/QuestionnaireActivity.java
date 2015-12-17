@@ -28,7 +28,7 @@ public class QuestionnaireActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        questionnaire = new Questionnaire(new QuestionsStorage().getQuestions());
+        questionnaire = new Questionnaire(new QuestionsStorage().getQuestions(this));
 
         final TextView correctAnswerView = (TextView) findViewById(R.id.correct_answer);
         final MutableObject<Translation> currentWord = new MutableObject<>(new Translation("defaultWord", "defaultTranslation"));

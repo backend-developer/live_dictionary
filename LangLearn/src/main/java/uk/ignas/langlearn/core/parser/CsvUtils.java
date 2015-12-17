@@ -1,12 +1,12 @@
 package uk.ignas.langlearn.core.parser;
 
+import android.content.Context;
 import com.opencsv.CSVReader;
 import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Translation;
-
+import uk.ignas.langlearn.core.db.DBHelper;
 
 import java.io.*;
-import java.lang.String;
 import java.util.*;
 
 public class CsvUtils {
@@ -14,6 +14,11 @@ public class CsvUtils {
     public static final char ENTRY_SEPARATOR = '|';
     public static final String SCV_HEADER = "Word" + ENTRY_SEPARATOR + "Translation";
     private TranslationParser translationParser = new TranslationParser();
+    private final Context context;
+
+    public CsvUtils(Context context) {
+        this.context = context;
+    }
 
     public LinkedHashMap<Translation, Difficulty> getTranslationsFromCsv(File translations) throws IOException {
         LinkedHashMap<Translation, Difficulty> questionList = new LinkedHashMap<>();
@@ -26,23 +31,29 @@ public class CsvUtils {
         // throw away the header
         csvReader.readNext();
 
-
         while ((line = csvReader.readNext()) != null) {
             questionList.put(new Translation(line[0], line[1]), Difficulty.EASY);
         }
-        return questionList;
+
+        return new DBHelper(context).getAllTranslations();
     }
 
     public void buildScvFromPlainTextFile(String planeTextFilePath, String csvFilePath) throws IOException {
         List<String> planeText = readFile(planeTextFilePath);
         List<String> csvText = new ArrayList<>();
         csvText.add(SCV_HEADER);
-        for (String planeTextLine: planeText) {
+        DBHelper dbHelper = new DBHelper(context);
+        dbHelper.deleteAll();
+
+        Set<Translation> uniqueOnly = new HashSet<>();
+        for (String planeTextLine : planeText) {
             Translation parsed = translationParser.parse(planeTextLine);
-            if (parsed != null) {
+            if (parsed != null && uniqueOnly.add(parsed)) {
                 csvText.add(parsed.getOriginalWord() + ENTRY_SEPARATOR + parsed.getTranslatedWord());
+                dbHelper.insertContact(parsed.getOriginalWord(), parsed.getTranslatedWord());
             }
         }
+
         writeLines(csvFilePath, csvText);
     }
 
@@ -59,7 +70,7 @@ public class CsvUtils {
             e.printStackTrace();
         } finally {
             try {
-                if (br != null)br.close();
+                if (br != null) br.close();
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -73,7 +84,7 @@ public class CsvUtils {
 
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
 
-        for (String line: lines) {
+        for (String line : lines) {
             bw.write(line);
             bw.newLine();
         }
