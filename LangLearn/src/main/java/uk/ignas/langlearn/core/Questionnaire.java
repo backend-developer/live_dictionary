@@ -27,7 +27,12 @@ public class Questionnaire {
         if (unknownQuestions.size() == 20) {
             return getRandomUnknownQuestion();
         }
-        if (size < 100) {
+        if (unknownQuestions.size() > 0) {
+            if (unknownQuestions.size() >= random.nextInt(20) + 1) {
+                return getRandomUnknownQuestion();
+            }
+        }
+        if (size <= 100) {
             return questions.get(random.nextInt(size));
         } else {
             if (random.nextInt(100) < 80) {
@@ -49,6 +54,7 @@ public class Questionnaire {
     }
 
     public void markUnknown(Translation translation) {
+        questions.remove(translation);
         unknownQuestions.add(translation);
     }
 }

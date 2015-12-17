@@ -47,6 +47,17 @@ public class QuestionnaireTest {
     }
 
     @Test
+    public void shouldHandle100Questions() {
+        for (int i = 0; i < 100; i++) {
+            Questionnaire questionnaire = new Questionnaire(getNQuestionsStartingWith(100, "Any"));
+
+            String retrievedWord = questionnaire.getRandomTranslation().getOriginalWord();
+
+            assertThat(retrievedWord, containsString("Any"));
+        }
+    }
+
+    @Test
     public void afterFinding20UnknownWordsShouldNeverAskForOthers() {
         LinkedHashMap<Translation, Difficulty> allWords = getNQuestionsStartingWith(100, "Other");
         LinkedHashMap<Translation, Difficulty> unknownWords = getNQuestionsStartingWith(20, "UnknownWord");
@@ -60,6 +71,22 @@ public class QuestionnaireTest {
 
         int percentage = countPercentageOfExpectedWordsRetrieved("UnknownWord", retrievedWords);
         assertThat(percentage, is(equalTo(100)));
+    }
+
+    @Test
+    public void unknownWordsShouldBeAskedEvery20thTime() {
+        LinkedHashMap<Translation, Difficulty> allWords = getNQuestionsStartingWith(100, "Other");
+        LinkedHashMap<Translation, Difficulty> unknownWords = getNQuestionsStartingWith(5, "UnknownWord");
+        allWords.putAll(unknownWords);
+        Questionnaire questionnaire = new Questionnaire(allWords);
+
+        for (Translation t: unknownWords.keySet()) {
+            questionnaire.markUnknown(t);
+        }
+        final List<String> retrievedWords = retrieveWordsNTimes(questionnaire, 1000);
+
+        int percentage = countPercentageOfExpectedWordsRetrieved("UnknownWord", retrievedWords);
+        assertThat(percentage, allOf(greaterThan(20), lessThan(30)));
     }
 
     private List<String> retrieveWordsNTimes(Questionnaire questionnaire, int timesToExecute) {
