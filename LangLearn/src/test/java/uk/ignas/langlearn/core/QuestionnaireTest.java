@@ -71,20 +71,23 @@ public class QuestionnaireTest {
     }
 
     private int countPercentageOfExpectedWordsRetrieved(String expectedPattern, List<String> retrievedWords) {
-        int counter;
-        int counter1 = 0;
+        int timesInterested = 0;
         for (String w: retrievedWords) {
             if (w.contains(expectedPattern)) {
-                counter1++;
+                timesInterested++;
             }
         }
-        counter = counter1;
-        if (retrievedWords.size() > 100) {
-            int relationTo100 = retrievedWords.size() / 100;
-            return counter / relationTo100;
+        int timesTotal = retrievedWords.size();
+        return calculatePercentage(timesInterested, timesTotal);
+    }
+
+    private int calculatePercentage(int timesInterested, int timesTotal) {
+        if (timesTotal > 100) {
+            int relationTo100 = timesTotal / 100;
+            return timesInterested / relationTo100;
         } else {
-            int relationTo100 = 100 / retrievedWords.size();
-            return  counter * relationTo100;
+            int relationTo100 = 100 / timesTotal;
+            return  timesInterested * relationTo100;
         }
     }
 
