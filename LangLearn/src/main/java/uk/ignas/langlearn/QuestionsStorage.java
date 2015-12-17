@@ -8,12 +8,10 @@ import uk.ignas.langlearn.core.parser.CsvUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class QuestionsStorage {
 
     private LinkedHashMap<Translation, Difficulty> questionsList;
-
 
     public LinkedHashMap<Translation, Difficulty> getQuestions()  {
         if (questionsList == null) {
@@ -29,9 +27,9 @@ public class QuestionsStorage {
         File planeTextFileDir = new File(externalDir, "SpanishWords.txt");
         File translations = new File(applicationDir, "translations");
 
-        boolean mkdirs = applicationDir.mkdirs();
-
-        boolean isDirExists = externalDir.exists();
+        if (!externalDir.exists() || (!applicationDir.mkdirs() && !applicationDir.exists())) {
+            throw new RuntimeException("application dir cannot be created");
+        }
 
         try {
 
