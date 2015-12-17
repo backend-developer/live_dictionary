@@ -11,13 +11,12 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import uk.ignas.langlearn.core.Questionnaire;
 import uk.ignas.langlearn.core.Translation;
 
-
 public class QuestionnaireActivity extends Activity {
     private Button translationButton;
     private Button knownWordButton;
     private Button unknownWordButton;
 
-    private QuestionsStorage questionsStorage = new QuestionsStorage();
+    private Questionnaire questionnaire;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +28,12 @@ public class QuestionnaireActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
+        questionnaire = new Questionnaire(new QuestionsStorage().getQuestions());
+
         final TextView correctAnswerView = (TextView) findViewById(R.id.correct_answer);
         final MutableObject<Translation> currentWord = new MutableObject<>(new Translation("defaultWord", "defaultTranslation"));
         final TextView questionLabel = (TextView) findViewById(R.id.question_label);
+
         publishNextWord(currentWord, questionLabel, correctAnswerView);
 
         translationButton = (Button) findViewById(R.id.show_translation_button);
@@ -52,6 +54,7 @@ public class QuestionnaireActivity extends Activity {
             public void onClick(View view) {
                 publishNextWord(currentWord, questionLabel, correctAnswerView);
                 enableTranslationAndNotSubmittionButtons(true);
+                questionnaire.markKnown(currentWord.getValue());
             }
         });
 
@@ -60,6 +63,7 @@ public class QuestionnaireActivity extends Activity {
             public void onClick(View view) {
                 publishNextWord(currentWord, questionLabel, correctAnswerView);
                 enableTranslationAndNotSubmittionButtons(true);
+                questionnaire.markUnknown(currentWord.getValue());
             }
         });
     }
@@ -72,9 +76,7 @@ public class QuestionnaireActivity extends Activity {
 
     private void publishNextWord(MutableObject<Translation> currentWord, TextView questionLabel, TextView correctAnswerView) {
         try {
-
-            Questionnaire q = new Questionnaire(questionsStorage.getQuestions());
-            currentWord.setValue(q.getRandomTranslation());
+            currentWord.setValue(questionnaire.getRandomTranslation());
             questionLabel.setText(currentWord.getValue().getOriginalWord());
             correctAnswerView.setText("");
         } catch (RuntimeException e) {

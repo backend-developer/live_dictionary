@@ -38,4 +38,12 @@ public class Questionnaire {
         }
         return questions.get(random.nextInt(questions.size())).getOriginalWord();
     }
+
+    public void markKnown(Translation translation) {
+
+    }
+
+    public void markUnknown(Translation translation) {
+
+    }
 }
