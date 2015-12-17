@@ -14,10 +14,15 @@
 			/>
 
 	<Button
-			android:id="@+id/next_question"
+			android:id="@+id/known_word_submision_button"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="@string/jump_to_next_question"/>
+			android:text="@string/known_word"/>
+	<Button
+			android:id="@+id/unknown_word_submision_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/unknown_word"/>
 	<TextView
 			android:id="@+id/correct_answer"
 			android:layout_width="wrap_content"
@@ -29,4 +34,5 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:text="@string/show_answer"/>
+
 </LinearLayout>

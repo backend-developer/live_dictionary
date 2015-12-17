@@ -38,8 +38,15 @@ public class QuestionnaireActivity extends Activity {
             }
         });
 
-        Button nextQuestionButton = (Button) findViewById(R.id.next_question);
-        nextQuestionButton.setOnClickListener(new View.OnClickListener() {
+        Button knownWordButton = (Button) findViewById(R.id.known_word_submision_button);
+        knownWordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                publishNextWord(currentWord, questionLabel, correctAnswerView);
+            }
+        });
+        Button unknownWordButton = (Button) findViewById(R.id.unknown_word_submision_button);
+        unknownWordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 publishNextWord(currentWord, questionLabel, correctAnswerView);
