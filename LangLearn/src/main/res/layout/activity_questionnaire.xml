@@ -12,11 +12,12 @@
 			android:layout_height="wrap_content"
 			android:textSize="30sp"
 			/>
+
 	<Button
-			android:id="@+id/submit_button"
+			android:id="@+id/next_question"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="@string/show_answer"/>
+			android:text="@string/jump_to_next_question"/>
 	<TextView
 			android:id="@+id/correct_answer"
 			android:layout_width="wrap_content"
@@ -24,8 +25,8 @@
 			android:textSize="30sp"
 			/>
 	<Button
-			android:id="@+id/next_question"
+			android:id="@+id/submit_button"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="@string/jump_to_next_question"/>
+			android:text="@string/show_answer"/>
 </LinearLayout>
