@@ -43,7 +43,7 @@ public class DBHelper extends SQLiteOpenHelper {
         try {
             db.beginTransaction();
             for (Translation translation: translations) {
-                this.insertSingle(translation.getOriginalWord(), translation.getTranslatedWord());
+                this.insertSingle(translation);
             }
             db.setTransactionSuccessful();
         } finally {
@@ -51,13 +51,33 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    private boolean insertSingle(String originalWord, String translatedWord) {
+    private boolean insertSingle(Translation translation) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COLUMN_ORIGINAL_WORD, originalWord);
-        contentValues.put(COLUMN_TRANSLATED_WORD, translatedWord);
+        contentValues.put(COLUMN_ORIGINAL_WORD, translation.getOriginalWord());
+        contentValues.put(COLUMN_TRANSLATED_WORD, translation.getTranslatedWord());
         db.insert(TRANSLATIONS_TABLE_NAME, null, contentValues);
         return true;
+    }
+
+    public void delete(Set<Translation> translations) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        try {
+            db.beginTransaction();
+            for (Translation translation: translations) {
+                this.deleteSingle(translation);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    private Integer deleteSingle(Translation translation) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(TRANSLATIONS_TABLE_NAME,
+                COLUMN_ORIGINAL_WORD + " = ? AND " + COLUMN_TRANSLATED_WORD + " = ? ",
+                new String[]{translation.getOriginalWord(), translation.getTranslatedWord()});
     }
 
     public Cursor getData(int id) {
@@ -70,12 +90,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return (int) DatabaseUtils.queryNumEntries(db, TRANSLATIONS_TABLE_NAME);
     }
 
-    public Integer deleteContact(Integer id) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(TRANSLATIONS_TABLE_NAME,
-                "id = ? ",
-                new String[]{Integer.toString(id)});
-    }
+
 
     public void deleteAll() {
         SQLiteDatabase db = this.getWritableDatabase();

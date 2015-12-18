@@ -1,7 +1,7 @@
 package uk.ignas.langlearn.core.parser;
 
 import android.content.Context;
-import com.google.common.collect.ImmutableSet;
+import android.widget.Toast;
 import com.google.common.collect.Sets;
 import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Translation;
@@ -26,7 +26,6 @@ public class DbUtils {
         List<String> planeText = readFile(planeTextFilePath);
 
         DBHelper dbHelper = new DBHelper(context);
-        dbHelper.deleteAll();
         LinkedHashSet<Translation> translationsToInsert = new LinkedHashSet<>();
 
         for (String planeTextLine : planeText) {
@@ -36,7 +35,20 @@ public class DbUtils {
             }
         }
 
-        dbHelper.insert(translationsToInsert);
+        Set<Translation> translationsFromDb = getTranslationsFromDb().keySet();
+        Sets.SetView<Translation> toAdd = Sets.difference(translationsToInsert, translationsFromDb);
+        Sets.SetView<Translation> toRemove = Sets.difference(translationsFromDb, translationsToInsert);
+
+        dbHelper.insert(toAdd);
+        dbHelper.delete(toRemove);
+
+        showToast("inserted: " + toAdd.size() + "; removed: " + toRemove.size());
+    }
+
+    private void showToast(String text) {
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
     }
 
     private List<String> readFile(String path) {
