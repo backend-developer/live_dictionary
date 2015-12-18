@@ -1,6 +1,7 @@
 package uk.ignas.langlearn.core.parser;
 
 import android.content.Context;
+import com.google.common.base.Stopwatch;
 import com.opencsv.CSVReader;
 import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Translation;
@@ -8,6 +9,7 @@ import uk.ignas.langlearn.core.db.DBHelper;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class CsvUtils {
 
@@ -45,15 +47,18 @@ public class CsvUtils {
         DBHelper dbHelper = new DBHelper(context);
         dbHelper.deleteAll();
 
-        Set<Translation> uniqueOnly = new HashSet<>();
+        Set<Translation> uniqueValidTranslations = new HashSet<>();
+
         for (String planeTextLine : planeText) {
             Translation parsed = translationParser.parse(planeTextLine);
-            if (parsed != null && uniqueOnly.add(parsed)) {
-                csvText.add(parsed.getOriginalWord() + ENTRY_SEPARATOR + parsed.getTranslatedWord());
-                dbHelper.insertContact(parsed.getOriginalWord(), parsed.getTranslatedWord());
+            if (parsed != null) {
+                uniqueValidTranslations.add(parsed);
             }
         }
-
+        for (Translation translation: uniqueValidTranslations) {
+            csvText.add(translation.getOriginalWord() + ENTRY_SEPARATOR + translation.getTranslatedWord());
+        }
+        new DBHelper(context).insert(uniqueValidTranslations);
         writeLines(csvFilePath, csvText);
     }
 
