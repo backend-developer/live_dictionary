@@ -4,7 +4,7 @@ import android.content.Context;
 import android.os.Environment;
 import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Translation;
-import uk.ignas.langlearn.core.parser.CsvUtils;
+import uk.ignas.langlearn.core.parser.DbUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,8 +34,8 @@ public class QuestionsStorage {
         }
 
         try {
-            new CsvUtils(context).buildScvFromPlainTextFile(planeTextFileDir.getAbsolutePath(), translations.getAbsolutePath());
-            questionsList = new CsvUtils(context).getTranslationsFromCsv(translations);
+            new DbUtils(context).buildDbFromPlainTextFile(planeTextFileDir.getAbsolutePath(), translations.getAbsolutePath());
+            questionsList = new DbUtils(context).getTranslationsFromDb(translations);
 
         } catch (IOException e) {
             throw new RuntimeException("asd");

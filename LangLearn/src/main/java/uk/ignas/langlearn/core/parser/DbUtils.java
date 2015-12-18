@@ -9,18 +9,18 @@ import uk.ignas.langlearn.core.db.DBHelper;
 import java.io.*;
 import java.util.*;
 
-public class CsvUtils {
+public class DbUtils {
 
     public static final char ENTRY_SEPARATOR = '|';
     public static final String SCV_HEADER = "Word" + ENTRY_SEPARATOR + "Translation";
     private TranslationParser translationParser = new TranslationParser();
     private final Context context;
 
-    public CsvUtils(Context context) {
+    public DbUtils(Context context) {
         this.context = context;
     }
 
-    public LinkedHashMap<Translation, Difficulty> getTranslationsFromCsv(File translations) throws IOException {
+    public LinkedHashMap<Translation, Difficulty> getTranslationsFromDb(File translations) throws IOException {
         LinkedHashMap<Translation, Difficulty> questionList = new LinkedHashMap<>();
         InputStream csvStream = new FileInputStream(translations);
         InputStreamReader csvStreamReader = new InputStreamReader(csvStream);
@@ -38,7 +38,7 @@ public class CsvUtils {
         return new DBHelper(context).getAllTranslations();
     }
 
-    public void buildScvFromPlainTextFile(String planeTextFilePath, String csvFilePath) throws IOException {
+    public void buildDbFromPlainTextFile(String planeTextFilePath, String csvFilePath) throws IOException {
         List<String> planeText = readFile(planeTextFilePath);
         List<String> csvText = new ArrayList<>();
         csvText.add(SCV_HEADER);
