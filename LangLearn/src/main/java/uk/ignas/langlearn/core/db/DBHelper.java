@@ -10,6 +10,7 @@ import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Translation;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
 
 public class DBHelper extends SQLiteOpenHelper {
@@ -43,7 +44,7 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void insert(Set<Translation> translations) {
+    public void insert(List<Translation> translations) {
         SQLiteDatabase db = this.getWritableDatabase();
         try {
             db.beginTransaction();

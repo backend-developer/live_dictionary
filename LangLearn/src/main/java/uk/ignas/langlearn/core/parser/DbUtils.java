@@ -7,7 +7,9 @@ import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Translation;
 import uk.ignas.langlearn.core.db.DBHelper;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 public class DbUtils {
@@ -19,7 +21,14 @@ public class DbUtils {
     }
 
     public LinkedHashMap<Translation, Difficulty> getTranslationsFromDb() throws IOException {
-        return new DBHelper(context).getAllTranslations();
+        LinkedHashMap<Translation, Difficulty> allTranslations = new DBHelper(context).getAllTranslations();
+        List<Translation> translations = new ArrayList<>(allTranslations.keySet());
+        Collections.reverse(translations);
+        LinkedHashMap<Translation, Difficulty> allTranslationsReversed = new LinkedHashMap<>();
+        for (Translation translation : translations) {
+            allTranslationsReversed.put(translation, allTranslations.get(translation));
+        }
+        return allTranslationsReversed;
     }
 
     public void importFromFile(String planeTextFilePath) throws IOException {
@@ -39,7 +48,10 @@ public class DbUtils {
         Sets.SetView<Translation> toAdd = Sets.difference(translationsToInsert, translationsFromDb);
         Sets.SetView<Translation> toRemove = Sets.difference(translationsFromDb, translationsToInsert);
 
-        dbHelper.insert(toAdd);
+        List<Translation> reversedToAdd = new ArrayList<>(toAdd);
+        Collections.reverse(reversedToAdd);
+
+        dbHelper.insert(reversedToAdd);
         dbHelper.delete(toRemove);
 
         showToast("inserted: " + toAdd.size() + "; removed: " + toRemove.size());

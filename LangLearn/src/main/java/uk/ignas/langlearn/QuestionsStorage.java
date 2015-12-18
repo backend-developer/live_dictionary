@@ -43,7 +43,6 @@ public class QuestionsStorage {
         try {
             new DbUtils(context).importFromFile(planeTextFileDir.getAbsolutePath());
             questionsList = new DbUtils(context).getTranslationsFromDb();
-
         } catch (IOException e) {
             throw new RuntimeException("asd");
         }
