@@ -6,5 +6,6 @@
 	<string name="show_answer">Show Answer</string>
 	<string name="known_word">Mark as known</string>
     <string name="unknown_word">Mark as unknown</string>
+    <string name="export_data">Export Data</string>
 
 </resources>

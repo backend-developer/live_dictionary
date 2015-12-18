@@ -16,6 +16,7 @@ public class QuestionnaireActivity extends Activity {
     private Button translationButton;
     private Button knownWordButton;
     private Button unknownWordButton;
+    private Button exportDataButton;
 
     private Translation currentWord = new Translation("defaultWord", "defaultTranslation");
     private Questionnaire questionnaire;
@@ -41,6 +42,7 @@ public class QuestionnaireActivity extends Activity {
         translationButton = (Button) findViewById(R.id.show_translation_button);
         knownWordButton = (Button) findViewById(R.id.known_word_submision_button);
         unknownWordButton = (Button) findViewById(R.id.unknown_word_submision_button);
+        exportDataButton = (Button) findViewById(R.id.export_data_button);
 
         enableTranslationAndNotSubmittionButtons(true);
         translationButton.setOnClickListener(new View.OnClickListener() {
@@ -66,6 +68,13 @@ public class QuestionnaireActivity extends Activity {
                 publishNextWord(questionLabel, correctAnswerView);
                 enableTranslationAndNotSubmittionButtons(true);
                 questionnaire.markUnknown(currentWord);
+            }
+        });
+
+        exportDataButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
     }
