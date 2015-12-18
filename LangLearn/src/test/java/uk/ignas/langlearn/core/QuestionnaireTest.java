@@ -76,7 +76,7 @@ public class QuestionnaireTest {
     @Test
     public void unknownWordsShouldBeAskedEvery20thTime() {
         LinkedHashMap<Translation, Difficulty> allWords = getNQuestionsStartingWith(100, "Other");
-        LinkedHashMap<Translation, Difficulty> unknownWords = getNQuestionsStartingWith(5, "UnknownWord");
+        LinkedHashMap<Translation, Difficulty> unknownWords = getNQuestionsStartingWith(10, "UnknownWord");
         allWords.putAll(unknownWords);
         Questionnaire questionnaire = new Questionnaire(allWords);
 
@@ -86,7 +86,21 @@ public class QuestionnaireTest {
         final List<String> retrievedWords = retrieveWordsNTimes(questionnaire, 1000);
 
         int percentage = countPercentageOfExpectedWordsRetrieved("UnknownWord", retrievedWords);
-        assertThat(percentage, allOf(greaterThan(20), lessThan(30)));
+        assertThat(percentage, allOf(greaterThan(45), lessThan(55)));
+    }
+
+    @Test
+    public void unknownWordsShouldBeAskedEvery20thTimeEvenIfTheyWerePassedInitially() {
+        LinkedHashMap<Translation, Difficulty> allWords = getNQuestionsStartingWith(100, "Other");
+        LinkedHashMap<Translation, Difficulty> unknownWords = getNQuestionsStartingWith(10, "UnknownWord", Difficulty.HARD);
+        allWords.putAll(unknownWords);
+        Questionnaire questionnaire = new Questionnaire(allWords);
+
+        final List<String> retrievedWords = retrieveWordsNTimes(questionnaire, 1000);
+
+
+        int percentage = countPercentageOfExpectedWordsRetrieved("UnknownWord", retrievedWords);
+        assertThat(percentage, allOf(greaterThan(45), lessThan(55)));
     }
 
     private List<String> retrieveWordsNTimes(Questionnaire questionnaire, int timesToExecute) {
@@ -126,9 +140,13 @@ public class QuestionnaireTest {
     }
 
     public LinkedHashMap<Translation, Difficulty> getNQuestionsStartingWith(int n, String prefix) {
+        return getNQuestionsStartingWith(n, prefix, Difficulty.EASY);
+    }
+
+    public LinkedHashMap<Translation, Difficulty> getNQuestionsStartingWith(int n, String prefix, Difficulty difficulty) {
         LinkedHashMap<Translation, Difficulty> translations = new LinkedHashMap<>();
         for (int i = 0; i < n; i++) {
-            translations.put(new Translation(prefix + getUniqueInt(), "t" + getUniqueInt()), Difficulty.EASY);
+            translations.put(new Translation(prefix + getUniqueInt(), "t" + getUniqueInt()), difficulty);
         }
         return translations;
     }

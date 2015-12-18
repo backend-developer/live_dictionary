@@ -17,6 +17,11 @@ public class Questionnaire {
         }
         this.random = random;
         this.questions = new ArrayList<>(q.keySet());
+        for (Translation t: q.keySet()) {
+            if (q.get(t) == Difficulty.HARD) {
+                markUnknown(t);
+            }
+        }
     }
 
     public Translation getRandomTranslation() {
@@ -53,5 +58,9 @@ public class Questionnaire {
     public void markUnknown(Translation translation) {
         questions.remove(translation);
         unknownQuestions.add(translation);
+    }
+
+    public Set<Translation> getUnknownQuestions() {
+        return unknownQuestions;
     }
 }

@@ -14,11 +14,12 @@ import java.util.Set;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    public static final String DATABASE_NAME = "MyDBName2.db";
+    public static final String DATABASE_NAME = "MyDBName3.db";
     public static final String TRANSLATIONS_TABLE_NAME = "translations";
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_ORIGINAL_WORD = "originalWord";
     public static final String COLUMN_TRANSLATED_WORD = "translatedWord";
+    public static final String COLUMN_WORD_DIFFICULTY = "difficulty";
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -28,7 +29,11 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(
                 "create table " + TRANSLATIONS_TABLE_NAME + " " +
-                        "(" + COLUMN_ID + " integer primary key, " + COLUMN_ORIGINAL_WORD + " text," + COLUMN_TRANSLATED_WORD + " text)"
+                        "(" +
+                        COLUMN_ID + " integer primary key, " +
+                        COLUMN_ORIGINAL_WORD + " text," +
+                        COLUMN_TRANSLATED_WORD + " text, " +
+                        COLUMN_WORD_DIFFICULTY + " text)"
         );
     }
 
@@ -56,8 +61,18 @@ public class DBHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_ORIGINAL_WORD, translation.getOriginalWord());
         contentValues.put(COLUMN_TRANSLATED_WORD, translation.getTranslatedWord());
+        contentValues.put(COLUMN_WORD_DIFFICULTY, Difficulty.EASY.name());
         db.insert(TRANSLATIONS_TABLE_NAME, null, contentValues);
         return true;
+    }
+
+    public int update(String originalWord, String translatedWord, Difficulty difficulty) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_WORD_DIFFICULTY, difficulty.name());
+        return db.update(TRANSLATIONS_TABLE_NAME, contentValues,
+                COLUMN_ORIGINAL_WORD + " = ? AND " + COLUMN_TRANSLATED_WORD + " = ? ",
+                new String[]{originalWord, translatedWord});
     }
 
     public void delete(Set<Translation> translations) {
@@ -85,12 +100,12 @@ public class DBHelper extends SQLiteOpenHelper {
         return db.rawQuery("select * from " + TRANSLATIONS_TABLE_NAME + " where id=" + id + "", null);
     }
 
+
+
     public int numberOfRows() {
         SQLiteDatabase db = this.getReadableDatabase();
         return (int) DatabaseUtils.queryNumEntries(db, TRANSLATIONS_TABLE_NAME);
     }
-
-
 
     public void deleteAll() {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -105,7 +120,10 @@ public class DBHelper extends SQLiteOpenHelper {
         res.moveToFirst();
 
         while (!res.isAfterLast()) {
-            translations.put(new Translation(res.getString(res.getColumnIndex(COLUMN_ORIGINAL_WORD)), res.getString(res.getColumnIndex(COLUMN_TRANSLATED_WORD))), Difficulty.EASY);
+            translations.put(new Translation(res.getString(
+                    res.getColumnIndex(COLUMN_ORIGINAL_WORD)),
+                    res.getString(res.getColumnIndex(COLUMN_TRANSLATED_WORD))),
+                    Difficulty.valueOf(res.getString(res.getColumnIndex(COLUMN_WORD_DIFFICULTY))));
             res.moveToNext();
         }
         res.close();

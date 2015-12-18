@@ -10,6 +10,8 @@ import android.widget.TextView;
 import uk.ignas.langlearn.core.Questionnaire;
 import uk.ignas.langlearn.core.Translation;
 
+import java.util.Set;
+
 public class QuestionnaireActivity extends Activity {
     private Button translationButton;
     private Button knownWordButton;
@@ -28,7 +30,7 @@ public class QuestionnaireActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        questionnaire = new Questionnaire(new QuestionsStorage().getQuestions(this));
+        questionnaire = new Questionnaire(new QuestionsStorage(this).getQuestions());
 
         final TextView correctAnswerView = (TextView) findViewById(R.id.correct_answer);
 
@@ -66,6 +68,13 @@ public class QuestionnaireActivity extends Activity {
                 questionnaire.markUnknown(currentWord);
             }
         });
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Set<Translation> unknownQuestions = questionnaire.getUnknownQuestions();
+        new QuestionsStorage(this).markUnknown(unknownQuestions);
     }
 
     private void enableTranslationAndNotSubmittionButtons(boolean isTranslationPhase) {
