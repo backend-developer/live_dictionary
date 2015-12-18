@@ -39,10 +39,6 @@ public class DbUtils {
         dbHelper.insert(translationsToInsert);
     }
 
-    public static void main(String[] args) {
-        System.out.println(Sets.difference(ImmutableSet.of("a", "b"), ImmutableSet.of("b", "c")));
-    }
-
     private List<String> readFile(String path) {
         BufferedReader br = null;
         List<String> lines = new ArrayList<>();
