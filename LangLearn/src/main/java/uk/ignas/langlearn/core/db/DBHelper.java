@@ -16,7 +16,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "MyDBName3.db";
     public static final String TRANSLATIONS_TABLE_NAME = "translations";
-    public static final String COLUMN_ID = "id";
+
     public static final String COLUMN_ORIGINAL_WORD = "originalWord";
     public static final String COLUMN_TRANSLATED_WORD = "translatedWord";
     public static final String COLUMN_WORD_DIFFICULTY = "difficulty";
@@ -30,10 +30,10 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(
                 "create table " + TRANSLATIONS_TABLE_NAME + " " +
                         "(" +
-                        COLUMN_ID + " integer primary key, " +
-                        COLUMN_ORIGINAL_WORD + " text," +
-                        COLUMN_TRANSLATED_WORD + " text, " +
-                        COLUMN_WORD_DIFFICULTY + " text)"
+                        COLUMN_ORIGINAL_WORD + " text NOT NULL," +
+                        COLUMN_TRANSLATED_WORD + " text NOT NULL, " +
+                        COLUMN_WORD_DIFFICULTY + " text, " +
+                        "PRIMARY KEY ( " + COLUMN_ORIGINAL_WORD + ", " + COLUMN_TRANSLATED_WORD + "))"
         );
     }
 
@@ -93,11 +93,6 @@ public class DBHelper extends SQLiteOpenHelper {
         return db.delete(TRANSLATIONS_TABLE_NAME,
                 COLUMN_ORIGINAL_WORD + " = ? AND " + COLUMN_TRANSLATED_WORD + " = ? ",
                 new String[]{translation.getOriginalWord(), translation.getTranslatedWord()});
-    }
-
-    public Cursor getData(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery("select * from " + TRANSLATIONS_TABLE_NAME + " where id=" + id + "", null);
     }
 
 
