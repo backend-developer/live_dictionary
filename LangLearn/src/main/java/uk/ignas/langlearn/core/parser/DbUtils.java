@@ -1,6 +1,8 @@
 package uk.ignas.langlearn.core.parser;
 
 import android.content.Context;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Translation;
 import uk.ignas.langlearn.core.db.DBHelper;
@@ -9,7 +11,6 @@ import java.io.*;
 import java.util.*;
 
 public class DbUtils {
-
     private TranslationParser translationParser = new TranslationParser();
     private final Context context;
 
@@ -21,22 +22,25 @@ public class DbUtils {
         return new DBHelper(context).getAllTranslations();
     }
 
-    public void buildDbFromPlainTextFile(String planeTextFilePath) throws IOException {
+    public void importFromFile(String planeTextFilePath) throws IOException {
         List<String> planeText = readFile(planeTextFilePath);
 
         DBHelper dbHelper = new DBHelper(context);
         dbHelper.deleteAll();
-
-        Set<Translation> uniqueValidTranslations = new HashSet<>();
+        LinkedHashSet<Translation> translationsToInsert = new LinkedHashSet<>();
 
         for (String planeTextLine : planeText) {
             Translation parsed = translationParser.parse(planeTextLine);
             if (parsed != null) {
-                uniqueValidTranslations.add(parsed);
+                translationsToInsert.add(parsed);
             }
         }
-        new DBHelper(context).insert(uniqueValidTranslations);
 
+        dbHelper.insert(translationsToInsert);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Sets.difference(ImmutableSet.of("a", "b"), ImmutableSet.of("b", "c")));
     }
 
     private List<String> readFile(String path) {

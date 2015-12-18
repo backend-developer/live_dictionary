@@ -27,14 +27,13 @@ public class QuestionsStorage {
         File externalDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
         File applicationDir = new File(externalDir, "LangLearn");
         File planeTextFileDir = new File(externalDir, "SpanishWords.txt");
-        File translations = new File(applicationDir, "translations");
 
         if (!externalDir.exists() || (!applicationDir.mkdirs() && !applicationDir.exists())) {
             throw new RuntimeException("application dir cannot be created");
         }
 
         try {
-            new DbUtils(context).buildDbFromPlainTextFile(planeTextFileDir.getAbsolutePath());
+            new DbUtils(context).importFromFile(planeTextFileDir.getAbsolutePath());
             questionsList = new DbUtils(context).getTranslationsFromDb();
 
         } catch (IOException e) {
