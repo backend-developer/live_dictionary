@@ -35,7 +35,7 @@ public class QuestionsStorage {
 
         try {
             new DbUtils(context).buildDbFromPlainTextFile(planeTextFileDir.getAbsolutePath(), translations.getAbsolutePath());
-            questionsList = new DbUtils(context).getTranslationsFromDb(translations);
+            questionsList = new DbUtils(context).getTranslationsFromDb();
 
         } catch (IOException e) {
             throw new RuntimeException("asd");

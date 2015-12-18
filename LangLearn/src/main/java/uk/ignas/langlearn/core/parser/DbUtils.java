@@ -1,7 +1,6 @@
 package uk.ignas.langlearn.core.parser;
 
 import android.content.Context;
-import com.opencsv.CSVReader;
 import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Translation;
 import uk.ignas.langlearn.core.db.DBHelper;
@@ -20,21 +19,7 @@ public class DbUtils {
         this.context = context;
     }
 
-    public LinkedHashMap<Translation, Difficulty> getTranslationsFromDb(File translations) throws IOException {
-        LinkedHashMap<Translation, Difficulty> questionList = new LinkedHashMap<>();
-        InputStream csvStream = new FileInputStream(translations);
-        InputStreamReader csvStreamReader = new InputStreamReader(csvStream);
-        CSVReader csvReader = new CSVReader(csvStreamReader, ENTRY_SEPARATOR);
-
-        String[] line;
-
-        // throw away the header
-        csvReader.readNext();
-
-        while ((line = csvReader.readNext()) != null) {
-            questionList.put(new Translation(line[0], line[1]), Difficulty.EASY);
-        }
-
+    public LinkedHashMap<Translation, Difficulty> getTranslationsFromDb() throws IOException {
         return new DBHelper(context).getAllTranslations();
     }
 
