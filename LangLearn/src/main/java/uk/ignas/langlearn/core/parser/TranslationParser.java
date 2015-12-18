@@ -7,8 +7,6 @@ import uk.ignas.langlearn.core.Translation;
 import java.util.List;
 
 public class TranslationParser {
-
-
     public Translation parse(String line) {
         List<String> wordAndTranslation = Splitter.on("-").trimResults().splitToList(line);
         if (wordAndTranslation.size() != 2) {

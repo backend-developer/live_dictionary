@@ -1,7 +1,6 @@
 package uk.ignas.langlearn.core.parser;
 
 import android.content.Context;
-import com.google.common.base.Stopwatch;
 import com.opencsv.CSVReader;
 import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Translation;
@@ -9,7 +8,6 @@ import uk.ignas.langlearn.core.db.DBHelper;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class CsvUtils {
 

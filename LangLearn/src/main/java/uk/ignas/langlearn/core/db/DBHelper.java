@@ -6,13 +6,11 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import com.google.common.base.Stopwatch;
 import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Translation;
 
 import java.util.LinkedHashMap;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -21,7 +19,6 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_ORIGINAL_WORD = "originalWord";
     public static final String COLUMN_TRANSLATED_WORD = "translatedWord";
-
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
