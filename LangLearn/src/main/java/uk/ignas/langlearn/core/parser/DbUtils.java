@@ -55,6 +55,38 @@ public class DbUtils {
         showToast("inserted: " + toAdd.size() + "; removed: " + toRemove.size());
     }
 
+    public void export(String planeTextExportedPath) {
+        LinkedHashMap<Translation, Difficulty> translationsFromDb = new DbUtils(context).getTranslationsFromDb();
+        try {
+            writeTranslations(planeTextExportedPath, translationsFromDb.keySet());
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
+    }
+
+    public void validateImportAndExportWorksConsistently(String dataToImportFileName, String exportedDataFileName) {
+        if (!new File(dataToImportFileName).exists()) {
+            throw new RuntimeException("validation failed. invalid import file specified");
+        }
+        if (!new File(exportedDataFileName).exists()) {
+            throw new RuntimeException("validation failed. invalid export file specified");
+        }
+        List<String> dataToImport = readFile(dataToImportFileName);
+        List<String> exportedData = readFile(exportedDataFileName);
+
+        for(Iterator<String> it = dataToImport.iterator(); it.hasNext(); ) {
+            if (it.next().isEmpty()) {
+                it.remove();
+            }
+        }
+
+        Set<String> dataToImportSet = new HashSet<>(dataToImport);
+        Set<String> exportedDataSet = new HashSet<>(exportedData);
+        if (!dataToImportSet.equals(exportedDataSet)) {
+            throw new RuntimeException("Import or export does not work properly");
+        }
+    }
+
     private void showToast(String text) {
         int duration = Toast.LENGTH_SHORT;
         Toast toast = Toast.makeText(context, text, duration);
@@ -80,15 +112,6 @@ public class DbUtils {
             }
         }
         return lines;
-    }
-
-    public void export(File planeTextExportedFile) {
-        LinkedHashMap<Translation, Difficulty> translationsFromDb = new DbUtils(context).getTranslationsFromDb();
-        try {
-            writeTranslations(planeTextExportedFile.getAbsolutePath(), translationsFromDb.keySet());
-        } catch (Exception e) {
-            throw new RuntimeException();
-        }
     }
 
     private void writeTranslations(String path, Set<Translation> translations) throws IOException {
