@@ -56,7 +56,7 @@ public class DbUtils {
     }
 
     public void export(String planeTextExportedPath) {
-        LinkedHashMap<Translation, Difficulty> translationsFromDb = new DbUtils(context).getTranslationsFromDb();
+        LinkedHashMap<Translation, Difficulty> translationsFromDb = getTranslationsFromDb();
         try {
             writeTranslations(planeTextExportedPath, translationsFromDb.keySet());
         } catch (Exception e) {

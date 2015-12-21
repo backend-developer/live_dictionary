@@ -7,9 +7,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import uk.ignas.langlearn.core.DataImporterExporter;
+import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Questionnaire;
 import uk.ignas.langlearn.core.Translation;
+import uk.ignas.langlearn.core.db.DBHelper;
+import uk.ignas.langlearn.core.parser.DbUtils;
 
+import java.util.LinkedHashMap;
 import java.util.Set;
 
 public class QuestionnaireActivity extends Activity {
@@ -17,6 +22,7 @@ public class QuestionnaireActivity extends Activity {
     private Button knownWordButton;
     private Button unknownWordButton;
     private Button exportDataButton;
+    private LinkedHashMap<Translation, Difficulty> questionsList;
 
     private Translation currentWord = new Translation("defaultWord", "defaultTranslation");
     private Questionnaire questionnaire;
@@ -31,7 +37,10 @@ public class QuestionnaireActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        questionnaire = new Questionnaire(new QuestionsStorage(this).getQuestions());
+        new DataImporterExporter(this).importAndValidateTranslations();
+        LinkedHashMap<Translation, Difficulty> questions = getQuestions();
+
+        questionnaire = new Questionnaire(questions);
 
         final TextView correctAnswerView = (TextView) findViewById(R.id.correct_answer);
 
@@ -74,16 +83,28 @@ public class QuestionnaireActivity extends Activity {
         exportDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new QuestionsStorage(QuestionnaireActivity.this).reexport("ExportedByUserRequest.txt");
+                new DataImporterExporter(QuestionnaireActivity.this).reexport("ExportedByUserRequest.txt");
             }
         });
+    }
+
+    public LinkedHashMap<Translation, Difficulty> getQuestions() {
+        if (questionsList == null) {
+            this.questionsList = new DbUtils(this).getTranslationsFromDb();
+        }
+        return questionsList;
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Set<Translation> unknownQuestions = questionnaire.getUnknownQuestions();
-        new QuestionsStorage(this).markUnknown(unknownQuestions);
+        persistUnknown(questionnaire.getUnknownQuestions());
+    }
+
+    public void persistUnknown(Set<Translation> unknownQuestions) {
+        for (Translation t: unknownQuestions) {
+            new DBHelper(this).update(t.getOriginalWord(), t.getTranslatedWord(), Difficulty.HARD);
+        }
     }
 
     private void enableTranslationAndNotSubmittionButtons(boolean isTranslationPhase) {

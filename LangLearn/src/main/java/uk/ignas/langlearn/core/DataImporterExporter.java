@@ -1,35 +1,20 @@
-package uk.ignas.langlearn;
+package uk.ignas.langlearn.core;
 
 import android.content.Context;
 import android.os.Environment;
-import uk.ignas.langlearn.core.Difficulty;
-import uk.ignas.langlearn.core.Translation;
-import uk.ignas.langlearn.core.db.DBHelper;
 import uk.ignas.langlearn.core.parser.DbUtils;
 
-import java.io.*;
-import java.util.LinkedHashMap;
-import java.util.Set;
+import java.io.File;
 
-public class QuestionsStorage {
-    private LinkedHashMap<Translation, Difficulty> questionsList;
+public class DataImporterExporter {
 
     private Context context;
 
-    public QuestionsStorage(Context context) {
-
+    public DataImporterExporter(Context context) {
         this.context = context;
     }
 
-    public LinkedHashMap<Translation, Difficulty> getQuestions() {
-        if (questionsList == null) {
-            this.questionsList = loadQuestions();
-        }
-        return questionsList;
-    }
-
-    private LinkedHashMap<Translation, Difficulty> loadQuestions() {
-        LinkedHashMap<Translation, Difficulty> questionsList;
+    public void importAndValidateTranslations() {
         File externalDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
         File applicationDir = new File(externalDir, "LangLearn");
         String dataToImportFileName = "SpanishWords.txt";
@@ -45,11 +30,10 @@ public class QuestionsStorage {
             new DbUtils(context).importFromFile(dataToImportFile.getAbsolutePath());
             reexport(exportedDataFileName);
             new DbUtils(context).validateImportAndExportWorksConsistently(dataToImportFile.getAbsolutePath(), exportedDataFile.getAbsolutePath());
-            questionsList = new DbUtils(context).getTranslationsFromDb();
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return questionsList;
     }
 
     public void reexport(String exportedDataFileName) {
@@ -65,11 +49,5 @@ public class QuestionsStorage {
             }
         }
         new DbUtils(context).export(planeTextExportedFile.getAbsolutePath());
-    }
-
-    public void markUnknown(Set<Translation> unknownQuestions) {
-        for (Translation t: unknownQuestions) {
-            new DBHelper(context).update(t.getOriginalWord(), t.getTranslatedWord(), Difficulty.HARD);
-        }
     }
 }
