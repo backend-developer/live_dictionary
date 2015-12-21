@@ -7,9 +7,7 @@ import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Translation;
 import uk.ignas.langlearn.core.db.DBHelper;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class DbUtils {
@@ -82,5 +80,28 @@ public class DbUtils {
             }
         }
         return lines;
+    }
+
+    public void export(File planeTextExportedFile) {
+        LinkedHashMap<Translation, Difficulty> translationsFromDb = new DbUtils(context).getTranslationsFromDb();
+        try {
+            writeTranslations(planeTextExportedFile.getAbsolutePath(), translationsFromDb.keySet());
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
+    }
+
+    private void writeTranslations(String path, Set<Translation> translations) throws IOException {
+        File fout = new File(path);
+        FileOutputStream fos = new FileOutputStream(fout);
+
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+
+        for (Translation translation : translations) {
+            bw.write(translation.getTranslatedWord() + " - " + translation.getOriginalWord());
+            bw.newLine();
+        }
+
+        bw.close();
     }
 }

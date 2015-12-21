@@ -54,32 +54,13 @@ public class QuestionsStorage {
         }
     }
 
-    public void exportData() {
+    public void backupData() {
         File externalDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
         File planeTextExportedFile = new File(externalDir, "PlaneTextExportedFile.txt");
         if (externalDir.exists() || !planeTextExportedFile.exists()) {
-            LinkedHashMap<Translation, Difficulty> translationsFromDb = new DbUtils(context).getTranslationsFromDb();
-            try {
-                writeTranslations(planeTextExportedFile.getAbsolutePath(), translationsFromDb.keySet());
-            } catch (Exception e) {
-                throw new RuntimeException();
-            }
+            new DbUtils(context).export(planeTextExportedFile);
         } else {
             throw new RuntimeException();
         }
-    }
-
-    private void writeTranslations(String path, Set<Translation> translations) throws IOException {
-        File fout = new File(path);
-        FileOutputStream fos = new FileOutputStream(fout);
-
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-
-        for (Translation translation : translations) {
-            bw.write(translation.getTranslatedWord() + " - " + translation.getOriginalWord());
-            bw.newLine();
-        }
-
-        bw.close();
     }
 }
