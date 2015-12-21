@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,7 +13,7 @@ import uk.ignas.langlearn.core.DataImporterExporter;
 import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Questionnaire;
 import uk.ignas.langlearn.core.Translation;
-import uk.ignas.langlearn.core.db.DBHelper;
+import uk.ignas.langlearn.core.db.TranslationDaoSqlite;
 import uk.ignas.langlearn.core.parser.DbUtils;
 
 import java.io.File;
@@ -40,7 +41,9 @@ public class QuestionnaireActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        new DataImporterExporter(this).importAndValidateTranslations();
+        File externalStoragePublicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+        final DataImporterExporter dataImporterExporter = new DataImporterExporter(this, new TranslationDaoSqlite(QuestionnaireActivity.this), externalStoragePublicDirectory);
+        dataImporterExporter.importAndValidateTranslations();
         LinkedHashMap<Translation, Difficulty> questions = getQuestions();
 
         questionnaire = new Questionnaire(questions);
@@ -56,7 +59,7 @@ public class QuestionnaireActivity extends Activity {
         unknownWordButton = (Button) findViewById(R.id.unknown_word_submision_button);
         exportDataButton = (Button) findViewById(R.id.export_data_button);
         exportDataFileEditText = (EditText) findViewById(R.id.export_data_path_textedit);
-        File defaultExportFile = new File(new DataImporterExporter(this).EXTERNAL_STORAGE_PUBLIC_DIRECTORY, "ExportedByUserRequest.txt");
+        File defaultExportFile = new File(externalStoragePublicDirectory, "ExportedByUserRequest.txt");
         exportDataFileEditText.setText(defaultExportFile.getAbsolutePath());
 
         enableTranslationAndNotSubmittionButtons(true);
@@ -89,14 +92,14 @@ public class QuestionnaireActivity extends Activity {
         exportDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new DataImporterExporter(QuestionnaireActivity.this).reexport(exportDataFileEditText.getText().toString());
+                dataImporterExporter.reexport(exportDataFileEditText.getText().toString());
             }
         });
     }
 
     public LinkedHashMap<Translation, Difficulty> getQuestions() {
         if (questionsList == null) {
-            this.questionsList = new DbUtils(this).getTranslationsFromDb();
+            this.questionsList = new DbUtils(new TranslationDaoSqlite(QuestionnaireActivity.this)).getTranslationsFromDb();
         }
         return questionsList;
     }
@@ -109,7 +112,7 @@ public class QuestionnaireActivity extends Activity {
 
     public void persistUnknown(Set<Translation> unknownQuestions) {
         for (Translation t: unknownQuestions) {
-            new DBHelper(this).update(t.getOriginalWord(), t.getTranslatedWord(), Difficulty.HARD);
+            new TranslationDaoSqlite(this).update(t.getOriginalWord(), t.getTranslatedWord(), Difficulty.HARD);
         }
     }
 

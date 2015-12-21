@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
-public class DBHelper extends SQLiteOpenHelper {
+public class TranslationDaoSqlite extends SQLiteOpenHelper implements TranslationDao {
 
     public static final String DATABASE_NAME = "MyDBName3.db";
     public static final String TRANSLATIONS_TABLE_NAME = "translations";
@@ -22,7 +22,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_TRANSLATED_WORD = "translatedWord";
     public static final String COLUMN_WORD_DIFFICULTY = "difficulty";
 
-    public DBHelper(Context context) {
+    public TranslationDaoSqlite(Context context) {
         super(context, DATABASE_NAME, null, 1);
     }
 
@@ -44,6 +44,7 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    @Override
     public void insert(List<Translation> translations) {
         SQLiteDatabase db = this.getWritableDatabase();
         try {
@@ -67,6 +68,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    @Override
     public int update(String originalWord, String translatedWord, Difficulty difficulty) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -76,6 +78,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 new String[]{originalWord, translatedWord});
     }
 
+    @Override
     public void delete(Set<Translation> translations) {
         SQLiteDatabase db = this.getWritableDatabase();
         try {
@@ -96,23 +99,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 new String[]{translation.getOriginalWord(), translation.getTranslatedWord()});
     }
 
-    public Cursor getData(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery("select * from " + TRANSLATIONS_TABLE_NAME + " where id=" + id + "", null);
-    }
-
-
-
-    public int numberOfRows() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        return (int) DatabaseUtils.queryNumEntries(db, TRANSLATIONS_TABLE_NAME);
-    }
-
-    public void deleteAll() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DELETE FROM " + TRANSLATIONS_TABLE_NAME);
-    }
-
+    @Override
     public LinkedHashMap<Translation, Difficulty> getAllTranslations() {
         LinkedHashMap<Translation, Difficulty> translations = new LinkedHashMap<>();
 
