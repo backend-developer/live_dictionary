@@ -74,7 +74,7 @@ public class QuestionnaireActivity extends Activity {
         exportDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                new QuestionsStorage(QuestionnaireActivity.this).exportData();
             }
         });
     }

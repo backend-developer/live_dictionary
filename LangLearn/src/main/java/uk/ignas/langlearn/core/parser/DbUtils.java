@@ -20,7 +20,7 @@ public class DbUtils {
         this.context = context;
     }
 
-    public LinkedHashMap<Translation, Difficulty> getTranslationsFromDb() throws IOException {
+    public LinkedHashMap<Translation, Difficulty> getTranslationsFromDb() {
         LinkedHashMap<Translation, Difficulty> allTranslations = new DBHelper(context).getAllTranslations();
         List<Translation> translations = new ArrayList<>(allTranslations.keySet());
         Collections.reverse(translations);
