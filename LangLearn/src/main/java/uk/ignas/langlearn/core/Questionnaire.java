@@ -3,6 +3,9 @@ package uk.ignas.langlearn.core;
 import java.util.*;
 
 public class Questionnaire {
+    public static final int UNKNOWN_QUESTION_LIMIT = 20;
+    public static final int NEWEST_100_QUESTIONS = 100;
+    public static final int PROBABILITY_OF_80_PERCENT = 80;
     private final List<Translation> questions ;
     private final Set<Translation> unknownQuestions = new HashSet<>();
     private final Random random;
@@ -30,19 +33,32 @@ public class Questionnaire {
             throw new QuestionnaireException("no questions found");
         }
         if (unknownQuestions.size() > 0) {
-            if (unknownQuestions.size() >= random.nextInt(20) + 1) {
+            if (unknownQuestions.size() > random.nextInt(UNKNOWN_QUESTION_LIMIT)) {
                 return getRandomUnknownQuestion();
             }
         }
-        if (size <= 100) {
+        if (size <= NEWEST_100_QUESTIONS) {
             return questions.get(random.nextInt(size));
         } else {
-            if (random.nextInt(100) < 80) {
-                return questions.get(random.nextInt(100));
+            if (is80PercentOfTimes()) {
+                return getOneOfTheNewest100Questions();
             } else {
-                return questions.get(random.nextInt(size - 100) + 100);
+                return getQuestionNotOutOf100Newest();
             }
         }
+    }
+
+    private boolean is80PercentOfTimes() {
+        return random.nextInt(100) < PROBABILITY_OF_80_PERCENT;
+    }
+
+    private Translation getOneOfTheNewest100Questions() {
+        return questions.get(random.nextInt(NEWEST_100_QUESTIONS));
+    }
+
+    private Translation getQuestionNotOutOf100Newest() {
+        int randomGreaterOrEqualsTo100 = random.nextInt(questions.size() - NEWEST_100_QUESTIONS) + NEWEST_100_QUESTIONS;
+        return questions.get(randomGreaterOrEqualsTo100);
     }
 
     private Translation getRandomUnknownQuestion() {

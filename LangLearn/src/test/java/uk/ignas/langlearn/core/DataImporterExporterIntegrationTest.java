@@ -16,7 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.mock;
 
-public class DataImporterExporterTest {
+public class DataImporterExporterIntegrationTest {
 
     @Test
     public void exportFileShouldNotContainBlankLines() throws IOException, URISyntaxException {
