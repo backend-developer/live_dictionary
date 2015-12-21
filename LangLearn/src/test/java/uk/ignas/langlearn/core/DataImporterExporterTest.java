@@ -58,9 +58,7 @@ public class DataImporterExporterTest {
 
         Set<String> dataToImportSet = new HashSet<>(dataToImport);
         Set<String> exportedDataSet = new HashSet<>(exportedData);
-        if (!dataToImportSet.equals(exportedDataSet)) {
-            throw new RuntimeException("Import or export does not work properly");
-        }
+        assertThat(dataToImportSet, is(equalTo(exportedDataSet)));
     }
 
     private List<String> readFile(String path) {
@@ -82,19 +80,5 @@ public class DataImporterExporterTest {
             }
         }
         return lines;
-    }
-
-    private void writeFile(String path, Set<String> lines) throws IOException {
-        File fout = new File(path);
-        FileOutputStream fos = new FileOutputStream(fout);
-
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-
-        for (String line : lines) {
-            bw.write(line);
-            bw.newLine();
-        }
-
-        bw.close();
     }
 }
