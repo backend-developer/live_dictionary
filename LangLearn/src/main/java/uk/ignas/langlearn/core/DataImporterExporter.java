@@ -16,13 +16,12 @@ public class DataImporterExporter {
 
     public void importAndValidateTranslations() {
         File externalDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
-        File applicationDir = new File(externalDir, "LangLearn");
         String dataToImportFileName = "SpanishWords.txt";
         File dataToImportFile = new File(externalDir, dataToImportFileName);
         String exportedDataFileName = "PlaneTextExportedFile.txt";
         File exportedDataFile = new File(externalDir, exportedDataFileName);
 
-        if (!externalDir.exists() || (!applicationDir.mkdirs() && !applicationDir.exists())) {
+        if (!externalDir.exists()) {
             throw new RuntimeException("application dir cannot be created");
         }
 
