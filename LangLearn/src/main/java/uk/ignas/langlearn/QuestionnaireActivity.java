@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import uk.ignas.langlearn.core.DataImporterExporter;
 import uk.ignas.langlearn.core.Difficulty;
@@ -14,6 +15,7 @@ import uk.ignas.langlearn.core.Translation;
 import uk.ignas.langlearn.core.db.DBHelper;
 import uk.ignas.langlearn.core.parser.DbUtils;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
@@ -22,6 +24,7 @@ public class QuestionnaireActivity extends Activity {
     private Button knownWordButton;
     private Button unknownWordButton;
     private Button exportDataButton;
+    private EditText exportDataFileEditText;
     private LinkedHashMap<Translation, Difficulty> questionsList;
 
     private Translation currentWord = new Translation("defaultWord", "defaultTranslation");
@@ -52,6 +55,9 @@ public class QuestionnaireActivity extends Activity {
         knownWordButton = (Button) findViewById(R.id.known_word_submision_button);
         unknownWordButton = (Button) findViewById(R.id.unknown_word_submision_button);
         exportDataButton = (Button) findViewById(R.id.export_data_button);
+        exportDataFileEditText = (EditText) findViewById(R.id.export_data_path_textedit);
+        File defaultExportFile = new File(new DataImporterExporter(this).EXTERNAL_STORAGE_PUBLIC_DIRECTORY, "ExportedByUserRequest.txt");
+        exportDataFileEditText.setText(defaultExportFile.getAbsolutePath());
 
         enableTranslationAndNotSubmittionButtons(true);
         translationButton.setOnClickListener(new View.OnClickListener() {
@@ -83,7 +89,7 @@ public class QuestionnaireActivity extends Activity {
         exportDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new DataImporterExporter(QuestionnaireActivity.this).reexport("ExportedByUserRequest.txt");
+                new DataImporterExporter(QuestionnaireActivity.this).reexport(exportDataFileEditText.getText().toString());
             }
         });
     }

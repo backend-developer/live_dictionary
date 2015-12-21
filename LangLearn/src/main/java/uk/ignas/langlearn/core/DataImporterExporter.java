@@ -12,6 +12,7 @@ import java.io.*;
 import java.util.*;
 
 public class DataImporterExporter {
+    public static final File EXTERNAL_STORAGE_PUBLIC_DIRECTORY = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
     private TranslationParser translationParser = new TranslationParser();
     private Context context;
 
@@ -20,7 +21,7 @@ public class DataImporterExporter {
     }
 
     public void importAndValidateTranslations() {
-        File externalDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+        File externalDir = EXTERNAL_STORAGE_PUBLIC_DIRECTORY;
         String dataToImportFileName = "SpanishWords.txt";
         File dataToImportFile = new File(externalDir, dataToImportFileName);
         String exportedDataFileName = "PlaneTextExportedFile.txt";
@@ -32,20 +33,20 @@ public class DataImporterExporter {
 
         try {
             importFromFile(dataToImportFile.getAbsolutePath());
-            reexport(exportedDataFileName);
+            reexport(exportedDataFile.getAbsolutePath());
             validateImportAndExportWorksConsistently(dataToImportFile.getAbsolutePath(), exportedDataFile.getAbsolutePath());
+            boolean isDeleted = exportedDataFile.delete();
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void reexport(String exportedDataFileName) {
-        File externalDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
-        if (!externalDir.exists()) {
+    public void reexport(String pathToFile) {
+        File planeTextExportedFile = new File(pathToFile);
+        if (!planeTextExportedFile.getParentFile().exists()) {
             throw new RuntimeException("application dir cannot be created");
         }
-        File planeTextExportedFile = new File(externalDir, exportedDataFileName);
 
         if (planeTextExportedFile.exists()) {
             if(!planeTextExportedFile.delete()) {

@@ -7,5 +7,6 @@
 	<string name="known_word">Mark as known</string>
     <string name="unknown_word">Mark as unknown</string>
     <string name="export_data">Export Data</string>
+    <string name="export_path">Export Path:</string>
 
 </resources>
