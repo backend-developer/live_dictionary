@@ -90,4 +90,8 @@ public class Questionnaire {
         unknownQuestions.add(translation);
         dao.update(translation.getOriginalWord(), translation.getTranslatedWord(), Difficulty.HARD);
     }
+
+    public boolean insert(Translation translation) {
+        return dao.insertSingle(translation);
+    }
 }

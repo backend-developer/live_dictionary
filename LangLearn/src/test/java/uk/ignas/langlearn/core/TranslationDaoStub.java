@@ -10,8 +10,17 @@ public class TranslationDaoStub implements TranslationDao {
     @Override
     public void insert(List<Translation> translations) {
         for (Translation t: translations) {
-            inMemoryTranslations.put(t, Difficulty.EASY);
+            insertSingle(t);
         }
+    }
+
+    @Override
+    public boolean insertSingle(Translation translation) {
+        if (inMemoryTranslations.containsKey(translation)) {
+            return false;
+        }
+        inMemoryTranslations.put(translation, Difficulty.EASY);
+        return true;
     }
 
     @Override

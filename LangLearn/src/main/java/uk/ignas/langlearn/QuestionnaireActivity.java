@@ -16,7 +16,6 @@ import uk.ignas.langlearn.core.Translation;
 import uk.ignas.langlearn.core.TranslationDaoSqlite;
 
 import java.io.File;
-import java.util.Collections;
 
 public class QuestionnaireActivity extends Activity {
     private Button translationButton;
@@ -91,11 +90,20 @@ public class QuestionnaireActivity extends Activity {
 
         addWordButton.setOnClickListener(new View.OnClickListener() {
 
+            private String errorMessage;
+
             @Override
             public void onClick(View arg0) {
                 AlertDialog.Builder b = new AlertDialog.Builder(QuestionnaireActivity.this);
                 LayoutInflater i = getLayoutInflater();
                 View inflatedDialogView = i.inflate(R.layout.add_word_dialog, null);
+
+                final TextView errorTextView = (TextView) inflatedDialogView.findViewById(R.id.error_textview);
+                if (errorMessage != null) {
+                    errorTextView.setText(errorMessage);
+                    errorMessage = null;
+                }
+
                 final EditText foreignWordEditText = (EditText) inflatedDialogView.findViewById(R.id.foreign_language_word_edittext);
                 final EditText nativeWordEditText = (EditText) inflatedDialogView.findViewById(R.id.native_language_word_edittext);
                 final AlertDialog dialog = b
@@ -106,7 +114,11 @@ public class QuestionnaireActivity extends Activity {
                             public void onClick(DialogInterface d, int which) {
                                 String foreignWord = foreignWordEditText.getText().toString();
                                 String nativeWord = nativeWordEditText.getText().toString();
-                                dao.insert(Collections.singletonList(new Translation(nativeWord, foreignWord)));
+                                boolean inserted = questionnaire.insert(new Translation(nativeWord, foreignWord));
+                                if (!inserted) {
+                                    errorMessage = "Duplicate Record";
+                                    addWordButton.callOnClick();
+                                }
                             }
                         })
                         .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener(){

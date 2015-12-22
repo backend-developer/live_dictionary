@@ -18,6 +18,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     public static final String COLUMN_ORIGINAL_WORD = "originalWord";
     public static final String COLUMN_TRANSLATED_WORD = "translatedWord";
     public static final String COLUMN_WORD_DIFFICULTY = "difficulty";
+    public static final int ERROR_OCURRED = -1;
 
     public TranslationDaoSqlite(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -31,7 +32,9 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
                         COLUMN_ID + " integer primary key, " +
                         COLUMN_ORIGINAL_WORD + " text," +
                         COLUMN_TRANSLATED_WORD + " text, " +
-                        COLUMN_WORD_DIFFICULTY + " text)"
+                        COLUMN_WORD_DIFFICULTY + " text, " +
+                        "CONSTRAINT uniqueWT UNIQUE (" + COLUMN_ORIGINAL_WORD + ", " + COLUMN_TRANSLATED_WORD + ")" +
+                        ")"
         );
     }
 
@@ -47,7 +50,9 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         try {
             db.beginTransaction();
             for (Translation translation: translations) {
-                this.insertSingle(translation);
+                if (!this.insertSingle(translation)) {
+                    throw new RuntimeException("could not insert all values");
+                }
             }
             db.setTransactionSuccessful();
         } finally {
@@ -55,14 +60,15 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         }
     }
 
-    private boolean insertSingle(Translation translation) {
+    @Override
+    public boolean insertSingle(Translation translation) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_ORIGINAL_WORD, translation.getOriginalWord());
         contentValues.put(COLUMN_TRANSLATED_WORD, translation.getTranslatedWord());
         contentValues.put(COLUMN_WORD_DIFFICULTY, Difficulty.EASY.name());
-        db.insert(TRANSLATIONS_TABLE_NAME, null, contentValues);
-        return true;
+        long id = db.insert(TRANSLATIONS_TABLE_NAME, null, contentValues);
+        return id != ERROR_OCURRED;
     }
 
     @Override

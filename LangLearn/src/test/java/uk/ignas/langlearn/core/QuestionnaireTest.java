@@ -90,7 +90,6 @@ public class QuestionnaireTest {
         allWords.putAll(unknownWords);
         TranslationDao dao = new TranslationDaoStub();
         dao.insert(new ArrayList<>(allWords.keySet()));
-        dao.insert(new ArrayList<>(unknownWords.keySet()));
         Questionnaire questionnaire = new Questionnaire(dao);
 
         for (Translation t: unknownWords.keySet()) {
@@ -109,7 +108,6 @@ public class QuestionnaireTest {
         allWords.putAll(unknownWords);
         TranslationDao dao = new TranslationDaoStub();
         dao.insert(new ArrayList<>(allWords.keySet()));
-        dao.insert(new ArrayList<>(unknownWords.keySet()));
         Questionnaire questionnaire = new Questionnaire(dao);
 
         for (Translation t: unknownWords.keySet()) {
@@ -128,7 +126,6 @@ public class QuestionnaireTest {
         allWords.putAll(unknownWords);
         TranslationDao dao = new TranslationDaoStub();
         dao.insert(new ArrayList<>(allWords.keySet()));
-        dao.insert(new ArrayList<>(unknownWords.keySet()));
         for (Translation t: unknownWords.keySet()) {
             dao.update(t.getOriginalWord(), t.getTranslatedWord(), unknownWords.get(t));
         }
@@ -140,6 +137,26 @@ public class QuestionnaireTest {
         assertThat(percentage, allOf(greaterThan(45), lessThan(55)));
     }
 
+    @Test
+    public void shouldReturnNonErrorCodeIfInsertionIsSuccessful() {
+        TranslationDao dao = new TranslationDaoStub();
+        Questionnaire questionnaire = new Questionnaire(dao);
+
+        boolean result = questionnaire.insert(new Translation("duplicate", "dup_translation"));
+
+        assertThat(result, is(true));
+    }
+
+    @Test
+    public void shouldReturnErrorCodeIfInsertionIsSuccessful() {
+        TranslationDao dao = new TranslationDaoStub();
+        Questionnaire questionnaire = new Questionnaire(dao);
+
+        questionnaire.insert(new Translation("duplicate", "dup_translation"));
+        boolean result = questionnaire.insert(new Translation("duplicate", "dup_translation"));
+
+        assertThat(result, is(false));
+    }
 
     public LinkedHashMap<Translation, Difficulty> get200QuestionsOutOfWhichNewestNStartsWith(int n, String prefixForFirst100Questions) {
         LinkedHashMap<Translation, Difficulty> translations = new LinkedHashMap<>();

@@ -1,14 +1,13 @@
 package uk.ignas.langlearn.core;
 
-import uk.ignas.langlearn.core.Difficulty;
-import uk.ignas.langlearn.core.Translation;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
 public interface TranslationDao {
     void insert(List<Translation> translations);
+
+    boolean insertSingle(Translation translation);
 
     int update(String originalWord, String translatedWord, Difficulty difficulty);
 
