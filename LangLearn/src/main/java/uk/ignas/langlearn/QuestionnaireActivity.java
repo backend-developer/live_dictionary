@@ -30,6 +30,7 @@ public class QuestionnaireActivity extends Activity {
 
     private Translation currentWord = new Translation("defaultWord", "defaultTranslation");
     private Questionnaire questionnaire;
+    private TranslationDaoSqlite dao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,11 +43,12 @@ public class QuestionnaireActivity extends Activity {
         super.onResume();
 
         File externalStoragePublicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
-        final DataImporterExporter dataImporterExporter = new DataImporterExporter(this, new TranslationDaoSqlite(QuestionnaireActivity.this), externalStoragePublicDirectory);
+        dao = new TranslationDaoSqlite(QuestionnaireActivity.this);
+        final DataImporterExporter dataImporterExporter = new DataImporterExporter(this, dao, externalStoragePublicDirectory);
         dataImporterExporter.importAndValidateTranslations();
         LinkedHashMap<Translation, Difficulty> questions = getQuestions();
 
-        questionnaire = new Questionnaire(questions);
+        questionnaire = new Questionnaire(dao);
 
         final TextView correctAnswerView = (TextView) findViewById(R.id.correct_answer);
 
@@ -99,7 +101,7 @@ public class QuestionnaireActivity extends Activity {
 
     public LinkedHashMap<Translation, Difficulty> getQuestions() {
         if (questionsList == null) {
-            this.questionsList = new DbUtils(new TranslationDaoSqlite(QuestionnaireActivity.this)).getTranslationsFromDb();
+            this.questionsList = new DbUtils(dao).getTranslationsFromDb();
         }
         return questionsList;
     }
@@ -112,7 +114,7 @@ public class QuestionnaireActivity extends Activity {
 
     public void persistUnknown(Set<Translation> unknownQuestions) {
         for (Translation t: unknownQuestions) {
-            new TranslationDaoSqlite(this).update(t.getOriginalWord(), t.getTranslatedWord(), Difficulty.HARD);
+            dao.update(t.getOriginalWord(), t.getTranslatedWord(), Difficulty.HARD);
         }
     }
 

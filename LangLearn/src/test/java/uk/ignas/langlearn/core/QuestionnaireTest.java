@@ -21,7 +21,7 @@ public class QuestionnaireTest {
     public void shouldThrowWhenGeneratingQuestionIfQuestionBaseIsEmpty() {
         TranslationDao dao = new TranslationDaoStub();
 
-        Questionnaire questionnaire = new Questionnaire(new LinkedHashMap<Translation, Difficulty>());
+        Questionnaire questionnaire = new Questionnaire(dao);
         try {
             questionnaire.getRandomTranslation();
             fail();
@@ -34,26 +34,34 @@ public class QuestionnaireTest {
     public void shouldNotCrashWhenThereAreFewWords() {
         LinkedHashMap<Translation, Difficulty> words = new LinkedHashMap<>();
         words.put(new Translation("word", "translation"), Difficulty.EASY);
+        TranslationDao dao = new TranslationDaoStub();
+        dao.insert(new ArrayList<>(words.keySet()));
 
-        Questionnaire questionnaire = new Questionnaire(words);
+        Questionnaire questionnaire = new Questionnaire(dao);
         Translation translation = questionnaire.getRandomTranslation();
         assertThat(translation.getOriginalWord(), is(equalTo("word")));
     }
 
     @Test
-    public void shouldGetFirst100QuestionsWith80PercentProbability() {
-        Questionnaire questionnaire = new Questionnaire(get200QuestionsOutOfWhichNStartsWith(100, "FirstQ"));
+    public void shouldGetNewest100QuestionsWith80PercentProbability() {
+        LinkedHashMap<Translation, Difficulty> words = get200QuestionsOutOfWhichNewestNStartsWith(100, "LastQ");
+        TranslationDao dao = new TranslationDaoStub();
+        dao.insert(new ArrayList<>(words.keySet()));
+        Questionnaire questionnaire = new Questionnaire(dao);
 
         final List<String> retrievedWords = retrieveWordsNTimes(questionnaire, 1000);
 
-        int percentage = countPercentageOfExpectedWordsRetrieved("FirstQ", retrievedWords);
+        int percentage = countPercentageOfExpectedWordsRetrieved("LastQ", retrievedWords);
         assertThat(percentage, allOf(greaterThan(75), lessThan(85)));
     }
 
     @Test
     public void shouldHandle100Questions() {
         for (int i = 0; i < 100; i++) {
-            Questionnaire questionnaire = new Questionnaire(getNQuestionsStartingWith(100, "Any"));
+            TranslationDao dao = new TranslationDaoStub();
+            LinkedHashMap<Translation, Difficulty> words = getNQuestionsStartingWith(100, "Any");
+            dao.insert(new ArrayList<>(words.keySet()));
+            Questionnaire questionnaire = new Questionnaire(dao);
 
             String retrievedWord = questionnaire.getRandomTranslation().getOriginalWord();
 
@@ -66,7 +74,10 @@ public class QuestionnaireTest {
         LinkedHashMap<Translation, Difficulty> allWords = getNQuestionsStartingWith(100, "Other");
         LinkedHashMap<Translation, Difficulty> unknownWords = getNQuestionsStartingWith(20, "UnknownWord");
         allWords.putAll(unknownWords);
-        Questionnaire questionnaire = new Questionnaire(allWords);
+        TranslationDao dao = new TranslationDaoStub();
+        dao.insert(new ArrayList<>(allWords.keySet()));
+        dao.insert(new ArrayList<>(unknownWords.keySet()));
+        Questionnaire questionnaire = new Questionnaire(dao);
 
         for (Translation t: unknownWords.keySet()) {
             questionnaire.markUnknown(t);
@@ -82,7 +93,10 @@ public class QuestionnaireTest {
         LinkedHashMap<Translation, Difficulty> allWords = getNQuestionsStartingWith(100, "Other");
         LinkedHashMap<Translation, Difficulty> unknownWords = getNQuestionsStartingWith(10, "UnknownWord");
         allWords.putAll(unknownWords);
-        Questionnaire questionnaire = new Questionnaire(allWords);
+        TranslationDao dao = new TranslationDaoStub();
+        dao.insert(new ArrayList<>(allWords.keySet()));
+        dao.insert(new ArrayList<>(unknownWords.keySet()));
+        Questionnaire questionnaire = new Questionnaire(dao);
 
         for (Translation t: unknownWords.keySet()) {
             questionnaire.markUnknown(t);
@@ -98,7 +112,13 @@ public class QuestionnaireTest {
         LinkedHashMap<Translation, Difficulty> allWords = getNQuestionsStartingWith(100, "Other");
         LinkedHashMap<Translation, Difficulty> unknownWords = getNQuestionsStartingWith(10, "UnknownWord", Difficulty.HARD);
         allWords.putAll(unknownWords);
-        Questionnaire questionnaire = new Questionnaire(allWords);
+        TranslationDao dao = new TranslationDaoStub();
+        dao.insert(new ArrayList<>(allWords.keySet()));
+        dao.insert(new ArrayList<>(unknownWords.keySet()));
+        for (Translation t: unknownWords.keySet()) {
+            dao.update(t.getOriginalWord(), t.getTranslatedWord(), unknownWords.get(t));
+        }
+        Questionnaire questionnaire = new Questionnaire(dao);
 
         final List<String> retrievedWords = retrieveWordsNTimes(questionnaire, 1000);
 
@@ -136,10 +156,11 @@ public class QuestionnaireTest {
         }
     }
 
-    public LinkedHashMap<Translation, Difficulty> get200QuestionsOutOfWhichNStartsWith(int n, String prefixForFirst100Questions) {
+    public LinkedHashMap<Translation, Difficulty> get200QuestionsOutOfWhichNewestNStartsWith(int n, String prefixForFirst100Questions) {
         LinkedHashMap<Translation, Difficulty> translations = new LinkedHashMap<>();
-        translations.putAll(getNQuestionsStartingWith(n, prefixForFirst100Questions));
+        //order is omportant
         translations.putAll(getNQuestionsStartingWith(200-n, "Other"));
+        translations.putAll(getNQuestionsStartingWith(n, prefixForFirst100Questions));
         return translations;
     }
 
