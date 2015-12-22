@@ -1,6 +1,5 @@
 package uk.ignas.langlearn.core;
 
-import android.content.Context;
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
 import org.junit.Test;
@@ -25,7 +24,7 @@ public class DataImporterExporterIntegrationTest {
         File wordsToImport = new File(resource.toURI());
         Files.copy(wordsToImport, new File("import.txt"));
         TranslationDaoStub dao = new TranslationDaoStub();
-        DataImporterExporter dataImporterExporter = new DataImporterExporter(mock(Context.class), dao, new File("."));
+        DataImporterExporter dataImporterExporter = new DataImporterExporter(dao, new File("."));
 
         dataImporterExporter.importFromFile("import.txt");
         dataImporterExporter.export("export.txt");

@@ -12,12 +12,10 @@ import java.util.*;
 public class DataImporterExporter {
     private File defaultAppDirFile;
     private TranslationParser translationParser = new TranslationParser();
-    private Context context;
     private TranslationDao dao;
     private DbUtils dbUtils;
 
-    public DataImporterExporter(Context context, TranslationDao dao, File defaultAppDirFile) {
-        this.context = context;
+    public DataImporterExporter(TranslationDao dao, File defaultAppDirFile) {
         this.dao = dao;
         this.defaultAppDirFile = defaultAppDirFile;
         dbUtils = new DbUtils(dao);

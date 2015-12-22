@@ -14,11 +14,9 @@ import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Questionnaire;
 import uk.ignas.langlearn.core.Translation;
 import uk.ignas.langlearn.core.db.TranslationDaoSqlite;
-import uk.ignas.langlearn.core.parser.DbUtils;
 
 import java.io.File;
 import java.util.LinkedHashMap;
-import java.util.Set;
 
 public class QuestionnaireActivity extends Activity {
     private Button translationButton;
@@ -44,7 +42,7 @@ public class QuestionnaireActivity extends Activity {
 
         File externalStoragePublicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
         dao = new TranslationDaoSqlite(QuestionnaireActivity.this);
-        final DataImporterExporter dataImporterExporter = new DataImporterExporter(this, dao, externalStoragePublicDirectory);
+        final DataImporterExporter dataImporterExporter = new DataImporterExporter(dao, externalStoragePublicDirectory);
         dataImporterExporter.importAndValidateTranslations();
 
         questionnaire = new Questionnaire(dao);
