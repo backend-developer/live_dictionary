@@ -12,8 +12,6 @@ public class LiveDictionaryDsl {
         return retrievedWords;
     }
 
-
-
     public static int countPercentageOfRetrievedWordsInExpectedSet(List<Translation> retrieved, List<Translation> expectedSet) {
         int timesInterested = 0;
         for (Translation t: retrieved) {

@@ -136,7 +136,6 @@ public class QuestionnaireTest {
 
         final List<Translation> retrievedWords = retrieveWordsNTimes(questionnaire, 1000);
 
-
         int percentage = countPercentageOfRetrievedWordsHadExpectedPattern(retrievedWords, "UnknownWord");
         assertThat(percentage, allOf(greaterThan(45), lessThan(55)));
     }

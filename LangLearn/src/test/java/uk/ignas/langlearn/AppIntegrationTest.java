@@ -2,6 +2,7 @@ package uk.ignas.langlearn;
 
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
+import org.junit.After;
 import org.junit.Test;
 import uk.ignas.langlearn.core.*;
 
@@ -21,47 +22,50 @@ import static org.hamcrest.core.IsEqual.equalTo;
 
 public class AppIntegrationTest {
 
+    public static final String IMPORT_FILE_NAME = "import.txt";
+    public static final String LIVE_DATA_RESOURCE_NAME = "exported_words.txt";
+    public static final String EXPORT_FILE_NAME = "export.txt";
+
+    @After
+    public void teardown() {
+        removeFileIfExists(IMPORT_FILE_NAME);
+        removeFileIfExists(EXPORT_FILE_NAME);
+    }
+
+    private void removeFileIfExists(String fileName) {
+        File importFile = new File(fileName);
+        if (importFile.exists()) {
+            importFile.delete();
+        }
+    }
+
     @Test
     public void exportFileShouldNotContainBlankLines() throws IOException, URISyntaxException {
-        URL resource = Resources.getResource("exported_words.txt");
-        File wordsToImport = new File(resource.toURI());
-        Files.copy(wordsToImport, new File("import.txt"));
-        TranslationDaoStub dao = new TranslationDaoStub();
-        DataImporterExporter dataImporterExporter = new DataImporterExporter(dao, new File("."));
 
-        dataImporterExporter.importFromFile("import.txt");
-        dataImporterExporter.export("export.txt");
+        DataImporterExporter dataImporterExporter = createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, new TranslationDaoStub());
+        dataImporterExporter.export(EXPORT_FILE_NAME);
 
-        validateNumberOfEntriesInFile("export.txt", 2491);
-        validateNumberOfEntriesInFile("import.txt", 2627);
-        validateImportedAndExportedFilesMatch("import.txt", "export.txt");
-        assertThat(readFile("import.txt").get(0), is(equalTo("morado - purple")));
-        assertThat(readFile("export.txt").get(0), is(equalTo("morado - purple")));
+        validateNumberOfEntriesInFile(EXPORT_FILE_NAME, 2491);
+        validateNumberOfEntriesInFile(IMPORT_FILE_NAME, 2627);
+        validateImportedAndExportedFilesMatch(IMPORT_FILE_NAME, EXPORT_FILE_NAME);
+        assertThat(readFile(IMPORT_FILE_NAME).get(0), is(equalTo("morado - purple")));
+        assertThat(readFile(IMPORT_FILE_NAME).get(0), is(equalTo("morado - purple")));
     }
 
     @Test
     public void importedDataShouldBeInOrderDataAppearedInFile() throws IOException, URISyntaxException {
-        URL resource = Resources.getResource("exported_words.txt");
-        File wordsToImport = new File(resource.toURI());
-        Files.copy(wordsToImport, new File("import.txt"));
         TranslationDaoStub dao = new TranslationDaoStub();
-        DataImporterExporter dataImporterExporter = new DataImporterExporter(dao, new File("."));
 
-        dataImporterExporter.importFromFile("import.txt");
+        createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, dao);
 
         assertThat(getLast(dao.getAllTranslations().keySet()).getTranslatedWord(), is(equalTo("la chaqueta de piel")));
     }
 
     @Test
     public void newestQuestionsShouldBeMixedUpWitOldestOnes() throws IOException, URISyntaxException {
-        URL resource = Resources.getResource("exported_words.txt");
-        File wordsToImport = new File(resource.toURI());
-        Files.copy(wordsToImport, new File("import.txt"));
         TranslationDaoStub dao = new TranslationDaoStub();
-        DataImporterExporter dataImporterExporter = new DataImporterExporter(dao, new File("."));
-        dataImporterExporter.importFromFile("import.txt");
+        createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, dao);
         Questionnaire q = new Questionnaire(dao);
-
         List<Translation> translations = new ArrayList<>(dao.getAllTranslations().keySet());
         int size = translations.size();
         List<Translation> eldestTranslations = translations.subList(0, 100);
@@ -71,8 +75,19 @@ public class AppIntegrationTest {
 
         int eldestCounter = LiveDictionaryDsl.countPercentageOfRetrievedWordsInExpectedSet(retrieved, eldestTranslations);
         int newestCounter = LiveDictionaryDsl.countPercentageOfRetrievedWordsInExpectedSet(retrieved, newestTranslations);
-
         assertThat(newestCounter, is(greaterThan(eldestCounter)));
+    }
+
+
+
+    private DataImporterExporter createImportedAndimportDataToDao(String liveDataResourceName, TranslationDaoStub dao) throws URISyntaxException, IOException {
+        URL resource = Resources.getResource(liveDataResourceName);
+        File wordsToImport = new File(resource.toURI());
+        Files.copy(wordsToImport, new File(IMPORT_FILE_NAME));
+        DataImporterExporter dataImporterExporter = new DataImporterExporter(dao, new File("."));
+
+        dataImporterExporter.importFromFile(IMPORT_FILE_NAME);
+        return dataImporterExporter;
     }
 
     private void validateNumberOfEntriesInFile(String fileName, int expectedNumberOfEntries) {
@@ -83,7 +98,7 @@ public class AppIntegrationTest {
         assertThat(exportedData.size(), is(equalTo(expectedNumberOfEntries)));
     }
 
-    public void validateImportedAndExportedFilesMatch(String dataToImportFileName, String exportedDataFileName) {
+    private void validateImportedAndExportedFilesMatch(String dataToImportFileName, String exportedDataFileName) {
         if (!new File(dataToImportFileName).exists()) {
             throw new RuntimeException("validation failed. invalid import file specified");
         }
