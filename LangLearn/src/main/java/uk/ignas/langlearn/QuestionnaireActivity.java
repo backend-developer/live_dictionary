@@ -5,26 +5,25 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import uk.ignas.langlearn.core.DataImporterExporter;
-import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Questionnaire;
 import uk.ignas.langlearn.core.Translation;
 import uk.ignas.langlearn.core.TranslationDaoSqlite;
 
 import java.io.File;
-import java.util.LinkedHashMap;
 
 public class QuestionnaireActivity extends Activity {
     private Button translationButton;
     private Button knownWordButton;
     private Button unknownWordButton;
+    private Button addWordButton;
     private Button exportDataButton;
     private EditText exportDataFileEditText;
-    private LinkedHashMap<Translation, Difficulty> questionsList;
 
     private Translation currentWord = new Translation("defaultWord", "defaultTranslation");
     private Questionnaire questionnaire;
@@ -56,6 +55,7 @@ public class QuestionnaireActivity extends Activity {
         translationButton = (Button) findViewById(R.id.show_translation_button);
         knownWordButton = (Button) findViewById(R.id.known_word_submision_button);
         unknownWordButton = (Button) findViewById(R.id.unknown_word_submision_button);
+        addWordButton = (Button) findViewById(R.id.add_word_button);
         exportDataButton = (Button) findViewById(R.id.export_data_button);
         exportDataFileEditText = (EditText) findViewById(R.id.export_data_path_textedit);
         File defaultExportFile = new File(externalStoragePublicDirectory, "ExportedByUserRequest.txt");
@@ -85,6 +85,35 @@ public class QuestionnaireActivity extends Activity {
                 publishNextWord(questionLabel, correctAnswerView);
                 enableTranslationAndNotSubmittionButtons(true);
                 questionnaire.markUnknown(currentWord);
+            }
+        });
+
+        addWordButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                AlertDialog.Builder b = new AlertDialog.Builder(QuestionnaireActivity.this);
+                LayoutInflater i = getLayoutInflater();
+                AlertDialog dialog = b
+                        .setView(i.inflate(R.layout.add_word_dialog, null))
+                        .setPositiveButton(R.string.add_word, new DialogInterface.OnClickListener(){
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener(){
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .create();
+
+                dialog.setTitle("Add new word");
+                dialog.show();
             }
         });
 

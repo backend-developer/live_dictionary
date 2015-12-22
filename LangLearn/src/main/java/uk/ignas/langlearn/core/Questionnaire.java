@@ -26,7 +26,7 @@ public class Questionnaire {
         }
     }
 
-    public LinkedHashMap<Translation, Difficulty> getTranslationsFromDb() {
+    private LinkedHashMap<Translation, Difficulty> getTranslationsFromDb() {
         LinkedHashMap<Translation, Difficulty> allTranslations = dao.getAllTranslations();
         return reverseInsertionOrder(allTranslations);
     }
