@@ -1,6 +1,5 @@
 package uk.ignas.langlearn.core;
 
-import android.content.Context;
 import com.google.common.collect.Sets;
 import uk.ignas.langlearn.core.db.TranslationDao;
 import uk.ignas.langlearn.core.parser.DbUtils;
@@ -13,12 +12,10 @@ public class DataImporterExporter {
     private File defaultAppDirFile;
     private TranslationParser translationParser = new TranslationParser();
     private TranslationDao dao;
-    private DbUtils dbUtils;
 
     public DataImporterExporter(TranslationDao dao, File defaultAppDirFile) {
         this.dao = dao;
         this.defaultAppDirFile = defaultAppDirFile;
-        dbUtils = new DbUtils(dao);
     }
 
     public void importAndValidateTranslations() {
@@ -58,27 +55,22 @@ public class DataImporterExporter {
             }
         }
 
-        Set<Translation> translationsFromDb = dbUtils.getTranslationsFromDb().keySet();
+        Set<Translation> translationsFromDb = dao.getAllTranslations().keySet();
         Sets.SetView<Translation> toAdd = Sets.difference(translationsToInsert, translationsFromDb);
         Sets.SetView<Translation> toRemove = Sets.difference(translationsFromDb, translationsToInsert);
 
-        List<Translation> reversedToAdd = new ArrayList<>(toAdd);
-        Collections.reverse(reversedToAdd);
-
-        dao.insert(reversedToAdd);
+        dao.insert(new ArrayList<>(toAdd));
         dao.delete(toRemove);
     }
 
     public void export(String planeTextExportedPath) {
-
-        LinkedHashMap<Translation, Difficulty> translationsFromDb = dbUtils.getTranslationsFromDb();
+        LinkedHashMap<Translation, Difficulty> translationsFromDb = dao.getAllTranslations();
         try {
             writeTranslations(planeTextExportedPath, translationsFromDb.keySet());
         } catch (Exception e) {
             throw new RuntimeException();
         }
     }
-
 
     private List<String> readFile(String path) {
         BufferedReader br = null;
