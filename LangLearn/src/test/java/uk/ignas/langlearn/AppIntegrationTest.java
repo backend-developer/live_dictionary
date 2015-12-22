@@ -1,8 +1,9 @@
-package uk.ignas.langlearn.core;
+package uk.ignas.langlearn;
 
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
 import org.junit.Test;
+import uk.ignas.langlearn.core.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -52,7 +53,7 @@ public class AppIntegrationTest {
     }
 
     @Test
-    public void newsetQuestionsShouldBeMixedUpWitOldestOnes() throws IOException, URISyntaxException {
+    public void newestQuestionsShouldBeMixedUpWitOldestOnes() throws IOException, URISyntaxException {
         URL resource = Resources.getResource("exported_words.txt");
         File wordsToImport = new File(resource.toURI());
         Files.copy(wordsToImport, new File("import.txt"));
@@ -65,18 +66,12 @@ public class AppIntegrationTest {
         int size = translations.size();
         List<Translation> eldestTranslations = translations.subList(0, 100);
         List<Translation> newestTranslations = translations.subList(size - 100, size);
-        int eldestCounter = 0;
-        int newestCounter = 0;
 
-        for (int i = 0; i < 10; i++) {
-            Translation translation = q.getRandomTranslation();
-            if(eldestTranslations.contains(translation)) {
-                eldestCounter++;
-            }
-            if (newestTranslations.contains(translation)) {
-                newestCounter++;
-            }
-        }
+        List<Translation> retrieved = LiveDictionaryDsl.retrieveWordsNTimes(q, 10);
+
+        int eldestCounter = LiveDictionaryDsl.countPercentageOfRetrievedWordsInExpectedSet(retrieved, eldestTranslations);
+        int newestCounter = LiveDictionaryDsl.countPercentageOfRetrievedWordsInExpectedSet(retrieved, newestTranslations);
+
         assertThat(newestCounter, is(greaterThan(eldestCounter)));
     }
 

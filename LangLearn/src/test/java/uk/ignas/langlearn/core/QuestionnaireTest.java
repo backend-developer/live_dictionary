@@ -10,6 +10,8 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.*;
+import static uk.ignas.langlearn.core.LiveDictionaryDsl.countPercentageOfRetrievedWordsHadExpectedPattern;
+import static uk.ignas.langlearn.core.LiveDictionaryDsl.retrieveWordsNTimes;
 
 public class QuestionnaireTest {
 
@@ -61,9 +63,9 @@ public class QuestionnaireTest {
         dao.insert(new ArrayList<>(words.keySet()));
         Questionnaire questionnaire = new Questionnaire(dao);
 
-        final List<String> retrievedWords = retrieveWordsNTimes(questionnaire, 1000);
+        final List<Translation> retrievedWords = retrieveWordsNTimes(questionnaire, 1000);
 
-        int percentage = countPercentageOfExpectedWordsRetrieved("LastQ", retrievedWords);
+        int percentage = countPercentageOfRetrievedWordsHadExpectedPattern(retrievedWords, "LastQ");
         assertThat(percentage, allOf(greaterThan(75), lessThan(85)));
     }
 
@@ -94,9 +96,9 @@ public class QuestionnaireTest {
         for (Translation t: unknownWords.keySet()) {
             questionnaire.markUnknown(t);
         }
-        final List<String> retrievedWords = retrieveWordsNTimes(questionnaire, 100);
+        final List<Translation> retrievedWords = retrieveWordsNTimes(questionnaire, 100);
 
-        int percentage = countPercentageOfExpectedWordsRetrieved("UnknownWord", retrievedWords);
+        int percentage = countPercentageOfRetrievedWordsHadExpectedPattern(retrievedWords, "UnknownWord");
         assertThat(percentage, is(equalTo(100)));
     }
 
@@ -113,9 +115,9 @@ public class QuestionnaireTest {
         for (Translation t: unknownWords.keySet()) {
             questionnaire.markUnknown(t);
         }
-        final List<String> retrievedWords = retrieveWordsNTimes(questionnaire, 1000);
+        final List<Translation> retrievedWords = retrieveWordsNTimes(questionnaire, 1000);
 
-        int percentage = countPercentageOfExpectedWordsRetrieved("UnknownWord", retrievedWords);
+        int percentage = countPercentageOfRetrievedWordsHadExpectedPattern(retrievedWords, "UnknownWord");
         assertThat(percentage, allOf(greaterThan(45), lessThan(55)));
     }
 
@@ -132,45 +134,17 @@ public class QuestionnaireTest {
         }
         Questionnaire questionnaire = new Questionnaire(dao);
 
-        final List<String> retrievedWords = retrieveWordsNTimes(questionnaire, 1000);
+        final List<Translation> retrievedWords = retrieveWordsNTimes(questionnaire, 1000);
 
 
-        int percentage = countPercentageOfExpectedWordsRetrieved("UnknownWord", retrievedWords);
+        int percentage = countPercentageOfRetrievedWordsHadExpectedPattern(retrievedWords, "UnknownWord");
         assertThat(percentage, allOf(greaterThan(45), lessThan(55)));
     }
 
-    private List<String> retrieveWordsNTimes(Questionnaire questionnaire, int timesToExecute) {
-        final List<String> retrievedWords = new ArrayList<>();
-        for (int i = 0; i < timesToExecute; i++) {
-            retrievedWords.add(questionnaire.getRandomTranslation().getOriginalWord());
-        }
-        return retrievedWords;
-    }
-
-    private int countPercentageOfExpectedWordsRetrieved(String expectedPattern, List<String> retrievedWords) {
-        int timesInterested = 0;
-        for (String w: retrievedWords) {
-            if (w.contains(expectedPattern)) {
-                timesInterested++;
-            }
-        }
-        int timesTotal = retrievedWords.size();
-        return calculatePercentage(timesInterested, timesTotal);
-    }
-
-    private int calculatePercentage(int timesInterested, int timesTotal) {
-        if (timesTotal > 100) {
-            int relationTo100 = timesTotal / 100;
-            return timesInterested / relationTo100;
-        } else {
-            int relationTo100 = 100 / timesTotal;
-            return  timesInterested * relationTo100;
-        }
-    }
 
     public LinkedHashMap<Translation, Difficulty> get200QuestionsOutOfWhichNewestNStartsWith(int n, String prefixForFirst100Questions) {
         LinkedHashMap<Translation, Difficulty> translations = new LinkedHashMap<>();
-        //order is omportant
+        //order is important
         translations.putAll(getNQuestionsStartingWith(200-n, "Other"));
         translations.putAll(getNQuestionsStartingWith(n, prefixForFirst100Questions));
         return translations;
