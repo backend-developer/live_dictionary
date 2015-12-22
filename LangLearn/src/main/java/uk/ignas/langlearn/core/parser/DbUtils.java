@@ -3,7 +3,6 @@ package uk.ignas.langlearn.core.parser;
 import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Translation;
 import uk.ignas.langlearn.core.db.TranslationDao;
-import uk.ignas.langlearn.core.db.TranslationDaoSqlite;
 
 import java.util.ArrayList;
 import java.util.Collections;

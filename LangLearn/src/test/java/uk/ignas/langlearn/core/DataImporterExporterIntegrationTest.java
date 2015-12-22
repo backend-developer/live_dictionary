@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 
+import static com.google.common.collect.Iterables.getLast;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -23,13 +24,15 @@ public class DataImporterExporterIntegrationTest {
         URL resource = Resources.getResource("exported_words.txt");
         File wordsToImport = new File(resource.toURI());
         Files.copy(wordsToImport, new File("import.txt"));
-        DataImporterExporter dataImporterExporter = new DataImporterExporter(mock(Context.class), new TranslationDaoStub(), new File("."));
+        TranslationDaoStub dao = new TranslationDaoStub();
+        DataImporterExporter dataImporterExporter = new DataImporterExporter(mock(Context.class), dao, new File("."));
 
         dataImporterExporter.importFromFile("import.txt");
         dataImporterExporter.export("export.txt");
 
         validateNumberOfEntriesInExportedFile("export.txt", 2491);
         validateImportedAndExportedFilesMatch("import.txt", "export.txt");
+        assertThat(getLast(dao.getAllTranslations().keySet()).getTranslatedWord(), is(equalTo("la chaqueta de piel")));
     }
 
     private void validateNumberOfEntriesInExportedFile(String exportedDataFileName, int numberOfEntries) {
