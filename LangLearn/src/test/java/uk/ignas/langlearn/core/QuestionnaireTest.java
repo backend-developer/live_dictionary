@@ -43,6 +43,20 @@ public class QuestionnaireTest {
     }
 
     @Test
+    public void shouldPersistUnknownWords() {
+        LinkedHashMap<Translation, Difficulty> words = new LinkedHashMap<>();
+        Translation translation = new Translation("word", "translation");
+        words.put(translation, Difficulty.EASY);
+        TranslationDao dao = new TranslationDaoStub();
+        dao.insert(new ArrayList<>(words.keySet()));
+        Questionnaire questionnaire = new Questionnaire(dao);
+
+        questionnaire.markUnknown(translation);
+
+        assertThat(dao.getAllTranslations().get(translation), is(equalTo(Difficulty.HARD)));
+    }
+
+    @Test
     public void shouldGetNewest100QuestionsWith80PercentProbability() {
         LinkedHashMap<Translation, Difficulty> words = get200QuestionsOutOfWhichNewestNStartsWith(100, "LastQ");
         TranslationDao dao = new TranslationDaoStub();

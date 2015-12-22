@@ -12,8 +12,10 @@ public class Questionnaire {
     private final List<Translation> questions ;
     private final Set<Translation> unknownQuestions = new HashSet<>();
     private final Random random = new Random();
+    private TranslationDao dao;
 
     public Questionnaire(TranslationDao dao) {
+        this.dao = dao;
         //making sure data structure preserves insertion order even the code is changed
         LinkedHashMap<Translation, Difficulty> q = new DbUtils(dao).getTranslationsFromDb();
         if (!(q instanceof LinkedHashMap)){
@@ -74,9 +76,6 @@ public class Questionnaire {
     public void markUnknown(Translation translation) {
         questions.remove(translation);
         unknownQuestions.add(translation);
-    }
-
-    public Set<Translation> getUnknownQuestions() {
-        return unknownQuestions;
+        dao.update(translation.getOriginalWord(), translation.getTranslatedWord(), Difficulty.HARD);
     }
 }

@@ -46,7 +46,6 @@ public class QuestionnaireActivity extends Activity {
         dao = new TranslationDaoSqlite(QuestionnaireActivity.this);
         final DataImporterExporter dataImporterExporter = new DataImporterExporter(this, dao, externalStoragePublicDirectory);
         dataImporterExporter.importAndValidateTranslations();
-        LinkedHashMap<Translation, Difficulty> questions = getQuestions();
 
         questionnaire = new Questionnaire(dao);
 
@@ -97,25 +96,6 @@ public class QuestionnaireActivity extends Activity {
                 dataImporterExporter.reexport(exportDataFileEditText.getText().toString());
             }
         });
-    }
-
-    public LinkedHashMap<Translation, Difficulty> getQuestions() {
-        if (questionsList == null) {
-            this.questionsList = new DbUtils(dao).getTranslationsFromDb();
-        }
-        return questionsList;
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        persistUnknown(questionnaire.getUnknownQuestions());
-    }
-
-    public void persistUnknown(Set<Translation> unknownQuestions) {
-        for (Translation t: unknownQuestions) {
-            dao.update(t.getOriginalWord(), t.getTranslatedWord(), Difficulty.HARD);
-        }
     }
 
     private void enableTranslationAndNotSubmittionButtons(boolean isTranslationPhase) {
