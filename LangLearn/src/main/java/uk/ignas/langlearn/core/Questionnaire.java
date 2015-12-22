@@ -8,17 +8,13 @@ public class Questionnaire {
     public static final int PROBABILITY_OF_80_PERCENT = 80;
     private final List<Translation> questions ;
     private final Set<Translation> unknownQuestions = new HashSet<>();
-    private final Random random;
+    private final Random random = new Random();
 
     public Questionnaire(LinkedHashMap<Translation, Difficulty> q) {
-        this(q, new Random());
-    }
-
-    public Questionnaire(Map<Translation, Difficulty> q, Random random) {
+        //making sure data structure preserves insertion order even the code is changed
         if (!(q instanceof LinkedHashMap)){
             throw new RuntimeException("words containing data structure does not preserve order: " + q.getClass().getName());
         }
-        this.random = random;
         this.questions = new ArrayList<>(q.keySet());
         for (Translation t: q.keySet()) {
             if (q.get(t) == Difficulty.HARD) {

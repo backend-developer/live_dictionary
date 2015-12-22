@@ -1,6 +1,8 @@
 package uk.ignas.langlearn.core;
 
 import org.junit.Test;
+import uk.ignas.langlearn.core.db.TranslationDao;
+import uk.ignas.langlearn.core.db.TranslationDaoStub;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -17,6 +19,8 @@ public class QuestionnaireTest {
 
     @Test
     public void shouldThrowWhenGeneratingQuestionIfQuestionBaseIsEmpty() {
+        TranslationDao dao = new TranslationDaoStub();
+
         Questionnaire questionnaire = new Questionnaire(new LinkedHashMap<Translation, Difficulty>());
         try {
             questionnaire.getRandomTranslation();
