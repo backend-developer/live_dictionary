@@ -1,8 +1,5 @@
 package uk.ignas.langlearn.core;
 
-import uk.ignas.langlearn.core.db.TranslationDao;
-import uk.ignas.langlearn.core.parser.DbUtils;
-
 import java.util.*;
 
 public class Questionnaire {
@@ -17,7 +14,7 @@ public class Questionnaire {
     public Questionnaire(TranslationDao dao) {
         this.dao = dao;
         //making sure data structure preserves insertion order even the code is changed
-        LinkedHashMap<Translation, Difficulty> q = new DbUtils(dao).getTranslationsFromDb();
+        LinkedHashMap<Translation, Difficulty> q = getTranslationsFromDb();
         if (!(q instanceof LinkedHashMap)){
             throw new RuntimeException("words containing data structure does not preserve order: " + q.getClass().getName());
         }
@@ -27,6 +24,21 @@ public class Questionnaire {
                 markUnknown(t);
             }
         }
+    }
+
+    public LinkedHashMap<Translation, Difficulty> getTranslationsFromDb() {
+        LinkedHashMap<Translation, Difficulty> allTranslations = dao.getAllTranslations();
+        return reverseInsertionOrder(allTranslations);
+    }
+
+    private LinkedHashMap<Translation, Difficulty> reverseInsertionOrder(LinkedHashMap<Translation, Difficulty> allTranslations) {
+        List<Translation> translations = new ArrayList<>(allTranslations.keySet());
+        Collections.reverse(translations);
+        LinkedHashMap<Translation, Difficulty> allTranslationsReversed = new LinkedHashMap<>();
+        for (Translation translation : translations) {
+            allTranslationsReversed.put(translation, allTranslations.get(translation));
+        }
+        return allTranslationsReversed;
     }
 
     public Translation getRandomTranslation() {

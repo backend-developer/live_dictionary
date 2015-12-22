@@ -1,8 +1,6 @@
 package uk.ignas.langlearn.core;
 
 import org.junit.Test;
-import uk.ignas.langlearn.core.db.TranslationDao;
-import uk.ignas.langlearn.core.db.TranslationDaoStub;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

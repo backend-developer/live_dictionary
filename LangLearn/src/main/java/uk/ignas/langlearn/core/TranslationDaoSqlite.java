@@ -1,13 +1,10 @@
-package uk.ignas.langlearn.core.db;
+package uk.ignas.langlearn.core;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import uk.ignas.langlearn.core.Difficulty;
-import uk.ignas.langlearn.core.Translation;
 
 import java.util.LinkedHashMap;
 import java.util.List;

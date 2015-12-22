@@ -1,4 +1,4 @@
-package uk.ignas.langlearn.core.parser;
+package uk.ignas.langlearn.core;
 
 import com.google.common.base.Splitter;
 import uk.ignas.langlearn.core.Translation;

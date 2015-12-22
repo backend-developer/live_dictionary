@@ -3,7 +3,6 @@ package uk.ignas.langlearn.core;
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
 import org.junit.Test;
-import uk.ignas.langlearn.core.db.TranslationDaoStub;
 
 import java.io.BufferedReader;
 import java.io.File;

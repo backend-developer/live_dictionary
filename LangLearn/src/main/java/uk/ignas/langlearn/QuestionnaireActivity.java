@@ -13,7 +13,7 @@ import uk.ignas.langlearn.core.DataImporterExporter;
 import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Questionnaire;
 import uk.ignas.langlearn.core.Translation;
-import uk.ignas.langlearn.core.db.TranslationDaoSqlite;
+import uk.ignas.langlearn.core.TranslationDaoSqlite;
 
 import java.io.File;
 import java.util.LinkedHashMap;

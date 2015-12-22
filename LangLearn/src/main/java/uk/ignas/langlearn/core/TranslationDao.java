@@ -1,4 +1,4 @@
-package uk.ignas.langlearn.core.db;
+package uk.ignas.langlearn.core;
 
 import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Translation;

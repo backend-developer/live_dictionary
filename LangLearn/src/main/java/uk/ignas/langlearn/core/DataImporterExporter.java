@@ -1,9 +1,6 @@
 package uk.ignas.langlearn.core;
 
 import com.google.common.collect.Sets;
-import uk.ignas.langlearn.core.db.TranslationDao;
-import uk.ignas.langlearn.core.parser.DbUtils;
-import uk.ignas.langlearn.core.parser.TranslationParser;
 
 import java.io.*;
 import java.util.*;

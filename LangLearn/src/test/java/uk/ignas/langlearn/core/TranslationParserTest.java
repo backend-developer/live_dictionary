@@ -1,10 +1,11 @@
-package uk.ignas.langlearn.core.parser;
+package uk.ignas.langlearn.core;
 
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ignas.langlearn.core.Translation;
+import uk.ignas.langlearn.core.TranslationParser;
 
 
 public class TranslationParserTest {

@@ -1,7 +1,9 @@
-package uk.ignas.langlearn.core.db;
+package uk.ignas.langlearn.core;
 
 import uk.ignas.langlearn.core.Difficulty;
 import uk.ignas.langlearn.core.Translation;
+import uk.ignas.langlearn.core.TranslationDao;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
