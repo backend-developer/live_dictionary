@@ -16,6 +16,7 @@ import uk.ignas.langlearn.core.Translation;
 import uk.ignas.langlearn.core.TranslationDaoSqlite;
 
 import java.io.File;
+import java.util.Collections;
 
 public class QuestionnaireActivity extends Activity {
     private Button translationButton;
@@ -94,13 +95,18 @@ public class QuestionnaireActivity extends Activity {
             public void onClick(View arg0) {
                 AlertDialog.Builder b = new AlertDialog.Builder(QuestionnaireActivity.this);
                 LayoutInflater i = getLayoutInflater();
-                AlertDialog dialog = b
-                        .setView(i.inflate(R.layout.add_word_dialog, null))
+                View inflatedDialogView = i.inflate(R.layout.add_word_dialog, null);
+                final EditText foreignWordEditText = (EditText) inflatedDialogView.findViewById(R.id.foreign_language_word_edittext);
+                final EditText nativeWordEditText = (EditText) inflatedDialogView.findViewById(R.id.native_language_word_edittext);
+                final AlertDialog dialog = b
+                        .setView(inflatedDialogView)
                         .setPositiveButton(R.string.add_word, new DialogInterface.OnClickListener(){
 
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
+                            public void onClick(DialogInterface d, int which) {
+                                String foreignWord = foreignWordEditText.getText().toString();
+                                String nativeWord = nativeWordEditText.getText().toString();
+                                dao.insert(Collections.singletonList(new Translation(nativeWord, foreignWord)));
                             }
                         })
                         .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener(){

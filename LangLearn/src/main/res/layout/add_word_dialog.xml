@@ -16,7 +16,7 @@
             android:hint="@string/foreign_word"
     />
     <EditText
-            android:id="@+id/home_language_word_edittext"
+            android:id="@+id/native_language_word_edittext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
