@@ -3,6 +3,7 @@ package uk.ignas.langlearn.core;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -73,14 +74,20 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
 
     @Override
     public int update(int id, String originalWord, String translatedWord, Difficulty difficulty) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COLUMN_WORD_DIFFICULTY, difficulty.name());
-        contentValues.put(COLUMN_ORIGINAL_WORD, originalWord);
-        contentValues.put(COLUMN_TRANSLATED_WORD, translatedWord);
-        return db.update(TRANSLATIONS_TABLE_NAME, contentValues,
-                COLUMN_ID + " = ? ",
-                new String[]{String.valueOf(id)});
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(COLUMN_WORD_DIFFICULTY, difficulty.name());
+            contentValues.put(COLUMN_ORIGINAL_WORD, originalWord);
+            contentValues.put(COLUMN_TRANSLATED_WORD, translatedWord);
+            return db.update(TRANSLATIONS_TABLE_NAME, contentValues,
+                    COLUMN_ID + " = ? ",
+                    new String[]{String.valueOf(id)});
+
+        } catch (SQLiteConstraintException e) {
+            deleteById(id);
+            return 1;
+        }
     }
 
     @Override
@@ -95,6 +102,13 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         } finally {
             db.endTransaction();
         }
+    }
+
+    private Integer deleteById(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(TRANSLATIONS_TABLE_NAME,
+                COLUMN_ID + " = ? ",
+                new String[]{String.valueOf(id)});
     }
 
     private Integer deleteSingle(Translation translation) {
