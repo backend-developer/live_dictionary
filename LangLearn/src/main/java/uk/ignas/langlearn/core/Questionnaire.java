@@ -2,6 +2,8 @@ package uk.ignas.langlearn.core;
 
 import java.util.*;
 
+import static java.util.Collections.singleton;
+
 public class Questionnaire {
     public static final int UNKNOWN_QUESTION_LIMIT = 20;
     public static final int NEWEST_100_QUESTIONS = 100;
@@ -93,5 +95,9 @@ public class Questionnaire {
 
     public boolean insert(Translation translation) {
         return dao.insertSingle(translation);
+    }
+
+    public void delete(Translation currentWord) {
+        dao.delete(singleton(currentWord));
     }
 }

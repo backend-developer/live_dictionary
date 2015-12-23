@@ -138,7 +138,7 @@ public class QuestionnaireTest {
     }
 
     @Test
-    public void shouldReturnNonErrorCodeIfInsertionIsSuccessful() {
+    public void shouldInsertWord() {
         TranslationDao dao = new TranslationDaoStub();
         Questionnaire questionnaire = new Questionnaire(dao);
 
@@ -148,7 +148,19 @@ public class QuestionnaireTest {
     }
 
     @Test
-    public void shouldReturnErrorCodeIfInsertionIsSuccessful() {
+    public void shouldDeleteWord() {
+        TranslationDao dao = new TranslationDaoStub();
+        Translation word = new Translation("word", "la palabra");
+        dao.insertSingle(word);
+        Questionnaire questionnaire = new Questionnaire(dao);
+
+        questionnaire.delete(word);
+
+        assertThat(dao.getAllTranslations().keySet(), not(hasItem(word)));
+    }
+
+    @Test
+    public void shouldNotInsertDuplicates() {
         TranslationDao dao = new TranslationDaoStub();
         Questionnaire questionnaire = new Questionnaire(dao);
 

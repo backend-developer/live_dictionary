@@ -44,6 +44,12 @@
 			android:layout_height="wrap_content"
 			android:text="@string/add_word"
 	/>
+	<Button
+			android:id="@+id/delete_word_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/delete_word"
+	/>
 	<TextView
 			android:id="@+id/path_to_export_textview"
 			android:layout_width="wrap_content"

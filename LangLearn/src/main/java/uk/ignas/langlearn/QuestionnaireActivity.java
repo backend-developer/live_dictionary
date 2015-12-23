@@ -22,8 +22,11 @@ public class QuestionnaireActivity extends Activity {
     private Button knownWordButton;
     private Button unknownWordButton;
     private Button addWordButton;
+    private Button deleteWordButton;
     private Button exportDataButton;
     private EditText exportDataFileEditText;
+    private TextView correctAnswerView;
+    private TextView questionLabel;
 
     private Translation currentWord = new Translation("defaultWord", "defaultTranslation");
     private Questionnaire questionnaire;
@@ -46,16 +49,16 @@ public class QuestionnaireActivity extends Activity {
 
         questionnaire = new Questionnaire(dao);
 
-        final TextView correctAnswerView = (TextView) findViewById(R.id.correct_answer);
+        correctAnswerView = (TextView) findViewById(R.id.correct_answer);
+        questionLabel = (TextView) findViewById(R.id.question_label);
 
-        final TextView questionLabel = (TextView) findViewById(R.id.question_label);
-
-        publishNextWord(questionLabel, correctAnswerView);
+        publishNextWord();
 
         translationButton = (Button) findViewById(R.id.show_translation_button);
         knownWordButton = (Button) findViewById(R.id.known_word_submision_button);
         unknownWordButton = (Button) findViewById(R.id.unknown_word_submision_button);
         addWordButton = (Button) findViewById(R.id.add_word_button);
+        deleteWordButton = (Button) findViewById(R.id.delete_word_button);
         exportDataButton = (Button) findViewById(R.id.export_data_button);
         exportDataFileEditText = (EditText) findViewById(R.id.export_data_path_textedit);
         File defaultExportFile = new File(externalStoragePublicDirectory, "ExportedByUserRequest.txt");
@@ -73,7 +76,7 @@ public class QuestionnaireActivity extends Activity {
         knownWordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                publishNextWord(questionLabel, correctAnswerView);
+                publishNextWord();
                 enableTranslationAndNotSubmittionButtons(true);
                 questionnaire.markKnown(currentWord);
             }
@@ -82,9 +85,31 @@ public class QuestionnaireActivity extends Activity {
         unknownWordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                publishNextWord(questionLabel, correctAnswerView);
+                publishNextWord();
                 enableTranslationAndNotSubmittionButtons(true);
                 questionnaire.markUnknown(currentWord);
+            }
+        });
+
+        deleteWordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(QuestionnaireActivity.this)
+                        .setMessage("Delete this word?")
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                questionnaire.delete(currentWord);
+                                publishNextWord();
+                            }
+                        })
+                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
             }
         });
 
@@ -141,6 +166,7 @@ public class QuestionnaireActivity extends Activity {
                         })
 
                         .create();
+                dialog.setMessage("Add new word");
 
                 dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
@@ -149,7 +175,6 @@ public class QuestionnaireActivity extends Activity {
                         nativeWordToRemember = "";
                     }
                 });
-                dialog.setTitle("Add new word");
                 dialog.show();
             }
         });
@@ -169,7 +194,7 @@ public class QuestionnaireActivity extends Activity {
         unknownWordButton.setEnabled(isSubmittionPhase);
     }
 
-    private void publishNextWord(TextView questionLabel, TextView correctAnswerView) {
+    private void publishNextWord() {
         try {
             currentWord =questionnaire.getRandomTranslation();
             questionLabel.setText(currentWord.getOriginalWord());
