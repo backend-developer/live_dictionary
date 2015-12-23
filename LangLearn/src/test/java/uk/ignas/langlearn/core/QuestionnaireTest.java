@@ -3,9 +3,12 @@ package uk.ignas.langlearn.core;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import static com.google.common.collect.Iterables.getOnlyElement;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
@@ -45,10 +48,10 @@ public class QuestionnaireTest {
     @Test
     public void shouldPersistUnknownWords() {
         LinkedHashMap<Translation, Difficulty> words = new LinkedHashMap<>();
-        Translation translation = new Translation("word", "translation");
-        words.put(translation, Difficulty.EASY);
+        words.put(new Translation("word", "translation"), Difficulty.EASY);
         TranslationDao dao = new TranslationDaoStub();
         dao.insert(new ArrayList<>(words.keySet()));
+        Translation translation = getOnlyElement(dao.getAllTranslations().keySet());
         Questionnaire questionnaire = new Questionnaire(dao);
 
         questionnaire.markUnknown(translation);
@@ -90,10 +93,13 @@ public class QuestionnaireTest {
         allWords.putAll(unknownWords);
         TranslationDao dao = new TranslationDaoStub();
         dao.insert(new ArrayList<>(allWords.keySet()));
+
         Questionnaire questionnaire = new Questionnaire(dao);
 
-        for (Translation t: unknownWords.keySet()) {
-            questionnaire.markUnknown(t);
+        for (Translation t: new HashSet<>(dao.getAllTranslations().keySet())) {
+            if (t.getOriginalWord().contains("UnknownWord")) {
+                questionnaire.markUnknown(t);
+            }
         }
         final List<Translation> retrievedWords = retrieveWordsNTimes(questionnaire, 100);
 
@@ -110,8 +116,10 @@ public class QuestionnaireTest {
         dao.insert(new ArrayList<>(allWords.keySet()));
         Questionnaire questionnaire = new Questionnaire(dao);
 
-        for (Translation t: unknownWords.keySet()) {
-            questionnaire.markUnknown(t);
+        for (Translation t: new HashSet<>(dao.getAllTranslations().keySet())) {
+            if (t.getOriginalWord().contains("UnknownWord")) {
+                questionnaire.markUnknown(t);
+            }
         }
         final List<Translation> retrievedWords = retrieveWordsNTimes(questionnaire, 1000);
 
@@ -126,8 +134,10 @@ public class QuestionnaireTest {
         allWords.putAll(unknownWords);
         TranslationDao dao = new TranslationDaoStub();
         dao.insert(new ArrayList<>(allWords.keySet()));
-        for (Translation t: unknownWords.keySet()) {
-            dao.update(t.getOriginalWord(), t.getTranslatedWord(), unknownWords.get(t));
+        for (Translation t: new HashSet<>(dao.getAllTranslations().keySet())) {
+            if (t.getOriginalWord().contains("UnknownWord")) {
+                dao.update(t.getId(), t.getOriginalWord(), t.getTranslatedWord(), unknownWords.get(t));
+            }
         }
         Questionnaire questionnaire = new Questionnaire(dao);
 
@@ -148,6 +158,17 @@ public class QuestionnaireTest {
     }
 
     @Test
+    public void shouldNotInsertDuplicates() {
+        TranslationDao dao = new TranslationDaoStub();
+        Questionnaire questionnaire = new Questionnaire(dao);
+
+        questionnaire.insert(new Translation("duplicate", "dup_translation"));
+        boolean result = questionnaire.insert(new Translation("duplicate", "dup_translation"));
+
+        assertThat(result, is(false));
+    }
+
+    @Test
     public void shouldDeleteWord() {
         TranslationDao dao = new TranslationDaoStub();
         Translation word = new Translation("word", "la palabra");
@@ -160,14 +181,51 @@ public class QuestionnaireTest {
     }
 
     @Test
-    public void shouldNotInsertDuplicates() {
+    public void shouldNotMarkDifficultyForRecordsWithoutId() {
         TranslationDao dao = new TranslationDaoStub();
         Questionnaire questionnaire = new Questionnaire(dao);
 
-        questionnaire.insert(new Translation("duplicate", "dup_translation"));
-        boolean result = questionnaire.insert(new Translation("duplicate", "dup_translation"));
+        boolean isUpdated = questionnaire.markUnknown(new Translation("duplicate", "dup_translation"));
 
-        assertThat(result, is(false));
+        assertThat(isUpdated, is(false));
+    }
+
+    @Test
+    public void shouldNotMarkDifficultyForRecordsNotInDb() {
+        TranslationDao dao = new TranslationDaoStub();
+        Questionnaire questionnaire = new Questionnaire(dao);
+        int nonexistentId = 8949861;
+
+        boolean isUpdated = questionnaire.markUnknown(new Translation(nonexistentId, "duplicate", "dup_translation"));
+
+        assertThat(isUpdated, is(false));
+    }
+
+    @Test
+    public void shouldMarkDifficulty() {
+        TranslationDao dao = new TranslationDaoStub();
+        Questionnaire questionnaire = new Questionnaire(dao);
+        dao.insert(singletonList(new Translation("word", "la palabra")));
+        Translation translation = dao.getAllTranslations().keySet().iterator().next();
+
+        boolean isUpdated = questionnaire.markUnknown(translation);
+
+        assertThat(isUpdated, is(true));
+    }
+
+    @Test
+    public void shouldUpdateQuestion() {
+        TranslationDao dao = new TranslationDaoStub();
+        dao.insert(singletonList(new Translation("word", "la palabra")));
+        Questionnaire questionnaire = new Questionnaire(dao);
+        Translation translation = dao.getAllTranslations().keySet().iterator().next();
+
+        boolean isUpdated = questionnaire.update(new Translation(translation.getId(), "modified word", "la palabra cambiada"));
+
+        assertThat(isUpdated, is(true));
+        Translation modifiedWord = dao.getAllTranslations().keySet().iterator().next();
+        assertThat(modifiedWord.getOriginalWord(), is(equalTo("modified word")));
+        assertThat(modifiedWord.getTranslatedWord(), is(equalTo("la palabra cambiada")));
     }
 
     public LinkedHashMap<Translation, Difficulty> get200QuestionsOutOfWhichNewestNStartsWith(int n, String prefixForFirst100Questions) {

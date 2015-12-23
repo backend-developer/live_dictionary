@@ -9,7 +9,7 @@ public interface TranslationDao {
 
     boolean insertSingle(Translation translation);
 
-    int update(String originalWord, String translatedWord, Difficulty difficulty);
+    int update(int id, String originalWord, String translatedWord, Difficulty difficulty);
 
     void delete(Set<Translation> translations);
 

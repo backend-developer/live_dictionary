@@ -72,13 +72,15 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     }
 
     @Override
-    public int update(String originalWord, String translatedWord, Difficulty difficulty) {
+    public int update(int id, String originalWord, String translatedWord, Difficulty difficulty) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_WORD_DIFFICULTY, difficulty.name());
+        contentValues.put(COLUMN_ORIGINAL_WORD, originalWord);
+        contentValues.put(COLUMN_TRANSLATED_WORD, translatedWord);
         return db.update(TRANSLATIONS_TABLE_NAME, contentValues,
-                COLUMN_ORIGINAL_WORD + " = ? AND " + COLUMN_TRANSLATED_WORD + " = ? ",
-                new String[]{originalWord, translatedWord});
+                COLUMN_ID + " = ? ",
+                new String[]{String.valueOf(id)});
     }
 
     @Override
@@ -111,8 +113,9 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         res.moveToFirst();
 
         while (!res.isAfterLast()) {
-            translations.put(new Translation(res.getString(
-                    res.getColumnIndex(COLUMN_ORIGINAL_WORD)),
+            translations.put(new Translation(
+                    res.getInt(res.getColumnIndex(COLUMN_ID)),
+                    res.getString(res.getColumnIndex(COLUMN_ORIGINAL_WORD)),
                     res.getString(res.getColumnIndex(COLUMN_TRANSLATED_WORD))),
                     Difficulty.valueOf(res.getString(res.getColumnIndex(COLUMN_WORD_DIFFICULTY))));
             res.moveToNext();

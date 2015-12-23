@@ -1,12 +1,28 @@
 package uk.ignas.langlearn.core;
 
 public class Translation {
+    private Integer id;
     private String originalWord;
     private String translatedWord;
 
     public Translation(String originalWord, String translatedWord) {
+        this(null, originalWord, translatedWord);
+    }
+
+    public Translation(Integer id, Translation translation) {
+        this.id = id;
+        this.originalWord = translation.getOriginalWord();
+        this.translatedWord = translation.getTranslatedWord();
+    }
+
+    public Translation(Integer id, String originalWord, String translatedWord) {
+        this.id = id;
         this.originalWord = originalWord;
         this.translatedWord = translatedWord;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     public String getOriginalWord() {

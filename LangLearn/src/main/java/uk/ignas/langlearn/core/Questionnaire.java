@@ -8,7 +8,7 @@ public class Questionnaire {
     public static final int UNKNOWN_QUESTION_LIMIT = 20;
     public static final int NEWEST_100_QUESTIONS = 100;
     public static final int PROBABILITY_OF_80_PERCENT = 80;
-    private final List<Translation> questions ;
+    private final List<Translation> questions;
     private final Set<Translation> unknownQuestions = new HashSet<>();
     private final Random random = new Random();
     private TranslationDao dao;
@@ -87,10 +87,14 @@ public class Questionnaire {
 
     }
 
-    public void markUnknown(Translation translation) {
+    public boolean markUnknown(Translation translation) {
+        if (translation.getId() == null) {
+            return false;
+        }
         questions.remove(translation);
         unknownQuestions.add(translation);
-        dao.update(translation.getOriginalWord(), translation.getTranslatedWord(), Difficulty.HARD);
+        int recordsUpdated = dao.update(translation.getId(), translation.getOriginalWord(), translation.getTranslatedWord(), Difficulty.HARD);
+        return recordsUpdated > 0;
     }
 
     public boolean insert(Translation translation) {
@@ -99,5 +103,24 @@ public class Questionnaire {
 
     public void delete(Translation currentWord) {
         dao.delete(singleton(currentWord));
+    }
+
+    public boolean update(Translation translation) {
+        if (translation.getId() == null) {
+            return false;
+        }
+        if (updateIfIsAnIdOfAnyOfWords(translation, unknownQuestions, Difficulty.HARD)) return true;
+        if (updateIfIsAnIdOfAnyOfWords(translation, questions, Difficulty.EASY)) return true;
+        return false;
+    }
+
+    private boolean updateIfIsAnIdOfAnyOfWords(Translation translation, Collection<Translation> questions, Difficulty difficulty) {
+        for (Translation t: questions) {
+            if (Objects.equals(t.getId(), translation.getId())) {
+                dao.update(translation.getId(), translation.getOriginalWord(), translation.getTranslatedWord(), difficulty);
+                return true;
+            }
+        }
+        return false;
     }
 }

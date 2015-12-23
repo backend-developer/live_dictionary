@@ -22,6 +22,7 @@ public class QuestionnaireActivity extends Activity {
     private Button knownWordButton;
     private Button unknownWordButton;
     private Button addWordButton;
+    private Button updateWordButton;
     private Button deleteWordButton;
     private Button exportDataButton;
     private EditText exportDataFileEditText;
@@ -58,6 +59,7 @@ public class QuestionnaireActivity extends Activity {
         knownWordButton = (Button) findViewById(R.id.known_word_submision_button);
         unknownWordButton = (Button) findViewById(R.id.unknown_word_submision_button);
         addWordButton = (Button) findViewById(R.id.add_word_button);
+        updateWordButton = (Button) findViewById(R.id.update_word_button);
         deleteWordButton = (Button) findViewById(R.id.delete_word_button);
         exportDataButton = (Button) findViewById(R.id.export_data_button);
         exportDataFileEditText = (EditText) findViewById(R.id.export_data_path_textedit);
@@ -123,7 +125,7 @@ public class QuestionnaireActivity extends Activity {
             public void onClick(View arg0) {
                 AlertDialog.Builder b = new AlertDialog.Builder(QuestionnaireActivity.this);
                 LayoutInflater i = getLayoutInflater();
-                View inflatedDialogView = i.inflate(R.layout.add_word_dialog, null);
+                View inflatedDialogView = i.inflate(R.layout.word_translation_dialog, null);
 
                 final TextView errorTextView = (TextView) inflatedDialogView.findViewById(R.id.error_textview);
                 if (errorMessage != null) {
@@ -175,6 +177,56 @@ public class QuestionnaireActivity extends Activity {
                         nativeWordToRemember = "";
                     }
                 });
+                dialog.show();
+            }
+        });
+
+        updateWordButton.setOnClickListener(new View.OnClickListener() {
+
+            private String errorMessage;
+
+            @Override
+            public void onClick(View arg0) {
+                AlertDialog.Builder b = new AlertDialog.Builder(QuestionnaireActivity.this);
+                LayoutInflater i = getLayoutInflater();
+                View inflatedDialogView = i.inflate(R.layout.word_translation_dialog, null);
+
+                final TextView errorTextView = (TextView) inflatedDialogView.findViewById(R.id.error_textview);
+                if (errorMessage != null) {
+                    errorTextView.setText(errorMessage);
+                    errorMessage = null;
+                }
+
+                final EditText foreignWordEditText = (EditText) inflatedDialogView.findViewById(R.id.foreign_language_word_edittext);
+                final EditText nativeWordEditText = (EditText) inflatedDialogView.findViewById(R.id.native_language_word_edittext);
+                foreignWordEditText.setText(currentWord.getTranslatedWord());
+                nativeWordEditText.setText(currentWord.getOriginalWord());
+                final AlertDialog dialog = b
+                        .setView(inflatedDialogView)
+                        .setPositiveButton(R.string.add_word, new DialogInterface.OnClickListener(){
+
+                            @Override
+                            public void onClick(DialogInterface d, int which) {
+                                String foreignWord = foreignWordEditText.getText().toString();
+                                String nativeWord = nativeWordEditText.getText().toString();
+                                boolean updated = questionnaire.update(new Translation(currentWord.getId(), nativeWord, foreignWord));
+                                if (!updated) {
+                                    errorMessage = "Record cannot be updated: id = " + currentWord.getId() + "; word = " + currentWord.getOriginalWord();
+                                    updateWordButton.callOnClick();
+                                }
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener(){
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+
+                        .create();
+                dialog.setMessage("Update word");
+
                 dialog.show();
             }
         });

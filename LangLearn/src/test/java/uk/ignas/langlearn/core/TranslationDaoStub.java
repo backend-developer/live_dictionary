@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class TranslationDaoStub implements TranslationDao {
     private LinkedHashMap<Translation, Difficulty> inMemoryTranslations = new LinkedHashMap<>();
-
+    private int sequence = 1;
     @Override
     public void insert(List<Translation> translations) {
         for (Translation t: translations) {
@@ -19,19 +19,32 @@ public class TranslationDaoStub implements TranslationDao {
         if (inMemoryTranslations.containsKey(translation)) {
             return false;
         }
-        inMemoryTranslations.put(translation, Difficulty.EASY);
+
+        inMemoryTranslations.put(new Translation(sequence++, translation), Difficulty.EASY);
         return true;
     }
 
     @Override
-    public int update(String originalWord, String translatedWord, Difficulty difficulty) {
+    public int update(int id, String originalWord, String translatedWord, Difficulty difficulty) {
         Translation wordToUpgrade = new Translation(originalWord, translatedWord);
-        if (inMemoryTranslations.containsKey(wordToUpgrade)) {
-            inMemoryTranslations.put(wordToUpgrade, difficulty);
+        Translation oldTranslation = getTranslationById(id);
+        if (oldTranslation != null) {
+            inMemoryTranslations.remove(oldTranslation);
+            inMemoryTranslations.put(new Translation(id, wordToUpgrade), difficulty);
             return 1;
         } else {
             return 0;
         }
+    }
+
+    private Translation getTranslationById(int id) {
+        Translation oldTranslation = null;
+        for (Translation t: inMemoryTranslations.keySet()) {
+            if (t.getId() == id) {
+                oldTranslation = t;
+            }
+        }
+        return oldTranslation;
     }
 
     @Override
