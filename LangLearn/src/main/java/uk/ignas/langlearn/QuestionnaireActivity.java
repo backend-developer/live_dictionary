@@ -91,6 +91,8 @@ public class QuestionnaireActivity extends Activity {
         addWordButton.setOnClickListener(new View.OnClickListener() {
 
             private String errorMessage;
+            private String foreignWordToRemember = "";
+            private String nativeWordToRemember = "";
 
             @Override
             public void onClick(View arg0) {
@@ -106,6 +108,8 @@ public class QuestionnaireActivity extends Activity {
 
                 final EditText foreignWordEditText = (EditText) inflatedDialogView.findViewById(R.id.foreign_language_word_edittext);
                 final EditText nativeWordEditText = (EditText) inflatedDialogView.findViewById(R.id.native_language_word_edittext);
+                foreignWordEditText.setText(foreignWordToRemember);
+                nativeWordEditText.setText(nativeWordToRemember);
                 final AlertDialog dialog = b
                         .setView(inflatedDialogView)
                         .setPositiveButton(R.string.add_word, new DialogInterface.OnClickListener(){
@@ -117,7 +121,12 @@ public class QuestionnaireActivity extends Activity {
                                 boolean inserted = questionnaire.insert(new Translation(nativeWord, foreignWord));
                                 if (!inserted) {
                                     errorMessage = "Duplicate Record";
+                                    foreignWordToRemember = foreignWord;
+                                    nativeWordToRemember = nativeWord;
                                     addWordButton.callOnClick();
+                                } else {
+                                    foreignWordToRemember = "";
+                                    nativeWordToRemember = "";
                                 }
                             }
                         })
@@ -125,11 +134,21 @@ public class QuestionnaireActivity extends Activity {
 
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                foreignWordToRemember = "";
+                                nativeWordToRemember = "";
                                 dialog.dismiss();
                             }
                         })
+
                         .create();
 
+                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        foreignWordToRemember = "";
+                        nativeWordToRemember = "";
+                    }
+                });
                 dialog.setTitle("Add new word");
                 dialog.show();
             }
