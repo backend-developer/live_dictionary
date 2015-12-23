@@ -20,8 +20,6 @@ class OnUpsertWordListener implements View.OnClickListener {
     private Integer id;
     private final String initialForeignWordToShow;
     private final String initialNativeWordToShow;
-    private String foreignWordToRemember = "";
-    private String nativeWordToRemember = "";
     private DictionaryActivity dictionaryActivity;
 
     public enum DictionaryActivity {INSERTING_WORD, UPDATING_WORD}
@@ -44,8 +42,6 @@ class OnUpsertWordListener implements View.OnClickListener {
         this.id = id;
         this.initialForeignWordToShow = initialForeignWordToShow;
         this.initialNativeWordToShow = initialNativeWordToShow;
-        foreignWordToRemember = initialForeignWordToShow;
-        nativeWordToRemember = initialNativeWordToShow;
         this.dictionaryActivity = dictionaryActivity;
     }
 
@@ -65,9 +61,10 @@ class OnUpsertWordListener implements View.OnClickListener {
         final EditText nativeWordEditText = (EditText) inflatedDialogView.findViewById(R.id.native_language_word_edittext);
         foreignWordEditText.setText(initialForeignWordToShow);
         nativeWordEditText.setText(initialNativeWordToShow);
+        int okButtonResorce = dictionaryActivity == DictionaryActivity.INSERTING_WORD ? R.string.add_word : R.string.update_word;
         final AlertDialog dialog = b
                 .setView(inflatedDialogView)
-                .setPositiveButton(R.string.add_word, new DialogInterface.OnClickListener() {
+                .setPositiveButton(okButtonResorce, new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface d, int which) {
@@ -81,8 +78,6 @@ class OnUpsertWordListener implements View.OnClickListener {
                                 questionnaire.update(new Translation(id, nativeWord, foreignWord));
                                 break;
                         }
-                        foreignWordToRemember = initialForeignWordToShow;
-                        nativeWordToRemember = initialNativeWordToShow;
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -94,15 +89,8 @@ class OnUpsertWordListener implements View.OnClickListener {
                 })
 
                 .create();
-        dialog.setMessage("Add new word");
-
-        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                foreignWordToRemember = initialForeignWordToShow;
-                nativeWordToRemember = initialNativeWordToShow;
-            }
-        });
+        String titleMessage = dictionaryActivity == DictionaryActivity.INSERTING_WORD ? "Add new word" : "Update a word";
+        dialog.setMessage(titleMessage);
         dialog.show();
     }
 }
