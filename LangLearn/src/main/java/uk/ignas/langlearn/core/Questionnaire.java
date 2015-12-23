@@ -97,8 +97,8 @@ public class Questionnaire {
         return recordsUpdated > 0;
     }
 
-    public boolean insert(Translation translation) {
-        return dao.insertSingle(translation);
+    public void insert(Translation translation) {
+        dao.insertSingle(translation);
     }
 
     public void delete(Translation currentWord) {

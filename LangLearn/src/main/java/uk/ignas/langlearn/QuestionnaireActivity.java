@@ -145,16 +145,9 @@ public class QuestionnaireActivity extends Activity {
                             public void onClick(DialogInterface d, int which) {
                                 String foreignWord = foreignWordEditText.getText().toString();
                                 String nativeWord = nativeWordEditText.getText().toString();
-                                boolean inserted = questionnaire.insert(new Translation(nativeWord, foreignWord));
-                                if (!inserted) {
-                                    errorMessage = "Duplicate Record";
-                                    foreignWordToRemember = foreignWord;
-                                    nativeWordToRemember = nativeWord;
-                                    addWordButton.callOnClick();
-                                } else {
-                                    foreignWordToRemember = "";
-                                    nativeWordToRemember = "";
-                                }
+                                questionnaire.insert(new Translation(nativeWord, foreignWord));
+                                foreignWordToRemember = "";
+                                nativeWordToRemember = "";
                             }
                         })
                         .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener(){
@@ -203,7 +196,7 @@ public class QuestionnaireActivity extends Activity {
                 nativeWordEditText.setText(currentWord.getOriginalWord());
                 final AlertDialog dialog = b
                         .setView(inflatedDialogView)
-                        .setPositiveButton(R.string.add_word, new DialogInterface.OnClickListener(){
+                        .setPositiveButton(R.string.update_word, new DialogInterface.OnClickListener(){
 
                             @Override
                             public void onClick(DialogInterface d, int which) {

@@ -152,9 +152,9 @@ public class QuestionnaireTest {
         TranslationDao dao = new TranslationDaoStub();
         Questionnaire questionnaire = new Questionnaire(dao);
 
-        boolean result = questionnaire.insert(new Translation("duplicate", "dup_translation"));
+        questionnaire.insert(new Translation("duplicate", "dup_translation"));
 
-        assertThat(result, is(true));
+        assertThat(dao.getAllTranslations().size(), is(equalTo(1)));
     }
 
     @Test
@@ -163,9 +163,9 @@ public class QuestionnaireTest {
         Questionnaire questionnaire = new Questionnaire(dao);
 
         questionnaire.insert(new Translation("duplicate", "dup_translation"));
-        boolean result = questionnaire.insert(new Translation("duplicate", "dup_translation"));
+        questionnaire.insert(new Translation("duplicate", "dup_translation"));
 
-        assertThat(result, is(false));
+        assertThat(dao.getAllTranslations().size(), is(equalTo(1)));
     }
 
     @Test
