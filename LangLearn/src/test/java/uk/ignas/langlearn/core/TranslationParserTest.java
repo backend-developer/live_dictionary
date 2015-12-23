@@ -26,15 +26,15 @@ public class TranslationParserTest {
     @Test
     public void shouldParseHappyPathData() {
         Translation translation = translationParser.parse("Modo Feliz-happy Path");
-        Assert.assertEquals(translation.getOriginalWord(), "happy Path");
-        Assert.assertEquals(translation.getTranslatedWord(), "Modo Feliz");
+        Assert.assertEquals(translation.getNativeWord().get(), "happy Path");
+        Assert.assertEquals(translation.getForeignWord().get(), "Modo Feliz");
     }
 
     @Test
     public void shouldTrimResultsAfterParsing() {
         Translation translation = translationParser.parse("  Modo Feliz -     happy Path  ");
-        Assert.assertEquals(translation.getOriginalWord(), "happy Path");
-        Assert.assertEquals(translation.getTranslatedWord(), "Modo Feliz");
+        Assert.assertEquals(translation.getNativeWord().get(), "happy Path");
+        Assert.assertEquals(translation.getForeignWord().get(), "Modo Feliz");
     }
 
     @Test

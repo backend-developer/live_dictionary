@@ -2,35 +2,35 @@ package uk.ignas.langlearn.core;
 
 public class Translation {
     private Integer id;
-    private String originalWord;
-    private String translatedWord;
+    private ForeignWord foreignWord;
+    private NativeWord nativeWord;
 
-    public Translation(String originalWord, String translatedWord) {
-        this(null, originalWord, translatedWord);
+    public Translation(ForeignWord foreignWord, NativeWord nativeWord) {
+        this(null, foreignWord, nativeWord);
     }
 
     public Translation(Integer id, Translation translation) {
         this.id = id;
-        this.originalWord = translation.getOriginalWord();
-        this.translatedWord = translation.getTranslatedWord();
+        this.foreignWord = translation.getForeignWord();
+        this.nativeWord = translation.getNativeWord();
     }
 
-    public Translation(Integer id, String originalWord, String translatedWord) {
+    public Translation(Integer id, ForeignWord foreignWord, NativeWord nativeWord) {
         this.id = id;
-        this.originalWord = originalWord;
-        this.translatedWord = translatedWord;
+        this.foreignWord = foreignWord;
+        this.nativeWord = nativeWord;
     }
 
     public Integer getId() {
         return id;
     }
 
-    public String getOriginalWord() {
-        return originalWord;
+    public ForeignWord getForeignWord() {
+        return foreignWord;
     }
 
-    public String getTranslatedWord() {
-        return translatedWord;
+    public NativeWord getNativeWord() {
+        return nativeWord;
     }
 
     @Override
@@ -40,24 +40,24 @@ public class Translation {
 
         Translation that = (Translation) o;
 
-        if (!originalWord.equals(that.originalWord)) return false;
-        if (!translatedWord.equals(that.translatedWord)) return false;
+        if (foreignWord != null ? !foreignWord.equals(that.foreignWord) : that.foreignWord != null) return false;
+        return nativeWord != null ? nativeWord.equals(that.nativeWord) : that.nativeWord == null;
 
-        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = originalWord.hashCode();
-        result = 31 * result + translatedWord.hashCode();
+        int result = foreignWord != null ? foreignWord.hashCode() : 0;
+        result = 31 * result + (nativeWord != null ? nativeWord.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
         return "Translation{" +
-                "originalWord='" + originalWord + '\'' +
-                ", translatedWord='" + translatedWord + '\'' +
+                "id=" + id +
+                ", foreignWord=" + foreignWord +
+                ", nativeWord=" + nativeWord +
                 '}';
     }
 }

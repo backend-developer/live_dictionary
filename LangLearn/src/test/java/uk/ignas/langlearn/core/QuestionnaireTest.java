@@ -33,22 +33,26 @@ public class QuestionnaireTest {
         }
     }
 
+    private Translation createForeignToNativeTranslation(String foreignWord, String nativeWord) {
+        return new Translation(new ForeignWord(foreignWord), new NativeWord(nativeWord));
+    }
+
     @Test
     public void shouldNotCrashWhenThereAreFewWords() {
         LinkedHashMap<Translation, Difficulty> words = new LinkedHashMap<>();
-        words.put(new Translation("word", "translation"), Difficulty.EASY);
+        words.put(createForeignToNativeTranslation("word", "translation"), Difficulty.EASY);
         TranslationDao dao = new TranslationDaoStub();
         dao.insert(new ArrayList<>(words.keySet()));
 
         Questionnaire questionnaire = new Questionnaire(dao);
         Translation translation = questionnaire.getRandomTranslation();
-        assertThat(translation.getOriginalWord(), is(equalTo("word")));
+        assertThat(translation.getForeignWord().get(), is(equalTo("word")));
     }
 
     @Test
     public void shouldPersistUnknownWords() {
         LinkedHashMap<Translation, Difficulty> words = new LinkedHashMap<>();
-        words.put(new Translation("word", "translation"), Difficulty.EASY);
+        words.put(createForeignToNativeTranslation("word", "translation"), Difficulty.EASY);
         TranslationDao dao = new TranslationDaoStub();
         dao.insert(new ArrayList<>(words.keySet()));
         Translation translation = getOnlyElement(dao.getAllTranslations().keySet());
@@ -80,7 +84,7 @@ public class QuestionnaireTest {
             dao.insert(new ArrayList<>(words.keySet()));
             Questionnaire questionnaire = new Questionnaire(dao);
 
-            String retrievedWord = questionnaire.getRandomTranslation().getOriginalWord();
+            String retrievedWord = questionnaire.getRandomTranslation().getForeignWord().get();
 
             assertThat(retrievedWord, containsString("Any"));
         }
@@ -97,7 +101,7 @@ public class QuestionnaireTest {
         Questionnaire questionnaire = new Questionnaire(dao);
 
         for (Translation t: new HashSet<>(dao.getAllTranslations().keySet())) {
-            if (t.getOriginalWord().contains("UnknownWord")) {
+            if (t.getForeignWord().get().contains("UnknownWord")) {
                 questionnaire.markUnknown(t);
             }
         }
@@ -117,7 +121,7 @@ public class QuestionnaireTest {
         Questionnaire questionnaire = new Questionnaire(dao);
 
         for (Translation t: new HashSet<>(dao.getAllTranslations().keySet())) {
-            if (t.getOriginalWord().contains("UnknownWord")) {
+            if (t.getForeignWord().get().contains("UnknownWord")) {
                 questionnaire.markUnknown(t);
             }
         }
@@ -135,8 +139,8 @@ public class QuestionnaireTest {
         TranslationDao dao = new TranslationDaoStub();
         dao.insert(new ArrayList<>(allWords.keySet()));
         for (Translation t: new HashSet<>(dao.getAllTranslations().keySet())) {
-            if (t.getOriginalWord().contains("UnknownWord")) {
-                dao.update(t.getId(), t.getOriginalWord(), t.getTranslatedWord(), unknownWords.get(t));
+            if (t.getForeignWord().get().contains("UnknownWord")) {
+                dao.update(t.getId(), t.getForeignWord(), t.getNativeWord(), unknownWords.get(t));
             }
         }
         Questionnaire questionnaire = new Questionnaire(dao);
@@ -152,7 +156,7 @@ public class QuestionnaireTest {
         TranslationDao dao = new TranslationDaoStub();
         Questionnaire questionnaire = new Questionnaire(dao);
 
-        questionnaire.insert(new Translation("duplicate", "dup_translation"));
+        questionnaire.insert(createForeignToNativeTranslation("duplicate", "dup_translation"));
 
         assertThat(dao.getAllTranslations().size(), is(equalTo(1)));
     }
@@ -162,8 +166,8 @@ public class QuestionnaireTest {
         TranslationDao dao = new TranslationDaoStub();
         Questionnaire questionnaire = new Questionnaire(dao);
 
-        questionnaire.insert(new Translation("duplicate", "dup_translation"));
-        questionnaire.insert(new Translation("duplicate", "dup_translation"));
+        questionnaire.insert(createForeignToNativeTranslation("duplicate", "dup_translation"));
+        questionnaire.insert(createForeignToNativeTranslation("duplicate", "dup_translation"));
 
         assertThat(dao.getAllTranslations().size(), is(equalTo(1)));
     }
@@ -171,7 +175,7 @@ public class QuestionnaireTest {
     @Test
     public void shouldDeleteWord() {
         TranslationDao dao = new TranslationDaoStub();
-        Translation word = new Translation("word", "la palabra");
+        Translation word = createForeignToNativeTranslation("word", "la palabra");
         dao.insertSingle(word);
         Questionnaire questionnaire = new Questionnaire(dao);
 
@@ -185,7 +189,7 @@ public class QuestionnaireTest {
         TranslationDao dao = new TranslationDaoStub();
         Questionnaire questionnaire = new Questionnaire(dao);
 
-        boolean isUpdated = questionnaire.markUnknown(new Translation("duplicate", "dup_translation"));
+        boolean isUpdated = questionnaire.markUnknown(createForeignToNativeTranslation("duplicate", "dup_translation"));
 
         assertThat(isUpdated, is(false));
     }
@@ -196,7 +200,7 @@ public class QuestionnaireTest {
         Questionnaire questionnaire = new Questionnaire(dao);
         int nonexistentId = 8949861;
 
-        boolean isUpdated = questionnaire.markUnknown(new Translation(nonexistentId, "duplicate", "dup_translation"));
+        boolean isUpdated = questionnaire.markUnknown(new Translation(nonexistentId, new ForeignWord("duplicate"), new NativeWord("dup_translation")));
 
         assertThat(isUpdated, is(false));
     }
@@ -205,7 +209,7 @@ public class QuestionnaireTest {
     public void shouldMarkDifficulty() {
         TranslationDao dao = new TranslationDaoStub();
         Questionnaire questionnaire = new Questionnaire(dao);
-        dao.insert(singletonList(new Translation("word", "la palabra")));
+        dao.insert(singletonList(createForeignToNativeTranslation("word", "la palabra")));
         Translation translation = dao.getAllTranslations().keySet().iterator().next();
 
         boolean isUpdated = questionnaire.markUnknown(translation);
@@ -216,16 +220,16 @@ public class QuestionnaireTest {
     @Test
     public void shouldUpdateQuestion() {
         TranslationDao dao = new TranslationDaoStub();
-        dao.insert(singletonList(new Translation("word", "la palabra")));
+        dao.insert(singletonList(createForeignToNativeTranslation("word", "la palabra")));
         Questionnaire questionnaire = new Questionnaire(dao);
         Translation translation = dao.getAllTranslations().keySet().iterator().next();
 
-        boolean isUpdated = questionnaire.update(new Translation(translation.getId(), "modified word", "la palabra cambiada"));
+        boolean isUpdated = questionnaire.update(new Translation(translation.getId(), new ForeignWord("modified word"), new NativeWord("la palabra cambiada")));
 
         assertThat(isUpdated, is(true));
         Translation modifiedWord = dao.getAllTranslations().keySet().iterator().next();
-        assertThat(modifiedWord.getOriginalWord(), is(equalTo("modified word")));
-        assertThat(modifiedWord.getTranslatedWord(), is(equalTo("la palabra cambiada")));
+        assertThat(modifiedWord.getForeignWord().get(), is(equalTo("modified word")));
+        assertThat(modifiedWord.getNativeWord().get(), is(equalTo("la palabra cambiada")));
     }
 
     public LinkedHashMap<Translation, Difficulty> get200QuestionsOutOfWhichNewestNStartsWith(int n, String prefixForFirst100Questions) {
@@ -243,7 +247,7 @@ public class QuestionnaireTest {
     public LinkedHashMap<Translation, Difficulty> getNQuestionsStartingWith(int n, String prefix, Difficulty difficulty) {
         LinkedHashMap<Translation, Difficulty> translations = new LinkedHashMap<>();
         for (int i = 0; i < n; i++) {
-            translations.put(new Translation(prefix + getUniqueInt(), "t" + getUniqueInt()), difficulty);
+            translations.put(new Translation(new ForeignWord(prefix + getUniqueInt()), new NativeWord("t" + getUniqueInt())), difficulty);
         }
         return translations;
     }

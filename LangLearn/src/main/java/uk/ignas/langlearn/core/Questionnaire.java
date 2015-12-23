@@ -93,7 +93,7 @@ public class Questionnaire {
         }
         questions.remove(translation);
         unknownQuestions.add(translation);
-        int recordsUpdated = dao.update(translation.getId(), translation.getOriginalWord(), translation.getTranslatedWord(), Difficulty.HARD);
+        int recordsUpdated = dao.update(translation.getId(), translation.getForeignWord(), translation.getNativeWord(), Difficulty.HARD);
         return recordsUpdated > 0;
     }
 
@@ -117,7 +117,7 @@ public class Questionnaire {
     private boolean updateIfIsAnIdOfAnyOfWords(Translation translation, Collection<Translation> questions, Difficulty difficulty) {
         for (Translation t: questions) {
             if (Objects.equals(t.getId(), translation.getId())) {
-                dao.update(translation.getId(), translation.getOriginalWord(), translation.getTranslatedWord(), difficulty);
+                dao.update(translation.getId(), translation.getForeignWord(), translation.getNativeWord(), difficulty);
                 return true;
             }
         }

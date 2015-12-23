@@ -97,7 +97,7 @@ public class DataImporterExporter {
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
 
         for (Translation translation : translations) {
-            bw.write(translation.getTranslatedWord() + " - " + translation.getOriginalWord());
+            bw.write(translation.getForeignWord() + " - " + translation.getNativeWord());
             bw.newLine();
         }
 

@@ -16,8 +16,8 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     public static final String DATABASE_NAME = "MyDBName3.db";
     public static final String TRANSLATIONS_TABLE_NAME = "translations";
     public static final String COLUMN_ID = "id";
-    public static final String COLUMN_ORIGINAL_WORD = "originalWord";
-    public static final String COLUMN_TRANSLATED_WORD = "translatedWord";
+    public static final String COLUMN_NATIVE_WORD = "nativeWord";
+    public static final String COLUMN_FOREIGN_WORD = "foreignWord";
     public static final String COLUMN_WORD_DIFFICULTY = "difficulty";
     public static final int ERROR_OCURRED = -1;
 
@@ -31,10 +31,10 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
                 "create table " + TRANSLATIONS_TABLE_NAME + " " +
                         "(" +
                         COLUMN_ID + " integer primary key, " +
-                        COLUMN_ORIGINAL_WORD + " text," +
-                        COLUMN_TRANSLATED_WORD + " text, " +
+                        COLUMN_NATIVE_WORD + " text," +
+                        COLUMN_FOREIGN_WORD + " text, " +
                         COLUMN_WORD_DIFFICULTY + " text, " +
-                        "CONSTRAINT uniqueWT UNIQUE (" + COLUMN_ORIGINAL_WORD + ", " + COLUMN_TRANSLATED_WORD + ")" +
+                        "CONSTRAINT uniqueWT UNIQUE (" + COLUMN_NATIVE_WORD + ", " + COLUMN_FOREIGN_WORD + ")" +
                         ")"
         );
     }
@@ -65,21 +65,21 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     public boolean insertSingle(Translation translation) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COLUMN_ORIGINAL_WORD, translation.getOriginalWord());
-        contentValues.put(COLUMN_TRANSLATED_WORD, translation.getTranslatedWord());
+        contentValues.put(COLUMN_NATIVE_WORD, translation.getNativeWord().get());
+        contentValues.put(COLUMN_FOREIGN_WORD, translation.getForeignWord().get());
         contentValues.put(COLUMN_WORD_DIFFICULTY, Difficulty.EASY.name());
         long id = db.insert(TRANSLATIONS_TABLE_NAME, null, contentValues);
         return id != ERROR_OCURRED;
     }
 
     @Override
-    public int update(int id, String originalWord, String translatedWord, Difficulty difficulty) {
+    public int update(int id, ForeignWord foreignWord, NativeWord nativeWord, Difficulty difficulty) {
         try {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues contentValues = new ContentValues();
             contentValues.put(COLUMN_WORD_DIFFICULTY, difficulty.name());
-            contentValues.put(COLUMN_ORIGINAL_WORD, originalWord);
-            contentValues.put(COLUMN_TRANSLATED_WORD, translatedWord);
+            contentValues.put(COLUMN_NATIVE_WORD, nativeWord.get());
+            contentValues.put(COLUMN_FOREIGN_WORD, foreignWord.get());
             return db.update(TRANSLATIONS_TABLE_NAME, contentValues,
                     COLUMN_ID + " = ? ",
                     new String[]{String.valueOf(id)});
@@ -114,8 +114,8 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     private Integer deleteSingle(Translation translation) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete(TRANSLATIONS_TABLE_NAME,
-                COLUMN_ORIGINAL_WORD + " = ? AND " + COLUMN_TRANSLATED_WORD + " = ? ",
-                new String[]{translation.getOriginalWord(), translation.getTranslatedWord()});
+                COLUMN_NATIVE_WORD + " = ? AND " + COLUMN_FOREIGN_WORD + " = ? ",
+                new String[]{translation.getNativeWord().get(), translation.getForeignWord().get()});
     }
 
     @Override
@@ -129,8 +129,8 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         while (!res.isAfterLast()) {
             translations.put(new Translation(
                     res.getInt(res.getColumnIndex(COLUMN_ID)),
-                    res.getString(res.getColumnIndex(COLUMN_ORIGINAL_WORD)),
-                    res.getString(res.getColumnIndex(COLUMN_TRANSLATED_WORD))),
+                    new ForeignWord(res.getString(res.getColumnIndex(COLUMN_FOREIGN_WORD))),
+                    new NativeWord(res.getString(res.getColumnIndex(COLUMN_NATIVE_WORD)))),
                     Difficulty.valueOf(res.getString(res.getColumnIndex(COLUMN_WORD_DIFFICULTY))));
             res.moveToNext();
         }

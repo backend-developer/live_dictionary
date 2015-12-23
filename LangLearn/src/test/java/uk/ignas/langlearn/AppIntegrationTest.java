@@ -58,7 +58,7 @@ public class AppIntegrationTest {
 
         createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, dao);
 
-        assertThat(getLast(dao.getAllTranslations().keySet()).getTranslatedWord(), is(equalTo("la chaqueta de piel")));
+        assertThat(getLast(dao.getAllTranslations().keySet()).getForeignWord().get(), is(equalTo("la chaqueta de piel")));
     }
 
     @Test

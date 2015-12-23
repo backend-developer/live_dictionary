@@ -9,10 +9,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import uk.ignas.langlearn.core.DataImporterExporter;
-import uk.ignas.langlearn.core.Questionnaire;
-import uk.ignas.langlearn.core.Translation;
-import uk.ignas.langlearn.core.TranslationDaoSqlite;
+import com.google.common.base.Supplier;
+import uk.ignas.langlearn.core.*;
 
 import java.io.File;
 
@@ -28,7 +26,7 @@ public class QuestionnaireActivity extends Activity {
     private TextView correctAnswerView;
     private TextView questionLabel;
 
-    private Translation currentWord = new Translation("defaultWord", "defaultTranslation");
+    private Translation currentTranslation = new Translation(new ForeignWord("defaultWord"), new NativeWord("defaultTranslation"));
     private Questionnaire questionnaire;
     private TranslationDaoSqlite dao;
 
@@ -69,7 +67,7 @@ public class QuestionnaireActivity extends Activity {
         translationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                correctAnswerView.setText(currentWord.getTranslatedWord());
+                correctAnswerView.setText(currentTranslation.getForeignWord().get());
                 enableTranslationAndNotSubmittionButtons(false);
             }
         });
@@ -79,7 +77,7 @@ public class QuestionnaireActivity extends Activity {
             public void onClick(View view) {
                 publishNextWord();
                 enableTranslationAndNotSubmittionButtons(true);
-                questionnaire.markKnown(currentWord);
+                questionnaire.markKnown(currentTranslation);
             }
         });
 
@@ -88,7 +86,7 @@ public class QuestionnaireActivity extends Activity {
             public void onClick(View view) {
                 publishNextWord();
                 enableTranslationAndNotSubmittionButtons(true);
-                questionnaire.markUnknown(currentWord);
+                questionnaire.markUnknown(currentTranslation);
             }
         });
 
@@ -100,7 +98,7 @@ public class QuestionnaireActivity extends Activity {
                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                questionnaire.delete(currentWord);
+                                questionnaire.delete(currentTranslation);
                                 publishNextWord();
                             }
                         })
@@ -114,9 +112,10 @@ public class QuestionnaireActivity extends Activity {
             }
         });
 
+        CurrentTranslationSupplier translationSupplier = new CurrentTranslationSupplier();
         View.OnClickListener onAddWordListener = OnUpsertWordListener.onInsertingWord(QuestionnaireActivity.this, questionnaire);
         addWordButton.setOnClickListener(onAddWordListener);
-        View.OnClickListener onUpdateWordListener = OnUpsertWordListener.onUpdatingWord(QuestionnaireActivity.this, questionnaire, currentWord.getId(), currentWord.getTranslatedWord(), currentWord.getOriginalWord());
+        View.OnClickListener onUpdateWordListener = OnUpsertWordListener.onUpdatingWord(QuestionnaireActivity.this, questionnaire, translationSupplier);
         updateWordButton.setOnClickListener(onUpdateWordListener);
 
         exportDataButton.setOnClickListener(new View.OnClickListener() {
@@ -136,8 +135,8 @@ public class QuestionnaireActivity extends Activity {
 
     private void publishNextWord() {
         try {
-            currentWord = questionnaire.getRandomTranslation();
-            questionLabel.setText(currentWord.getOriginalWord());
+            currentTranslation = questionnaire.getRandomTranslation();
+            questionLabel.setText(currentTranslation.getNativeWord().get());
             correctAnswerView.setText("");
         } catch (RuntimeException e) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -154,4 +153,11 @@ public class QuestionnaireActivity extends Activity {
         }
     }
 
+    public class CurrentTranslationSupplier implements Supplier<Translation>{
+
+        @Override
+        public Translation get() {
+            return currentTranslation;
+        }
+    }
 }

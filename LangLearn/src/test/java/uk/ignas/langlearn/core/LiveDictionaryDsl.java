@@ -26,7 +26,7 @@ public class LiveDictionaryDsl {
     public static int countPercentageOfRetrievedWordsHadExpectedPattern(List<Translation> retrievedWords, String expectedPattern) {
         int timesInterested = 0;
         for (Translation w: retrievedWords) {
-            if (w.getOriginalWord().contains(expectedPattern)) {
+            if (w.getForeignWord().get().contains(expectedPattern)) {
                 timesInterested++;
             }
         }
