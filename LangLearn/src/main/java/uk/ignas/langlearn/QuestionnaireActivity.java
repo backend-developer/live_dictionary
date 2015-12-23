@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -115,114 +114,10 @@ public class QuestionnaireActivity extends Activity {
             }
         });
 
-        addWordButton.setOnClickListener(new View.OnClickListener() {
-
-            private String errorMessage;
-            private String foreignWordToRemember = "";
-            private String nativeWordToRemember = "";
-
-            @Override
-            public void onClick(View arg0) {
-                AlertDialog.Builder b = new AlertDialog.Builder(QuestionnaireActivity.this);
-                LayoutInflater i = getLayoutInflater();
-                View inflatedDialogView = i.inflate(R.layout.word_translation_dialog, null);
-
-                final TextView errorTextView = (TextView) inflatedDialogView.findViewById(R.id.error_textview);
-                if (errorMessage != null) {
-                    errorTextView.setText(errorMessage);
-                    errorMessage = null;
-                }
-
-                final EditText foreignWordEditText = (EditText) inflatedDialogView.findViewById(R.id.foreign_language_word_edittext);
-                final EditText nativeWordEditText = (EditText) inflatedDialogView.findViewById(R.id.native_language_word_edittext);
-                foreignWordEditText.setText(foreignWordToRemember);
-                nativeWordEditText.setText(nativeWordToRemember);
-                final AlertDialog dialog = b
-                        .setView(inflatedDialogView)
-                        .setPositiveButton(R.string.add_word, new DialogInterface.OnClickListener(){
-
-                            @Override
-                            public void onClick(DialogInterface d, int which) {
-                                String foreignWord = foreignWordEditText.getText().toString();
-                                String nativeWord = nativeWordEditText.getText().toString();
-                                questionnaire.insert(new Translation(nativeWord, foreignWord));
-                                foreignWordToRemember = "";
-                                nativeWordToRemember = "";
-                            }
-                        })
-                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener(){
-
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                foreignWordToRemember = "";
-                                nativeWordToRemember = "";
-                                dialog.dismiss();
-                            }
-                        })
-
-                        .create();
-                dialog.setMessage("Add new word");
-
-                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        foreignWordToRemember = "";
-                        nativeWordToRemember = "";
-                    }
-                });
-                dialog.show();
-            }
-        });
-
-        updateWordButton.setOnClickListener(new View.OnClickListener() {
-
-            private String errorMessage;
-
-            @Override
-            public void onClick(View arg0) {
-                AlertDialog.Builder b = new AlertDialog.Builder(QuestionnaireActivity.this);
-                LayoutInflater i = getLayoutInflater();
-                View inflatedDialogView = i.inflate(R.layout.word_translation_dialog, null);
-
-                final TextView errorTextView = (TextView) inflatedDialogView.findViewById(R.id.error_textview);
-                if (errorMessage != null) {
-                    errorTextView.setText(errorMessage);
-                    errorMessage = null;
-                }
-
-                final EditText foreignWordEditText = (EditText) inflatedDialogView.findViewById(R.id.foreign_language_word_edittext);
-                final EditText nativeWordEditText = (EditText) inflatedDialogView.findViewById(R.id.native_language_word_edittext);
-                foreignWordEditText.setText(currentWord.getTranslatedWord());
-                nativeWordEditText.setText(currentWord.getOriginalWord());
-                final AlertDialog dialog = b
-                        .setView(inflatedDialogView)
-                        .setPositiveButton(R.string.update_word, new DialogInterface.OnClickListener(){
-
-                            @Override
-                            public void onClick(DialogInterface d, int which) {
-                                String foreignWord = foreignWordEditText.getText().toString();
-                                String nativeWord = nativeWordEditText.getText().toString();
-                                boolean updated = questionnaire.update(new Translation(currentWord.getId(), nativeWord, foreignWord));
-                                if (!updated) {
-                                    errorMessage = "Record cannot be updated: id = " + currentWord.getId() + "; word = " + currentWord.getOriginalWord();
-                                    updateWordButton.callOnClick();
-                                }
-                            }
-                        })
-                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener(){
-
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
-
-                        .create();
-                dialog.setMessage("Update word");
-
-                dialog.show();
-            }
-        });
+        View.OnClickListener onAddWordListener = OnUpsertWordListener.onInsertingWord(QuestionnaireActivity.this, questionnaire);
+        addWordButton.setOnClickListener(onAddWordListener);
+        View.OnClickListener onUpdateWordListener = OnUpsertWordListener.onUpdatingWord(QuestionnaireActivity.this, questionnaire, currentWord.getId(), currentWord.getTranslatedWord(), currentWord.getOriginalWord());
+        updateWordButton.setOnClickListener(onUpdateWordListener);
 
         exportDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -241,7 +136,7 @@ public class QuestionnaireActivity extends Activity {
 
     private void publishNextWord() {
         try {
-            currentWord =questionnaire.getRandomTranslation();
+            currentWord = questionnaire.getRandomTranslation();
             questionLabel.setText(currentWord.getOriginalWord());
             correctAnswerView.setText("");
         } catch (RuntimeException e) {
@@ -258,4 +153,5 @@ public class QuestionnaireActivity extends Activity {
             dialog.show();
         }
     }
+
 }
