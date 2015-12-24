@@ -111,11 +111,10 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
             }
         });
 
-        View.OnClickListener onAddWordListener = OnModifyDictionaryClickListener.onInsertingWord(QuestionnaireActivity.this);
+        View.OnClickListener onAddWordListener = OnModifyDictionaryClickListener.onInsertingWord(this);
         addWordButton.setOnClickListener(onAddWordListener);
-        View.OnClickListener onUpdateWordListener = OnModifyDictionaryClickListener.onUpdatingWord(QuestionnaireActivity.this, currentTranslation);
+        View.OnClickListener onUpdateWordListener = OnModifyDictionaryClickListener.onUpdatingWord(this, currentTranslation);
         updateWordButton.setOnClickListener(onUpdateWordListener);
-
 
         exportDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
