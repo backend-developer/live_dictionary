@@ -12,7 +12,7 @@ public class LiveDictionaryDsl {
         return retrievedWords;
     }
 
-    public static int countPercentageOfRetrievedWordsInExpectedSet(List<Translation> retrieved, List<Translation> expectedSet) {
+    public static int countPercentageOfRetrievedNativeWordsInExpectedSet(List<Translation> retrieved, List<Translation> expectedSet) {
         int timesInterested = 0;
         for (Translation t: retrieved) {
             if (expectedSet.contains(t)) {
@@ -23,10 +23,10 @@ public class LiveDictionaryDsl {
         return calculatePercentage(timesInterested, timesTotal);
     }
 
-    public static int countPercentageOfRetrievedWordsHadExpectedPattern(List<Translation> retrievedWords, String expectedPattern) {
+    public static int countPercentageOfRetrievedNativeWordsHadExpectedPattern(List<Translation> retrievedWords, String expectedPattern) {
         int timesInterested = 0;
         for (Translation w: retrievedWords) {
-            if (w.getForeignWord().get().contains(expectedPattern)) {
+            if (w.getNativeWord().get().contains(expectedPattern)) {
                 timesInterested++;
             }
         }

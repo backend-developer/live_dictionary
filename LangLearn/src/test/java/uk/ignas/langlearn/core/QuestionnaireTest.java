@@ -4,7 +4,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.google.common.collect.Iterables.getOnlyElement;
@@ -13,7 +12,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.*;
-import static uk.ignas.langlearn.core.LiveDictionaryDsl.countPercentageOfRetrievedWordsHadExpectedPattern;
+import static uk.ignas.langlearn.core.LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern;
 import static uk.ignas.langlearn.core.LiveDictionaryDsl.retrieveWordsNTimes;
 
 public class QuestionnaireTest {
@@ -62,13 +61,13 @@ public class QuestionnaireTest {
     @Test
     public void shouldGetNewest100QuestionsWith80PercentProbability() {
         TranslationDao dao = new TranslationDaoStub();
-        dao.insert(getNTranslationsStartingWith(100, "Other"));
-        dao.insert(getNTranslationsStartingWith(100, "LastQ"));
+        dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
+        dao.insert(getNTranslationsWithNativeWordStartingWith(100, "LastQ"));
         Questionnaire questionnaire = new Questionnaire(dao);
 
         final List<Translation> retrievedWords = retrieveWordsNTimes(questionnaire, 1000);
 
-        int percentage = countPercentageOfRetrievedWordsHadExpectedPattern(retrievedWords, "LastQ");
+        int percentage = countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrievedWords, "LastQ");
         assertThat(percentage, allOf(greaterThan(75), lessThan(85)));
     }
 
@@ -76,10 +75,10 @@ public class QuestionnaireTest {
     public void shouldHandle100Questions() {
         for (int i = 0; i < 100; i++) {
             TranslationDao dao = new TranslationDaoStub();
-            dao.insert(getNTranslationsStartingWith(100, "Any"));
+            dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Any"));
             Questionnaire questionnaire = new Questionnaire(dao);
 
-            String retrievedWord = questionnaire.getRandomTranslation().getForeignWord().get();
+            String retrievedWord = questionnaire.getRandomTranslation().getNativeWord().get();
 
             assertThat(retrievedWord, containsString("Any"));
         }
@@ -88,47 +87,47 @@ public class QuestionnaireTest {
     @Test
     public void afterFinding20UnknownWordsShouldNeverAskForOthers() {
         TranslationDao dao = new TranslationDaoStub();
-        dao.insert(getNTranslationsStartingWith(100, "Other"));
-        dao.insert(getNTranslationsStartingWith(20, "UnknownWord"));
+        dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
+        dao.insert(getNTranslationsWithNativeWordStartingWith(20, "UnknownWord"));
 
         Questionnaire questionnaire = new Questionnaire(dao);
 
         for (Translation t: new HashSet<>(dao.getAllTranslations().keySet())) {
-            if (t.getForeignWord().get().contains("UnknownWord")) {
+            if (t.getNativeWord().get().contains("UnknownWord")) {
                 questionnaire.markUnknown(t);
             }
         }
         final List<Translation> retrievedWords = retrieveWordsNTimes(questionnaire, 100);
 
-        int percentage = countPercentageOfRetrievedWordsHadExpectedPattern(retrievedWords, "UnknownWord");
+        int percentage = countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrievedWords, "UnknownWord");
         assertThat(percentage, is(equalTo(100)));
     }
 
     @Test
     public void unknownWordsShouldBeAskedEvery20thTime() {
         TranslationDao dao = new TranslationDaoStub();
-        dao.insert(getNTranslationsStartingWith(100, "Other"));
-        dao.insert(getNTranslationsStartingWith(10, "UnknownWord"));
+        dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
+        dao.insert(getNTranslationsWithNativeWordStartingWith(10, "UnknownWord"));
         Questionnaire questionnaire = new Questionnaire(dao);
 
         for (Translation t: new HashSet<>(dao.getAllTranslations().keySet())) {
-            if (t.getForeignWord().get().contains("UnknownWord")) {
+            if (t.getNativeWord().get().contains("UnknownWord")) {
                 questionnaire.markUnknown(t);
             }
         }
         final List<Translation> retrievedWords = retrieveWordsNTimes(questionnaire, 1000);
 
-        int percentage = countPercentageOfRetrievedWordsHadExpectedPattern(retrievedWords, "UnknownWord");
+        int percentage = countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrievedWords, "UnknownWord");
         assertThat(percentage, allOf(greaterThan(45), lessThan(55)));
     }
 
     @Test
     public void unknownWordsShouldBeAskedEvery20thTimeEvenIfTheyWerePassedInitially() {
         TranslationDao dao = new TranslationDaoStub();
-        dao.insert(getNTranslationsStartingWith(100, "Other"));
-        dao.insert(getNTranslationsStartingWith(10, "UnknownWord"));
+        dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
+        dao.insert(getNTranslationsWithNativeWordStartingWith(10, "UnknownWord"));
         for (Translation t: new HashSet<>(dao.getAllTranslations().keySet())) {
-            if (t.getForeignWord().get().contains("UnknownWord")) {
+            if (t.getNativeWord().get().contains("UnknownWord")) {
                 dao.update(t.getId(), t.getForeignWord(), t.getNativeWord(), Difficulty.HARD);
             }
         }
@@ -136,7 +135,7 @@ public class QuestionnaireTest {
 
         final List<Translation> retrievedWords = retrieveWordsNTimes(questionnaire, 1000);
 
-        int percentage = countPercentageOfRetrievedWordsHadExpectedPattern(retrievedWords, "UnknownWord");
+        int percentage = countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrievedWords, "UnknownWord");
         assertThat(percentage, allOf(greaterThan(45), lessThan(55)));
     }
 
@@ -196,7 +195,7 @@ public class QuestionnaireTest {
         Questionnaire questionnaire = new Questionnaire(dao);
         int nonexistentId = 8949861;
 
-        boolean isUpdated = questionnaire.markUnknown(new Translation(nonexistentId, new ForeignWord("duplicate"), new NativeWord("dup_translation")));
+        boolean isUpdated = questionnaire.markUnknown(new Translation(nonexistentId, new ForeignWord("la duplicado"), new NativeWord("duplication")));
 
         assertThat(isUpdated, is(false));
     }
@@ -220,19 +219,19 @@ public class QuestionnaireTest {
         Questionnaire questionnaire = new Questionnaire(dao);
         Translation translation = dao.getAllTranslations().keySet().iterator().next();
 
-        boolean isUpdated = questionnaire.update(new Translation(translation.getId(), new ForeignWord("modified word"), new NativeWord("la palabra cambiada")));
+        boolean isUpdated = questionnaire.update(new Translation(translation.getId(), new ForeignWord("la palabra cambiada"), new NativeWord("modified word")));
 
         assertThat(isUpdated, is(true));
         Translation modifiedWord = dao.getAllTranslations().keySet().iterator().next();
-        assertThat(modifiedWord.getForeignWord().get(), is(equalTo("modified word")));
-        assertThat(modifiedWord.getNativeWord().get(), is(equalTo("la palabra cambiada")));
-        assertThat(questionnaire.getRandomTranslation().getForeignWord().get(), is("modified word"));
+        assertThat(modifiedWord.getForeignWord().get(), is(equalTo("la palabra cambiada")));
+        assertThat(modifiedWord.getNativeWord().get(), is(equalTo("modified word")));
+        assertThat(questionnaire.getRandomTranslation().getNativeWord().get(), is("modified word"));
     }
 
-    public List<Translation> getNTranslationsStartingWith(int n, String prefix) {
+    public List<Translation> getNTranslationsWithNativeWordStartingWith(int n, String prefix) {
         List<Translation> translations = new ArrayList<>();
         for (int i = 0; i < n; i++) {
-            translations.add(new Translation(new ForeignWord(prefix + getUniqueInt()), new NativeWord("t" + getUniqueInt())));
+            translations.add(new Translation(new ForeignWord("desconocido" + getUniqueInt()), new NativeWord(prefix + getUniqueInt())));
         }
         return translations;
     }

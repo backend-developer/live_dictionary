@@ -73,8 +73,8 @@ public class AppIntegrationTest {
 
         List<Translation> retrieved = LiveDictionaryDsl.retrieveWordsNTimes(q, 10);
 
-        int eldestCounter = LiveDictionaryDsl.countPercentageOfRetrievedWordsInExpectedSet(retrieved, eldestTranslations);
-        int newestCounter = LiveDictionaryDsl.countPercentageOfRetrievedWordsInExpectedSet(retrieved, newestTranslations);
+        int eldestCounter = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsInExpectedSet(retrieved, eldestTranslations);
+        int newestCounter = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsInExpectedSet(retrieved, newestTranslations);
         assertThat(newestCounter, is(greaterThan(eldestCounter)));
     }
 

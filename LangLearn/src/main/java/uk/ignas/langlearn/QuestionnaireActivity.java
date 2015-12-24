@@ -25,7 +25,7 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
     private TextView correctAnswerView;
     private TextView questionLabel;
 
-    private Translation currentTranslation = new Translation(new ForeignWord("defaultWord"), new NativeWord("defaultTranslation"));
+    private Translation currentTranslation = new Translation(new ForeignWord("el valor por defecto"), new NativeWord("default"));
     private Questionnaire questionnaire;
     private TranslationDaoSqlite dao;
 

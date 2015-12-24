@@ -45,7 +45,7 @@ public class TranslationParserTest {
 
     @Test
     public void shouldNotParseStringWithoutOrigWord() {
-        Translation translation = translationParser.parse("-translation WithoutOriginalWord");
+        Translation translation = translationParser.parse("-native Word without translation");
         Assert.assertNull(translation);
     }
 
