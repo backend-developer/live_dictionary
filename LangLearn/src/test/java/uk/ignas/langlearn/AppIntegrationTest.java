@@ -5,6 +5,8 @@ import com.google.common.io.Resources;
 import org.junit.After;
 import org.junit.Test;
 import uk.ignas.langlearn.core.*;
+import uk.ignas.langlearn.testutils.LiveDictionaryDsl;
+import uk.ignas.langlearn.testutils.TranslationDaoStub;
 
 import java.io.BufferedReader;
 import java.io.File;

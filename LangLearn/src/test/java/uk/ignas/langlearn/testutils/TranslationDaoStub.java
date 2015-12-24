@@ -1,4 +1,6 @@
-package uk.ignas.langlearn.core;
+package uk.ignas.langlearn.testutils;
+
+import uk.ignas.langlearn.core.*;
 
 import java.util.LinkedHashMap;
 import java.util.List;

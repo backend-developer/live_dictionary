@@ -1,6 +1,8 @@
 package uk.ignas.langlearn.core;
 
 import org.junit.Test;
+import uk.ignas.langlearn.testutils.LiveDictionaryDsl;
+import uk.ignas.langlearn.testutils.TranslationDaoStub;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -12,8 +14,8 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.*;
-import static uk.ignas.langlearn.core.LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern;
-import static uk.ignas.langlearn.core.LiveDictionaryDsl.retrieveWordsNTimes;
+import static uk.ignas.langlearn.testutils.LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern;
+import static uk.ignas.langlearn.testutils.LiveDictionaryDsl.retrieveWordsNTimes;
 
 public class QuestionnaireTest {
 

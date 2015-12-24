@@ -1,4 +1,7 @@
-package uk.ignas.langlearn.core;
+package uk.ignas.langlearn.testutils;
+
+import uk.ignas.langlearn.core.Questionnaire;
+import uk.ignas.langlearn.core.Translation;
 
 import java.util.ArrayList;
 import java.util.List;
