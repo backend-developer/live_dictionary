@@ -78,9 +78,10 @@ public class QuestionnaireTest {
             dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Any"));
             Questionnaire questionnaire = new Questionnaire(dao);
 
-            String retrievedWord = questionnaire.getRandomTranslation().getNativeWord().get();
+            List<Translation> translations = LiveDictionaryDsl.retrieveWordsNTimes(questionnaire, 100);
 
-            assertThat(retrievedWord, containsString("Any"));
+            int percentage = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern(translations, "Any");
+            assertThat(percentage, is(100));
         }
     }
 
