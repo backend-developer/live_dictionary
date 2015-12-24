@@ -2553,8 +2553,6 @@ le importaría? - would it be important for you(Vd)?
 le importaría? - would you mind?
 al revés - vice versa
 
-A alguien le han dado cuerda - kalba kaip uzsukta
-
 
 puedo abrir la puerta? - can i open the doors?
 le importa si abro la puerta - do you mind if will open the doors?
@@ -2625,3 +2623,35 @@ la piel - skin
 la chaqueta - jacket
 la chaqueta de piel - leather jacket
 
+la chispa - spark
+pasarse - miss out
+pasarse una parada - miss a stop out
+pasarse una página - miss a page out
+pasarse de la raya - go too far
+la raya - line
+la máquina tragaperras - fruit machine
+la máquina - machine
+tragar - swollow
+la perra - coin
+la botella - bottle
+las escaleras - stairs
+el límite - limit
+el escritorio - desk
+la existencia - existence
+el globo - balloon
+el balón - ball
+ojalá - hopefully
+ojalá venga María - i hope Maria to come
+la pista - hint
+el otro - the other one
+la otra - the other one
+la lotería - lottery
+jugar a la lotería - play the lottery
+me tocó la lotería - i won the lottery
+te tocó la lotería - you won the loterry
+le tocó la lotería - she,he,Vd won the lottery
+nos tocó la lotería - we won the lottery
+os tocó la lotería - you won the loterry
+les tocó la lotería - they, Vds won the lottery
+el árbol de Navidad - Christmas tree
+el árbol - tree

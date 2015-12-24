@@ -53,11 +53,9 @@ public class DataImporterExporter {
         }
 
         Set<Translation> translationsFromDb = dao.getAllTranslations().keySet();
-        Sets.SetView<Translation> toAdd = Sets.difference(translationsToInsert, translationsFromDb);
-        Sets.SetView<Translation> toRemove = Sets.difference(translationsFromDb, translationsToInsert);
+        dao.delete(translationsFromDb);
 
-        dao.insert(new ArrayList<>(toAdd));
-        dao.delete(toRemove);
+        dao.insert(new ArrayList<>(translationsToInsert));
     }
 
     public void export(String planeTextExportedPath) {

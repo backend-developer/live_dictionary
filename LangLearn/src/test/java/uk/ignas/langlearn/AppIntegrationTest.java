@@ -4,7 +4,9 @@ import com.google.common.io.Files;
 import com.google.common.io.Resources;
 import org.junit.After;
 import org.junit.Test;
-import uk.ignas.langlearn.core.*;
+import uk.ignas.langlearn.core.DataImporterExporter;
+import uk.ignas.langlearn.core.Questionnaire;
+import uk.ignas.langlearn.core.Translation;
 import uk.ignas.langlearn.testutils.LiveDictionaryDsl;
 import uk.ignas.langlearn.testutils.TranslationDaoStub;
 
@@ -16,7 +18,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 
-import static com.google.common.collect.Iterables.getLast;
+import static com.google.common.collect.Iterables.getFirst;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
@@ -47,20 +49,30 @@ public class AppIntegrationTest {
         DataImporterExporter dataImporterExporter = createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, new TranslationDaoStub());
         dataImporterExporter.export(EXPORT_FILE_NAME);
 
-        validateNumberOfEntriesInFile(EXPORT_FILE_NAME, 2491);
-        validateNumberOfEntriesInFile(IMPORT_FILE_NAME, 2627);
+        validateNumberOfEntriesInFile(EXPORT_FILE_NAME, 2521);
+        validateNumberOfEntriesInFile(IMPORT_FILE_NAME, 2657);
         validateImportedAndExportedFilesMatch(IMPORT_FILE_NAME, EXPORT_FILE_NAME);
         assertThat(readFile(IMPORT_FILE_NAME).get(0), is(equalTo("morado - purple")));
-        assertThat(readFile(IMPORT_FILE_NAME).get(0), is(equalTo("morado - purple")));
+        assertThat(readFile(EXPORT_FILE_NAME).get(0), is(equalTo("morado - purple")));
     }
 
     @Test
-    public void importedDataShouldBeInOrderDataAppearedInFile() throws IOException, URISyntaxException {
+    public void exportAndImportFilesShouldHaveSameOrderOfRecords() throws IOException, URISyntaxException {
+
+        DataImporterExporter dataImporterExporter = createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, new TranslationDaoStub());
+        dataImporterExporter.export(EXPORT_FILE_NAME);
+
+        assertThat(readFile(IMPORT_FILE_NAME).get(0), is(equalTo("morado - purple")));
+        assertThat(readFile(EXPORT_FILE_NAME).get(0), is(equalTo("morado - purple")));
+    }
+
+    @Test
+    public void importedDataToDbShouldPreserveAnOrderInFile() throws IOException, URISyntaxException {
         TranslationDaoStub dao = new TranslationDaoStub();
 
         createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, dao);
 
-        assertThat(getLast(dao.getAllTranslations().keySet()).getForeignWord().get(), is(equalTo("la chaqueta de piel")));
+        assertThat(getFirst(dao.getAllTranslations().keySet(), null).getForeignWord().get(), is(equalTo("morado")));
     }
 
     @Test
