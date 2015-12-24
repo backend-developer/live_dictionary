@@ -39,10 +39,8 @@ public class QuestionnaireTest {
 
     @Test
     public void shouldNotCrashWhenThereAreFewWords() {
-        LinkedHashMap<Translation, Difficulty> words = new LinkedHashMap<>();
-        words.put(createForeignToNativeTranslation("word", "translation"), Difficulty.EASY);
         TranslationDao dao = new TranslationDaoStub();
-        dao.insert(new ArrayList<>(words.keySet()));
+        dao.insertSingle(createForeignToNativeTranslation("word", "translation"));
 
         Questionnaire questionnaire = new Questionnaire(dao);
         Translation translation = questionnaire.getRandomTranslation();
@@ -51,10 +49,8 @@ public class QuestionnaireTest {
 
     @Test
     public void shouldPersistUnknownWords() {
-        LinkedHashMap<Translation, Difficulty> words = new LinkedHashMap<>();
-        words.put(createForeignToNativeTranslation("word", "translation"), Difficulty.EASY);
         TranslationDao dao = new TranslationDaoStub();
-        dao.insert(new ArrayList<>(words.keySet()));
+        dao.insertSingle(createForeignToNativeTranslation("word", "translation"));
         Translation translation = getOnlyElement(dao.getAllTranslations().keySet());
         Questionnaire questionnaire = new Questionnaire(dao);
 
@@ -65,9 +61,9 @@ public class QuestionnaireTest {
 
     @Test
     public void shouldGetNewest100QuestionsWith80PercentProbability() {
-        LinkedHashMap<Translation, Difficulty> words = get200QuestionsOutOfWhichNewestNStartsWith(100, "LastQ");
         TranslationDao dao = new TranslationDaoStub();
-        dao.insert(new ArrayList<>(words.keySet()));
+        dao.insert(getNTranslationsStartingWith(100, "Other"));
+        dao.insert(getNTranslationsStartingWith(100, "LastQ"));
         Questionnaire questionnaire = new Questionnaire(dao);
 
         final List<Translation> retrievedWords = retrieveWordsNTimes(questionnaire, 1000);
@@ -80,8 +76,7 @@ public class QuestionnaireTest {
     public void shouldHandle100Questions() {
         for (int i = 0; i < 100; i++) {
             TranslationDao dao = new TranslationDaoStub();
-            LinkedHashMap<Translation, Difficulty> words = getNQuestionsStartingWith(100, "Any");
-            dao.insert(new ArrayList<>(words.keySet()));
+            dao.insert(getNTranslationsStartingWith(100, "Any"));
             Questionnaire questionnaire = new Questionnaire(dao);
 
             String retrievedWord = questionnaire.getRandomTranslation().getForeignWord().get();
@@ -92,11 +87,9 @@ public class QuestionnaireTest {
 
     @Test
     public void afterFinding20UnknownWordsShouldNeverAskForOthers() {
-        LinkedHashMap<Translation, Difficulty> allWords = getNQuestionsStartingWith(100, "Other");
-        LinkedHashMap<Translation, Difficulty> unknownWords = getNQuestionsStartingWith(20, "UnknownWord");
-        allWords.putAll(unknownWords);
         TranslationDao dao = new TranslationDaoStub();
-        dao.insert(new ArrayList<>(allWords.keySet()));
+        dao.insert(getNTranslationsStartingWith(100, "Other"));
+        dao.insert(getNTranslationsStartingWith(20, "UnknownWord"));
 
         Questionnaire questionnaire = new Questionnaire(dao);
 
@@ -113,11 +106,9 @@ public class QuestionnaireTest {
 
     @Test
     public void unknownWordsShouldBeAskedEvery20thTime() {
-        LinkedHashMap<Translation, Difficulty> allWords = getNQuestionsStartingWith(100, "Other");
-        LinkedHashMap<Translation, Difficulty> unknownWords = getNQuestionsStartingWith(10, "UnknownWord");
-        allWords.putAll(unknownWords);
         TranslationDao dao = new TranslationDaoStub();
-        dao.insert(new ArrayList<>(allWords.keySet()));
+        dao.insert(getNTranslationsStartingWith(100, "Other"));
+        dao.insert(getNTranslationsStartingWith(10, "UnknownWord"));
         Questionnaire questionnaire = new Questionnaire(dao);
 
         for (Translation t: new HashSet<>(dao.getAllTranslations().keySet())) {
@@ -133,14 +124,12 @@ public class QuestionnaireTest {
 
     @Test
     public void unknownWordsShouldBeAskedEvery20thTimeEvenIfTheyWerePassedInitially() {
-        LinkedHashMap<Translation, Difficulty> allWords = getNQuestionsStartingWith(100, "Other");
-        LinkedHashMap<Translation, Difficulty> unknownWords = getNQuestionsStartingWith(10, "UnknownWord", Difficulty.HARD);
-        allWords.putAll(unknownWords);
         TranslationDao dao = new TranslationDaoStub();
-        dao.insert(new ArrayList<>(allWords.keySet()));
+        dao.insert(getNTranslationsStartingWith(100, "Other"));
+        dao.insert(getNTranslationsStartingWith(10, "UnknownWord"));
         for (Translation t: new HashSet<>(dao.getAllTranslations().keySet())) {
             if (t.getForeignWord().get().contains("UnknownWord")) {
-                dao.update(t.getId(), t.getForeignWord(), t.getNativeWord(), unknownWords.get(t));
+                dao.update(t.getId(), t.getForeignWord(), t.getNativeWord(), Difficulty.HARD);
             }
         }
         Questionnaire questionnaire = new Questionnaire(dao);
@@ -232,22 +221,10 @@ public class QuestionnaireTest {
         assertThat(modifiedWord.getNativeWord().get(), is(equalTo("la palabra cambiada")));
     }
 
-    public LinkedHashMap<Translation, Difficulty> get200QuestionsOutOfWhichNewestNStartsWith(int n, String prefixForFirst100Questions) {
-        LinkedHashMap<Translation, Difficulty> translations = new LinkedHashMap<>();
-        //order is important
-        translations.putAll(getNQuestionsStartingWith(200-n, "Other"));
-        translations.putAll(getNQuestionsStartingWith(n, prefixForFirst100Questions));
-        return translations;
-    }
-
-    public LinkedHashMap<Translation, Difficulty> getNQuestionsStartingWith(int n, String prefix) {
-        return getNQuestionsStartingWith(n, prefix, Difficulty.EASY);
-    }
-
-    public LinkedHashMap<Translation, Difficulty> getNQuestionsStartingWith(int n, String prefix, Difficulty difficulty) {
-        LinkedHashMap<Translation, Difficulty> translations = new LinkedHashMap<>();
+    public List<Translation> getNTranslationsStartingWith(int n, String prefix) {
+        List<Translation> translations = new ArrayList<>();
         for (int i = 0; i < n; i++) {
-            translations.put(new Translation(new ForeignWord(prefix + getUniqueInt()), new NativeWord("t" + getUniqueInt())), difficulty);
+            translations.add(new Translation(new ForeignWord(prefix + getUniqueInt()), new NativeWord("t" + getUniqueInt())));
         }
         return translations;
     }
