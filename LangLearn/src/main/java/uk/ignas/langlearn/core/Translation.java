@@ -25,6 +25,14 @@ public class Translation {
         return id;
     }
 
+    public void setForeignWord(ForeignWord foreignWord) {
+        this.foreignWord = foreignWord;
+    }
+
+    public void setNativeWord(NativeWord nativeWord) {
+        this.nativeWord = nativeWord;
+    }
+
     public ForeignWord getForeignWord() {
         return foreignWord;
     }

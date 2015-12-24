@@ -7,17 +7,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import com.google.common.base.Supplier;
 import uk.ignas.langlearn.core.ForeignWord;
 import uk.ignas.langlearn.core.NativeWord;
 import uk.ignas.langlearn.core.Questionnaire;
 import uk.ignas.langlearn.core.Translation;
+import uk.ignas.langlearn.util.MutableObject;
 
 class OnModifyDictionaryClickListener implements View.OnClickListener {
+
+    public interface ModifyDictionaryListener {
+        void createTranslation(Translation translation);
+        void updateTranslation(Translation translation);
+    }
+
     private String errorMessage;
     private Activity context;
     private Questionnaire questionnaire;
-    private Supplier<Translation> currentTranslationSupplier;
+    private MutableObject<Translation> currentTranslationHolder;
     private DictionaryActivity dictionaryActivity;
 
     public enum DictionaryActivity {INSERTING_WORD, UPDATING_WORD}
@@ -26,30 +32,26 @@ class OnModifyDictionaryClickListener implements View.OnClickListener {
         return new OnModifyDictionaryClickListener(context, questionnaire, DictionaryActivity.INSERTING_WORD);
     }
 
-    public static OnModifyDictionaryClickListener onUpdatingWord(Activity context, Questionnaire questionnaire, QuestionnaireActivity.CurrentTranslationSupplier currentTranslationSupplier) {
-        return new OnModifyDictionaryClickListener(context, questionnaire, currentTranslationSupplier, DictionaryActivity.UPDATING_WORD);
+    public static OnModifyDictionaryClickListener onUpdatingWord(Activity context, Questionnaire questionnaire, MutableObject<Translation> currentTranslationHolder) {
+        return new OnModifyDictionaryClickListener(context, questionnaire, currentTranslationHolder, DictionaryActivity.UPDATING_WORD);
     }
 
     private OnModifyDictionaryClickListener(Activity context, Questionnaire questionnaire, DictionaryActivity dictionaryActivity) {
-        this(context, questionnaire, new Supplier<Translation>() {
-            @Override
-            public Translation get() {
-                return new Translation(
-                        new ForeignWord(""),
-                        new NativeWord(""));
-            }
-        }, dictionaryActivity);
+        this(context, questionnaire, new MutableObject<>(new Translation(
+                new ForeignWord(""),
+                new NativeWord(""))), dictionaryActivity);
     }
 
-    private OnModifyDictionaryClickListener(Activity context, Questionnaire questionnaire, Supplier<Translation> currentTranslationSupplier, DictionaryActivity dictionaryActivity) {
+    private OnModifyDictionaryClickListener(Activity context, Questionnaire questionnaire, MutableObject<Translation> currentTranslationHolder, DictionaryActivity dictionaryActivity) {
         this.context = context;
         this.questionnaire = questionnaire;
-        this.currentTranslationSupplier = currentTranslationSupplier;
+        this.currentTranslationHolder = currentTranslationHolder;
         this.dictionaryActivity = dictionaryActivity;
     }
 
     @Override
     public void onClick(View arg0) {
+
         AlertDialog.Builder b = new AlertDialog.Builder(context);
         LayoutInflater i = context.getLayoutInflater();
         View inflatedDialogView = i.inflate(R.layout.word_translation_dialog, null);
@@ -62,7 +64,7 @@ class OnModifyDictionaryClickListener implements View.OnClickListener {
 
         final EditText foreignWordEditText = (EditText) inflatedDialogView.findViewById(R.id.foreign_language_word_edittext);
         final EditText nativeWordEditText = (EditText) inflatedDialogView.findViewById(R.id.native_language_word_edittext);
-        final Translation currentTranslation = currentTranslationSupplier.get();
+        final Translation currentTranslation = currentTranslationHolder.get();
         foreignWordEditText.setText(currentTranslation.getForeignWord().get());
         nativeWordEditText.setText(currentTranslation.getNativeWord().get());
         int okButtonResorce = dictionaryActivity == DictionaryActivity.INSERTING_WORD ? R.string.add_word : R.string.update_word;
@@ -76,12 +78,13 @@ class OnModifyDictionaryClickListener implements View.OnClickListener {
                         String nativeWord = nativeWordEditText.getText().toString();
                         switch (dictionaryActivity) {
                             case INSERTING_WORD:
-                                questionnaire.insert(new Translation(
+                                ((ModifyDictionaryListener)context).createTranslation(new Translation(
                                         new ForeignWord(foreignWord),
                                         new NativeWord(nativeWord)));
                                 break;
                             case UPDATING_WORD:
-                                questionnaire.update(new Translation(currentTranslation.getId(),
+                                ((ModifyDictionaryListener)context).updateTranslation(new Translation(
+                                        currentTranslation.getId(),
                                         new ForeignWord(foreignWord),
                                         new NativeWord(nativeWord)));
                                 break;
@@ -95,7 +98,6 @@ class OnModifyDictionaryClickListener implements View.OnClickListener {
                         dialog.dismiss();
                     }
                 })
-
                 .create();
         String titleMessage = dictionaryActivity == DictionaryActivity.INSERTING_WORD ? "Add new word" : "Update a word";
         dialog.setMessage(titleMessage);

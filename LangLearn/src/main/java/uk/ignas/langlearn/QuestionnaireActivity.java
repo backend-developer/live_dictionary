@@ -9,12 +9,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import com.google.common.base.Supplier;
 import uk.ignas.langlearn.core.*;
+import uk.ignas.langlearn.util.MutableObject;
 
 import java.io.File;
 
-public class QuestionnaireActivity extends Activity {
+public class QuestionnaireActivity extends Activity implements OnModifyDictionaryClickListener.ModifyDictionaryListener {
     private Button translationButton;
     private Button knownWordButton;
     private Button unknownWordButton;
@@ -26,7 +26,7 @@ public class QuestionnaireActivity extends Activity {
     private TextView correctAnswerView;
     private TextView questionLabel;
 
-    private Translation currentTranslation = new Translation(new ForeignWord("defaultWord"), new NativeWord("defaultTranslation"));
+    private MutableObject<Translation> currentTranslation = new MutableObject<>(new Translation(new ForeignWord("defaultWord"), new NativeWord("defaultTranslation")));
     private Questionnaire questionnaire;
     private TranslationDaoSqlite dao;
 
@@ -67,7 +67,7 @@ public class QuestionnaireActivity extends Activity {
         translationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                correctAnswerView.setText(currentTranslation.getForeignWord().get());
+                correctAnswerView.setText(currentTranslation.get().getForeignWord().get());
                 enableTranslationAndNotSubmittionButtons(false);
             }
         });
@@ -77,7 +77,7 @@ public class QuestionnaireActivity extends Activity {
             public void onClick(View view) {
                 publishNextWord();
                 enableTranslationAndNotSubmittionButtons(true);
-                questionnaire.markKnown(currentTranslation);
+                questionnaire.markKnown(currentTranslation.get());
             }
         });
 
@@ -86,7 +86,7 @@ public class QuestionnaireActivity extends Activity {
             public void onClick(View view) {
                 publishNextWord();
                 enableTranslationAndNotSubmittionButtons(true);
-                questionnaire.markUnknown(currentTranslation);
+                questionnaire.markUnknown(currentTranslation.get());
             }
         });
 
@@ -98,7 +98,7 @@ public class QuestionnaireActivity extends Activity {
                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                questionnaire.delete(currentTranslation);
+                                questionnaire.delete(currentTranslation.get());
                                 publishNextWord();
                             }
                         })
@@ -112,11 +112,11 @@ public class QuestionnaireActivity extends Activity {
             }
         });
 
-        CurrentTranslationSupplier translationSupplier = new CurrentTranslationSupplier();
         View.OnClickListener onAddWordListener = OnModifyDictionaryClickListener.onInsertingWord(QuestionnaireActivity.this, questionnaire);
         addWordButton.setOnClickListener(onAddWordListener);
-        View.OnClickListener onUpdateWordListener = OnModifyDictionaryClickListener.onUpdatingWord(QuestionnaireActivity.this, questionnaire, translationSupplier);
+        View.OnClickListener onUpdateWordListener = OnModifyDictionaryClickListener.onUpdatingWord(QuestionnaireActivity.this, questionnaire, currentTranslation);
         updateWordButton.setOnClickListener(onUpdateWordListener);
+
 
         exportDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,9 +135,7 @@ public class QuestionnaireActivity extends Activity {
 
     private void publishNextWord() {
         try {
-            currentTranslation = questionnaire.getRandomTranslation();
-            questionLabel.setText(currentTranslation.getNativeWord().get());
-            correctAnswerView.setText("");
+            currentTranslation.set(questionnaire.getRandomTranslation());
         } catch (RuntimeException e) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("LangLearn")
@@ -151,13 +149,25 @@ public class QuestionnaireActivity extends Activity {
             AlertDialog dialog = builder.create();
             dialog.show();
         }
+        askUserToTranslate(currentTranslation.get());
     }
 
-    public class CurrentTranslationSupplier implements Supplier<Translation>{
+    private void askUserToTranslate(Translation translation) {
+        questionLabel.setText(translation.getNativeWord().get());
+        correctAnswerView.setText("");
+    }
 
-        @Override
-        public Translation get() {
-            return currentTranslation;
-        }
+
+
+    @Override
+    public void createTranslation(Translation translation) {
+        questionnaire.insert(translation);
+    }
+
+    @Override
+    public void updateTranslation(Translation translation) {
+        questionnaire.update(translation);
+        currentTranslation.set(translation);
+        askUserToTranslate(currentTranslation.get());
     }
 }
