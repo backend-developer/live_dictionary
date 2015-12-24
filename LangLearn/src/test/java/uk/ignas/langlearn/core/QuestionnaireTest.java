@@ -145,9 +145,10 @@ public class QuestionnaireTest {
         TranslationDao dao = new TranslationDaoStub();
         Questionnaire questionnaire = new Questionnaire(dao);
 
-        questionnaire.insert(createForeignToNativeTranslation("duplicate", "dup_translation"));
+        questionnaire.insert(createForeignToNativeTranslation("la palabra", "word"));
 
         assertThat(dao.getAllTranslations().size(), is(equalTo(1)));
+        assertThat(questionnaire.getRandomTranslation().getForeignWord().get(), is("la palabra"));
     }
 
     @Test
@@ -171,6 +172,12 @@ public class QuestionnaireTest {
         questionnaire.delete(word);
 
         assertThat(dao.getAllTranslations().keySet(), not(hasItem(word)));
+        try {
+            questionnaire.getRandomTranslation();
+            fail();
+        } catch (QuestionnaireException e) {
+            assertThat(e.getMessage(), containsString("no questions found")) ;
+        }
     }
 
     @Test
@@ -219,6 +226,7 @@ public class QuestionnaireTest {
         Translation modifiedWord = dao.getAllTranslations().keySet().iterator().next();
         assertThat(modifiedWord.getForeignWord().get(), is(equalTo("modified word")));
         assertThat(modifiedWord.getNativeWord().get(), is(equalTo("la palabra cambiada")));
+        assertThat(questionnaire.getRandomTranslation().getForeignWord().get(), is("modified word"));
     }
 
     public List<Translation> getNTranslationsStartingWith(int n, String prefix) {
