@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import uk.ignas.langlearn.core.*;
-import uk.ignas.langlearn.util.MutableObject;
 
 import java.io.File;
 
@@ -26,7 +25,7 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
     private TextView correctAnswerView;
     private TextView questionLabel;
 
-    private MutableObject<Translation> currentTranslation = new MutableObject<>(new Translation(new ForeignWord("defaultWord"), new NativeWord("defaultTranslation")));
+    private Translation currentTranslation = new Translation(new ForeignWord("defaultWord"), new NativeWord("defaultTranslation"));
     private Questionnaire questionnaire;
     private TranslationDaoSqlite dao;
 
@@ -67,7 +66,7 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
         translationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                correctAnswerView.setText(currentTranslation.get().getForeignWord().get());
+                correctAnswerView.setText(currentTranslation.getForeignWord().get());
                 enableTranslationAndNotSubmittionButtons(false);
             }
         });
@@ -77,7 +76,7 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
             public void onClick(View view) {
                 publishNextWord();
                 enableTranslationAndNotSubmittionButtons(true);
-                questionnaire.markKnown(currentTranslation.get());
+                questionnaire.markKnown(currentTranslation);
             }
         });
 
@@ -86,7 +85,7 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
             public void onClick(View view) {
                 publishNextWord();
                 enableTranslationAndNotSubmittionButtons(true);
-                questionnaire.markUnknown(currentTranslation.get());
+                questionnaire.markUnknown(currentTranslation);
             }
         });
 
@@ -98,7 +97,7 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                questionnaire.delete(currentTranslation.get());
+                                questionnaire.delete(currentTranslation);
                                 publishNextWord();
                             }
                         })
@@ -112,9 +111,9 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
             }
         });
 
-        View.OnClickListener onAddWordListener = OnModifyDictionaryClickListener.onInsertingWord(QuestionnaireActivity.this, questionnaire);
+        View.OnClickListener onAddWordListener = OnModifyDictionaryClickListener.onInsertingWord(QuestionnaireActivity.this);
         addWordButton.setOnClickListener(onAddWordListener);
-        View.OnClickListener onUpdateWordListener = OnModifyDictionaryClickListener.onUpdatingWord(QuestionnaireActivity.this, questionnaire, currentTranslation);
+        View.OnClickListener onUpdateWordListener = OnModifyDictionaryClickListener.onUpdatingWord(QuestionnaireActivity.this, currentTranslation);
         updateWordButton.setOnClickListener(onUpdateWordListener);
 
 
@@ -135,7 +134,8 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
 
     private void publishNextWord() {
         try {
-            currentTranslation.set(questionnaire.getRandomTranslation());
+            Translation newTranslation = questionnaire.getRandomTranslation();
+            askUserToTranslate(newTranslation);
         } catch (RuntimeException e) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("LangLearn")
@@ -149,15 +149,13 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
             AlertDialog dialog = builder.create();
             dialog.show();
         }
-        askUserToTranslate(currentTranslation.get());
     }
 
     private void askUserToTranslate(Translation translation) {
+        currentTranslation = translation;
         questionLabel.setText(translation.getNativeWord().get());
         correctAnswerView.setText("");
     }
-
-
 
     @Override
     public void createTranslation(Translation translation) {
@@ -167,7 +165,7 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
     @Override
     public void updateTranslation(Translation translation) {
         questionnaire.update(translation);
-        currentTranslation.set(translation);
-        askUserToTranslate(currentTranslation.get());
+
+        askUserToTranslate(translation);
     }
 }
