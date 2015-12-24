@@ -13,7 +13,7 @@ import uk.ignas.langlearn.core.NativeWord;
 import uk.ignas.langlearn.core.Questionnaire;
 import uk.ignas.langlearn.core.Translation;
 
-class OnUpsertWordListener implements View.OnClickListener {
+class OnModifyDictionaryClickListener implements View.OnClickListener {
     private String errorMessage;
     private Activity context;
     private Questionnaire questionnaire;
@@ -22,15 +22,15 @@ class OnUpsertWordListener implements View.OnClickListener {
 
     public enum DictionaryActivity {INSERTING_WORD, UPDATING_WORD}
 
-    public static OnUpsertWordListener onInsertingWord(Activity context, Questionnaire questionnaire) {
-        return new OnUpsertWordListener(context, questionnaire, DictionaryActivity.INSERTING_WORD);
+    public static OnModifyDictionaryClickListener onInsertingWord(Activity context, Questionnaire questionnaire) {
+        return new OnModifyDictionaryClickListener(context, questionnaire, DictionaryActivity.INSERTING_WORD);
     }
 
-    public static OnUpsertWordListener onUpdatingWord(Activity context, Questionnaire questionnaire, QuestionnaireActivity.CurrentTranslationSupplier currentTranslationSupplier) {
-        return new OnUpsertWordListener(context, questionnaire, currentTranslationSupplier, DictionaryActivity.UPDATING_WORD);
+    public static OnModifyDictionaryClickListener onUpdatingWord(Activity context, Questionnaire questionnaire, QuestionnaireActivity.CurrentTranslationSupplier currentTranslationSupplier) {
+        return new OnModifyDictionaryClickListener(context, questionnaire, currentTranslationSupplier, DictionaryActivity.UPDATING_WORD);
     }
 
-    public OnUpsertWordListener(Activity context, Questionnaire questionnaire, DictionaryActivity dictionaryActivity) {
+    private OnModifyDictionaryClickListener(Activity context, Questionnaire questionnaire, DictionaryActivity dictionaryActivity) {
         this(context, questionnaire, new Supplier<Translation>() {
             @Override
             public Translation get() {
@@ -41,7 +41,7 @@ class OnUpsertWordListener implements View.OnClickListener {
         }, dictionaryActivity);
     }
 
-    public OnUpsertWordListener(Activity context, Questionnaire questionnaire, Supplier<Translation> currentTranslationSupplier, DictionaryActivity dictionaryActivity) {
+    private OnModifyDictionaryClickListener(Activity context, Questionnaire questionnaire, Supplier<Translation> currentTranslationSupplier, DictionaryActivity dictionaryActivity) {
         this.context = context;
         this.questionnaire = questionnaire;
         this.currentTranslationSupplier = currentTranslationSupplier;

@@ -113,9 +113,9 @@ public class QuestionnaireActivity extends Activity {
         });
 
         CurrentTranslationSupplier translationSupplier = new CurrentTranslationSupplier();
-        View.OnClickListener onAddWordListener = OnUpsertWordListener.onInsertingWord(QuestionnaireActivity.this, questionnaire);
+        View.OnClickListener onAddWordListener = OnModifyDictionaryClickListener.onInsertingWord(QuestionnaireActivity.this, questionnaire);
         addWordButton.setOnClickListener(onAddWordListener);
-        View.OnClickListener onUpdateWordListener = OnUpsertWordListener.onUpdatingWord(QuestionnaireActivity.this, questionnaire, translationSupplier);
+        View.OnClickListener onUpdateWordListener = OnModifyDictionaryClickListener.onUpdatingWord(QuestionnaireActivity.this, questionnaire, translationSupplier);
         updateWordButton.setOnClickListener(onUpdateWordListener);
 
         exportDataButton.setOnClickListener(new View.OnClickListener() {
