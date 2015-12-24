@@ -43,7 +43,7 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
         File externalStoragePublicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
         dao = new TranslationDaoSqlite(QuestionnaireActivity.this);
         final DataImporterExporter dataImporterExporter = new DataImporterExporter(dao, externalStoragePublicDirectory);
-        dataImporterExporter.importAndValidateTranslations();
+        //dataImporterExporter.importTranslations();
 
         questionnaire = new Questionnaire(dao);
 

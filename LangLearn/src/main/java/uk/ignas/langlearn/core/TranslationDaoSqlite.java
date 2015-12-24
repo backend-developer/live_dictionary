@@ -37,6 +37,24 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
                         "CONSTRAINT uniqueWT UNIQUE (" + COLUMN_NATIVE_WORD + ", " + COLUMN_FOREIGN_WORD + ")" +
                         ")"
         );
+
+        insertSingleUsingDb(new Translation(new ForeignWord("morado"), new NativeWord("purple")), db);
+        insertSingleUsingDb(new Translation(new ForeignWord("verde"), new NativeWord("green")), db);
+        insertSingleUsingDb(new Translation(new ForeignWord("rosa"), new NativeWord("pink")), db);
+        insertSingleUsingDb(new Translation(new ForeignWord("rojo"), new NativeWord("red")), db);
+        insertSingleUsingDb(new Translation(new ForeignWord("plateado"), new NativeWord("silver")), db);
+        insertSingleUsingDb(new Translation(new ForeignWord("negro"), new NativeWord("black")), db);
+        insertSingleUsingDb(new Translation(new ForeignWord("naranja"), new NativeWord("orange")), db);
+        insertSingleUsingDb(new Translation(new ForeignWord("marrón"), new NativeWord("brown")), db);
+        insertSingleUsingDb(new Translation(new ForeignWord("gris"), new NativeWord("grey")), db);
+        insertSingleUsingDb(new Translation(new ForeignWord("fucsia"), new NativeWord("fuchsia")), db);
+        insertSingleUsingDb(new Translation(new ForeignWord("dorado"), new NativeWord("gold")), db);
+        insertSingleUsingDb(new Translation(new ForeignWord("blanco"), new NativeWord("white")), db);
+        insertSingleUsingDb(new Translation(new ForeignWord("beige"), new NativeWord("beige")), db);
+        insertSingleUsingDb(new Translation(new ForeignWord("azul marino"), new NativeWord("navy blue")), db);
+        insertSingleUsingDb(new Translation(new ForeignWord("azul"), new NativeWord("blue")), db);
+        insertSingleUsingDb(new Translation(new ForeignWord("amarillo"), new NativeWord("yellow")), db);
+        insertSingleUsingDb(new Translation(new ForeignWord("Los coroles"), new NativeWord("colors")), db);
     }
 
     @Override
@@ -64,6 +82,10 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     @Override
     public boolean insertSingle(Translation translation) {
         SQLiteDatabase db = this.getWritableDatabase();
+        return insertSingleUsingDb(translation, db);
+    }
+
+    private boolean insertSingleUsingDb(Translation translation, SQLiteDatabase db) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_NATIVE_WORD, translation.getNativeWord().get());
         contentValues.put(COLUMN_FOREIGN_WORD, translation.getForeignWord().get());

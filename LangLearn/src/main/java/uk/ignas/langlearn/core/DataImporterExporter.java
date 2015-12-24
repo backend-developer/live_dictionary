@@ -15,7 +15,7 @@ public class DataImporterExporter {
         this.defaultAppDirFile = defaultAppDirFile;
     }
 
-    public void importAndValidateTranslations() {
+    public void importTranslations() {
         File externalDir = defaultAppDirFile;
         String dataToImportFileName = "SpanishWords.txt";
         File dataToImportFile = new File(externalDir, dataToImportFileName);
