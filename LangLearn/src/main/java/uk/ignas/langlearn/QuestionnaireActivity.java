@@ -9,12 +9,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import com.google.common.base.Supplier;
 import uk.ignas.langlearn.core.*;
 
 import java.io.File;
 
-public class QuestionnaireActivity extends Activity implements OnModifyDictionaryClickListener.ModifyDictionaryListener {
-    private Button translationButton;
+public class QuestionnaireActivity extends Activity implements OnModifyDictionaryClickListener.ModifyDictionaryListener, Supplier<Translation> {
+    private Button showTranslationButton;
     private Button knownWordButton;
     private Button unknownWordButton;
     private Button addWordButton;
@@ -25,7 +26,7 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
     private TextView correctAnswerView;
     private TextView questionLabel;
 
-    private Translation currentTranslation = new Translation(new ForeignWord("el valor por defecto"), new NativeWord("default"));
+    private volatile Translation currentTranslation = new Translation(new ForeignWord("el valor por defecto"), new NativeWord("default"));
     private Questionnaire questionnaire;
     private TranslationDaoSqlite dao;
 
@@ -51,7 +52,7 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
 
         publishNextWord();
 
-        translationButton = (Button) findViewById(R.id.show_translation_button);
+        showTranslationButton = (Button) findViewById(R.id.show_translation_button);
         knownWordButton = (Button) findViewById(R.id.known_word_submision_button);
         unknownWordButton = (Button) findViewById(R.id.unknown_word_submision_button);
         addWordButton = (Button) findViewById(R.id.add_word_button);
@@ -63,11 +64,10 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
         exportDataFileEditText.setText(defaultExportFile.getAbsolutePath());
 
         enableTranslationAndNotSubmittionButtons(true);
-        translationButton.setOnClickListener(new View.OnClickListener() {
+        showTranslationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                correctAnswerView.setText(currentTranslation.getForeignWord().get());
-                enableTranslationAndNotSubmittionButtons(false);
+                showTranslation();
             }
         });
 
@@ -113,7 +113,7 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
 
         View.OnClickListener onAddWordListener = OnModifyDictionaryClickListener.onInsertingWord(this);
         addWordButton.setOnClickListener(onAddWordListener);
-        View.OnClickListener onUpdateWordListener = OnModifyDictionaryClickListener.onUpdatingWord(this, currentTranslation);
+        View.OnClickListener onUpdateWordListener = OnModifyDictionaryClickListener.onUpdatingWord(this, this);
         updateWordButton.setOnClickListener(onUpdateWordListener);
 
         exportDataButton.setOnClickListener(new View.OnClickListener() {
@@ -124,17 +124,23 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
         });
     }
 
+    private void showTranslation() {
+        questionLabel.setText(currentTranslation.getNativeWord().get());
+        correctAnswerView.setText(currentTranslation.getForeignWord().get());
+        enableTranslationAndNotSubmittionButtons(false);
+    }
+
     private void enableTranslationAndNotSubmittionButtons(boolean isTranslationPhase) {
         final boolean isSubmittionPhase = !isTranslationPhase;
-        translationButton.setEnabled(isTranslationPhase);
+        showTranslationButton.setEnabled(isTranslationPhase);
         knownWordButton.setEnabled(isSubmittionPhase);
         unknownWordButton.setEnabled(isSubmittionPhase);
     }
 
     private void publishNextWord() {
         try {
-            Translation newTranslation = questionnaire.getRandomTranslation();
-            askUserToTranslate(newTranslation);
+            currentTranslation = questionnaire.getRandomTranslation();
+            askUserToTranslate();
         } catch (RuntimeException e) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("LangLearn")
@@ -150,9 +156,8 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
         }
     }
 
-    private void askUserToTranslate(Translation translation) {
-        currentTranslation = translation;
-        questionLabel.setText(translation.getNativeWord().get());
+    private void askUserToTranslate() {
+        questionLabel.setText(currentTranslation.getNativeWord().get());
         correctAnswerView.setText("");
     }
 
@@ -164,7 +169,12 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
     @Override
     public void updateTranslation(Translation translation) {
         questionnaire.update(translation);
+        currentTranslation = translation;
+        showTranslation();
+    }
 
-        askUserToTranslate(translation);
+    @Override
+    public Translation get() {
+        return currentTranslation;
     }
 }
