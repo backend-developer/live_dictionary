@@ -4,9 +4,7 @@ import com.google.common.io.Files;
 import com.google.common.io.Resources;
 import org.junit.After;
 import org.junit.Test;
-import uk.ignas.langlearn.core.DataImporterExporter;
-import uk.ignas.langlearn.core.Questionnaire;
-import uk.ignas.langlearn.core.Translation;
+import uk.ignas.langlearn.core.*;
 import uk.ignas.langlearn.testutils.LiveDictionaryDsl;
 import uk.ignas.langlearn.testutils.TranslationDaoStub;
 
@@ -22,7 +20,9 @@ import static com.google.common.collect.Iterables.getFirst;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
 
 public class AppIntegrationTest {
 
@@ -73,6 +73,17 @@ public class AppIntegrationTest {
         createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, dao);
 
         assertThat(getFirst(dao.getAllTranslations().keySet(), null).getForeignWord().get(), is(equalTo("morado")));
+    }
+
+    @Test
+    public void importedDataReplaceDbContents() throws IOException, URISyntaxException {
+        TranslationDaoStub dao = new TranslationDaoStub();
+        Translation wordToBeReplaced = new Translation(new ForeignWord("palabra para borrar"), new NativeWord("word to delete"));
+        dao.insertSingle(wordToBeReplaced);
+
+        createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, dao);
+
+        assertThat(dao.getAllTranslations().keySet(), not(hasItem(wordToBeReplaced)));
     }
 
     @Test

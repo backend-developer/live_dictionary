@@ -16,5 +16,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="update_word">Update Word</string>
+    <string name="import_data">Import Data</string>
+    <string name="import_path">Import Path</string>
 </resources>
 

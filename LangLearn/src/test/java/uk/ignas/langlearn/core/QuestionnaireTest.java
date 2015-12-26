@@ -49,6 +49,18 @@ public class QuestionnaireTest {
     }
 
     @Test
+    public void shouldSynchronizeWithDbOnDemand() {
+        TranslationDao dao = new TranslationDaoStub();
+        Questionnaire questionnaire = new Questionnaire(dao);
+        dao.insertSingle(createForeignToNativeTranslation("word", "translation"));
+
+        questionnaire.reloadData();
+
+        Translation translation = questionnaire.getRandomTranslation();
+        assertThat(translation.getForeignWord().get(), is(equalTo("word")));
+    }
+
+    @Test
     public void shouldPersistUnknownWords() {
         TranslationDao dao = new TranslationDaoStub();
         dao.insertSingle(createForeignToNativeTranslation("word", "translation"));

@@ -21,7 +21,9 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
     private Button addWordButton;
     private Button updateWordButton;
     private Button deleteWordButton;
+    private Button importDataButton;
     private Button exportDataButton;
+    private EditText importDataFileEditText;
     private EditText exportDataFileEditText;
     private TextView correctAnswerView;
     private TextView questionLabel;
@@ -58,10 +60,18 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
         addWordButton = (Button) findViewById(R.id.add_word_button);
         updateWordButton = (Button) findViewById(R.id.update_word_button);
         deleteWordButton = (Button) findViewById(R.id.delete_word_button);
+        importDataButton = (Button) findViewById(R.id.import_data_button);
         exportDataButton = (Button) findViewById(R.id.export_data_button);
+
+        importDataFileEditText = (EditText) findViewById(R.id.import_data_path_textedit);
         exportDataFileEditText = (EditText) findViewById(R.id.export_data_path_textedit);
+
+        final File defaultImportFile = new File(externalStoragePublicDirectory, "SpanishWords.txt");
         File defaultExportFile = new File(externalStoragePublicDirectory, "ExportedByUserRequest.txt");
+
+        importDataFileEditText.setText(defaultImportFile.getAbsolutePath());
         exportDataFileEditText.setText(defaultExportFile.getAbsolutePath());
+
 
         enableTranslationAndNotSubmittionButtons(true);
         showTranslationButton.setOnClickListener(new View.OnClickListener() {
@@ -115,6 +125,14 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
         addWordButton.setOnClickListener(onAddWordListener);
         View.OnClickListener onUpdateWordListener = OnModifyDictionaryClickListener.onUpdatingWord(this, this);
         updateWordButton.setOnClickListener(onUpdateWordListener);
+
+        importDataButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dataImporterExporter.importTranslations();
+                questionnaire.reloadData();
+            }
+        });
 
         exportDataButton.setOnClickListener(new View.OnClickListener() {
             @Override

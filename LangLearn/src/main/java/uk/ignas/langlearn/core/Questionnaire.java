@@ -131,4 +131,8 @@ public class Questionnaire {
         }
         return false;
     }
+
+    public void reloadData() {
+        reloadTranslations();
+    }
 }
