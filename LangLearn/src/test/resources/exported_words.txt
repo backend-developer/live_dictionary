@@ -15,7 +15,6 @@ azul marino - navy blue
 azul - blue
 amarillo - yellow
 Los coroles - colors
-
 viernes - Friday
 sábado - Saturday
 miércoles - Wednesday
@@ -24,7 +23,6 @@ lunes - Monday
 jueves - Thursday
 domingo - Sunday
 Los días de la semana - days of the week
-
 ver la televisión - to watch television
 salir con amigos - to go out with friends
 leer - to read
@@ -46,7 +44,6 @@ escuchar música - to listen to music
 pintar - to draw
 bailar - to dance
 pasatiempos - hobbies
-
 Costar - cost
 Comprar - buy
 Conducir - drive
@@ -56,7 +53,6 @@ Romper - break
 Empezar - begin
 Cortar - cut
 Comer - eat
-
 el papel - paper
 la silla - a chair
 la mesa - a table
@@ -68,7 +64,6 @@ el chocolate - chocolate
 la sal - salt
 el azucar - sugar
 la taza - cup
-
 Conmigo - with me
 contigo - with you
 el libro - book
@@ -76,7 +71,6 @@ el móvil - mobile phone
 el Plato - plate
 El vaso - glass
 la taza de te - a cup of tea
-
 agotado - exhausted
 deprimido - depressed
 enfadado - angry
@@ -98,7 +92,6 @@ entusiasmado - excited
 Contento - happy
 satisfecho - satisfied
 Las emociones - emotions
-
 la tía - aunt
 la suegra - mother in law
 la sobrina - niece
@@ -123,7 +116,6 @@ la cuñada - sister in law
 el cuñado - brother in law
 el abuelo - grandfather
 La familia - family
-
 los platos vegetarianos - vegetarian dishes
 la zona de no fumadores - non smoking section
 la propina - tip
@@ -144,8 +136,6 @@ el acompañamiento - side order
 a la Carta - à la carte
 fresco - fresh
 El restaurante - restaurant
-
-
 El sol - sun
 El frío - a cold
 El calor - warmth
@@ -154,7 +144,6 @@ el otoño - autumn
 el verano - summer
 la primavera - spring
 Las estaciones - seasons
-
 tarde - late
 puntual - on time
 temprano - early
@@ -165,8 +154,6 @@ el atardecer - evening
 La tarde - evening
 la mañana - morning
 el alba - dawn
-
-
 los apuntes - notes
 la tiza - chalk
 la tarea - homework
@@ -199,7 +186,6 @@ Escribir - write
 el bolígrafo - pen
 El estudiante, la estudiante - student, pupil
 el alumno - student, pupil
-
 El periódico - periodical newspaper
 La carta - letter
 La persona - person
@@ -209,7 +195,6 @@ La niña - girl
 El niño - boy
 Ahogar - to drown
 Entender - understand
-
 las tres en punto - three o'clock exactly
 las dos - two o'clock
 las dos menos veinticinco - twenty five to two
@@ -223,7 +208,6 @@ la una y cinco - five past one
 la una - one o'clock
 El cuarto - quarter
 ¿Qué hora es? - What time is it?
-
 la naranjada - orange taste drink
 el jugo - juice
 el café - coffee
@@ -238,7 +222,6 @@ el agua mineral - mineral water
 Pedir bebidas - ordering drinks
 la bebida - a drink
 Beber - to drink
-
 Adiós. - Good bye
 Pronto - soon
 La vista - sight
@@ -287,7 +270,6 @@ Llamar - call
 Presentar - introduce
 Te presento a… - I'd like to introduce you to…
 Los Saludos - Greetings
-
 La naranja - orange
 La manzana - apple
 La patata - potato
@@ -318,7 +300,6 @@ El almuerzo - lunch
 El desayuno - breakfast
 Cocinar - to cook
 La comida - food
-
 El dolor - pain
 doler - to hurt
 aburrir - to bore
@@ -333,7 +314,6 @@ importar - to matter
 fascinar - to fascinate
 Gustar - like
 Verbos como gustar - verbs like "gustar"
-
 Mirar - to look at
 La hambre - hunger
 abrigada - warm
@@ -354,7 +334,6 @@ Lo siento - I am sorry
 Perdón - I am sorry
 Espera - wait (saukiamoji nuosaka)
 Esperar - to wait
-
 mil - 1000
 novecientos - 900
 ochocientos - 800
@@ -397,7 +376,6 @@ dos - 2
 uno - 1
 cero - 0
 El número - number
-
 la bota - boots
 la zapata - shoe
 la falda - skirt
@@ -425,7 +403,6 @@ el guante - glove
 la bufanda - scarf
 el abrigo - coat
 La ropa - clothing
-
 la ciruela - plum
 la pera - peardz
 la sandía - watermelon
@@ -450,7 +427,6 @@ el mango - mango
 la nectarina - nectarine
 el melocotón - peach
 el albaricoque - apricot
-
 juntar / separar - to join / to separat
 meter / sacar - to put in / to take out
 alejarse de / acercarse a - to move away / to come closer
@@ -467,7 +443,6 @@ sumar / restar - to add / to subtract
 El verbo - verb
 El antónimo - antonym
 Antónimos, Verbos - Antonyms, Verbs
-
 la escarcha - frost
 la nieve - snow
 el hielo - ice
@@ -496,7 +471,6 @@ la nube - cloud
 el sol - sun
 la aurora - daybreak
 El tiempo - the weather
-
 ... que viene - next...
 la semana que viene - next week
 esta semana - this week
@@ -512,7 +486,6 @@ anteayer - the day before yesterday
 Temporal - temporary
 La referencia - reference
 Referencias temporales - time references
-
 la música - music
 la orquesta - orchestra
 la sinfonía - symphony
@@ -535,15 +508,11 @@ el piano - piano
 Musical - music
 El instrumento - instrument
 Los instrumentos musicales - musical instruments
-
 vestirse - to get dressed
 usar la seda - to floss
-
-
 pasear al perro - to walk the dog
 maquillarse - to put on make up
 levantarse - to get up
-
 dormir - to sleep
 acostarse - to go to bed
 desvestirse - to get undressed
@@ -560,7 +529,6 @@ lavarse la cara - to wash one's face
 afeitarse - to shave
 hacer la cama - to make the bed
 Los hábitos - daily routine
-
 Hola - hi
 El secreto - secret
 Besar - kiss
@@ -578,11 +546,9 @@ Creer en - believe in
 La estrella - star
 El Dibujo - pictures
 La Canción - song
-
 sabe - he knows
 así - that way
 hacer - do, make
-
 puede - he can
 puedo - i can
 poder - can
@@ -603,7 +569,6 @@ quierer - want
 para usted - for you
 para mi - for me
 ver - see
-
 quiero ver lo - i want to see it
 una/la preferencia - prefference
 una/la influencia - influence
@@ -624,7 +589,6 @@ dar - give
 formar - form
 la conformar - conform
 la confirmar - confirm
-
 la situatión - situation
 la impresión - impression
 aquí - here
@@ -646,7 +610,6 @@ filosófico, filosófica - philosophical
 político, política - political
 en España - in Spain
 en Argentina - in Argentina
-
 cuánto - how much
 estoy - am (temporary)
 ocupado, ocupada - busy
@@ -665,7 +628,6 @@ todo - everything
 nada - nothing
 necesario - necessary
 complicar - complicate
-
 la cosa - thing
 el ser humano - human being
 humano - related to human
@@ -683,7 +645,6 @@ lo, la - it
 venir - come
 con usted - with you
 el coche - car
-
 vender - to sell
 vendo - i sell
 comprendo - i understand
@@ -703,7 +664,6 @@ todo el mundo - everybody
 compro - i buy
 ese, esa - that
 esto - this
-
 eso - that
 delicioso - delicious
 vamos - we go
@@ -724,7 +684,6 @@ ahí - there
 comenzar - comence
 comienzo - i commence
 pensar - think
-
 pensar - plan
 poder - to be able
 el poder - power
@@ -735,7 +694,7 @@ me levanto - i am getting up
 nos levantamos - we are getting up
 té lebantas - you are getting up
 se levanta - he, you (polite), she,  is getting up
-se lebantan - you, they are getting up
+se lebantan - Vds, they are getting up
 levantar se - get oneself up
 quedar - remain
 quánto tiempo - how long
@@ -744,7 +703,6 @@ unos días - several days
 vamos a quedarnos - we are going to stay
 la mano - hand
 hay - there is, there are
-
 la gente - people
 hay mucha gente - there are many people
 qué hay - what is there
@@ -765,7 +723,6 @@ comeré - i will eat
 tomaremos - we will take
 esperar - hope
 dormir - sleep
-
 quedar se - stay
 ban a - they are going to
 se quedan - they stay
@@ -786,7 +743,6 @@ diré - i will say
 el río - river
 grande - big
 sería - she it he would be
-
 aría - i would do
 diría - i would tell
 saldría - he, she, you would leave
@@ -807,7 +763,6 @@ quisiera - i might like
 haber - have
 lo he comprado - i have bought it
 hemos comprado - we have bought
-
 ha comprado - he has bought
 ha bendido - he has sold it
 he dicho - i have said it
@@ -827,7 +782,6 @@ no e comprendido lo que decia - i havent understand what you were saying
 lo hacia todos los días - he used to do it every day
 está echo - it is done
 la cena está preparada - dinner is preparred
-
 e visto - i have seen
 todabía - yet
 todabía, no e visto - i havent seen yet
@@ -845,7 +799,6 @@ el adjetivo - adjective
 la bañera - bath
 la toalla - towel
 la ducha - shower
-
 los deberes - homework
 fin de semana - weekend
 tranquila - calm
@@ -865,7 +818,6 @@ el día festivo - bank holiday
 el ordinador - computer
 sendarse - sit down
 aprendir - learn
-
 el billete - ticket
 la nevera - fridge
 largo - long
@@ -881,7 +833,6 @@ difícil - difficult
 fácil - easy
 tener 25 años - have 25 years
 la azafata - flight attendant
-
 el aula - classroom
 pagina - page
 española - spanish girl
@@ -902,7 +853,6 @@ no sé - dont know
 orden - order
 ventana - window
 repitir - repeat
-
 qué significa - what does that mean
 alto - loud
 tu - your
@@ -920,11 +870,10 @@ la actriz - actress
 el ector - actor
 el tranvía - tram
 el tren - train
-
 la señal - sign
 almendro - nut
 el bar - bar
-estacion de tren - railway station
+la estación de tren - railway station
 segundo - second
 letrear - spell
 decir se - to say
@@ -937,7 +886,6 @@ inglesa/inglés - english person
 sueco/sueca/suecia - swedish
 estudiar - study
 cocinero - cooker
-
 profesión - profesion
 alemán/alemana/Alemania - Germany/german
 lugar - place/institution
@@ -957,7 +905,6 @@ avión - plane
 la compaña - company
 origen - origin
 la aula - class
-
 yo/tú/... me/té/se/nos/os/se llamo/as/a/amos/aís/an - is called
 dedicar - occupie
 corregir - irregular word
@@ -966,7 +913,6 @@ cuántos años tiene - how old are you
 en qué trabajas - where do you work
 bombero - fireman
 presentación personal - preseting yourself
-terthera? - third
 pequeño - small
 escuela - school?
 estar en - be in localization
@@ -976,7 +922,6 @@ el sistema - system
 el banco - bank
 informático - it specialist
 persona - person
-
 ciudad - city
 compañía - company
 la empresa - company
@@ -997,7 +942,6 @@ profesor/a - teacher/profesor
 es posible los dos - both aare possible
 portugués/a/portugal - Portugal/Portuguese
 brsileño/a/brasil - brasilia/brasilian
-
 estadounidense - de los estados unidos
 ruso/a/rusia - Russia/russian
 indio/a/india - India/Indian
@@ -1018,7 +962,6 @@ el mapa - map
 la ventana - window
 la hoja - sheet
 feminino - feminine
-
 masculino - masculine
 el proyector - projector
 la papelera - bin
@@ -1037,7 +980,6 @@ el infinitivo - infinitive
 pasear por la playa - walk in the beach
 pasear por la montaña - walk in the mountains
 hacer deporte - go into sports
-
 el avión - plane
 jugar al fútbol - footbol
 la olla - pot
@@ -1057,7 +999,6 @@ en qué trabaja / soy... - what do you work as. / i am ..
 presidente/a - president
 cantante - singer
 famoso _ - famous
-
 por último - last one
 cambiar - change
 arañar - draskyti
@@ -1078,7 +1019,6 @@ madera - wood
 la puerta - doors
 siguir - continue
 las matemáticas - maths
-
 el pátio - yard
 el jardin - garden
 el gato/la gata - cat
@@ -1098,7 +1038,6 @@ abogado/a - lawer
 recuerdo - i remember
 recordar - remember
 la mayor parte - larger part
-
 belga/bélgica - belgian
 enfermo/a - ill
 enfermero/a - nurce
@@ -1119,7 +1058,6 @@ la montaña - mountain
 el árbol - tree
 la calma - being calm
 la naturaleza - nature
-
 el/la guitarrista - gitarist
 la barca - small ship
 el barco - large ship
@@ -1140,7 +1078,6 @@ pintura - tapyba
 ayer - yesterday
 actividad - activity
 deducir - guess
-
 deducción - guessing
 al fin - End
 cuáles - which (plural)
@@ -1161,7 +1098,6 @@ el próximo fin de semana - next
 el pasado fin de semana - previous
 la causa - motive
 el motivo - motive
-
 observar - observe
 solamente - only
 chatear - chat
@@ -1190,8 +1126,6 @@ el desarrollo - development
 la formación académica - academic background
 la experiencia laboral - work experience
 el Reino Unido - UK
-
-
 los jueves - every thursday
 latinoamericana - latin american
 baile - dance
@@ -1199,7 +1133,6 @@ nativo - native
 particular - private
 privado/privada - private
 el partido - match
-
 exposicion de diseño - design exposition
 exposición sobre al diseño - design exposition
 ver la partida - see match
@@ -1214,7 +1147,6 @@ hacer un viaje - have a trip
 hacer un cata de vinos - degustuoti
 hacer una visita a Madrid - visit madrid
 hacer una excursión - go to excursion
-
 por ejemplo - for example
 el montón - a lot (informal)
 el montón de cosas - a lot of things
@@ -1232,7 +1164,6 @@ antes - before
 después - after
 la caja fuerte - safe
 el collar - necklace
-
 diciembre - December
 noviembre - November
 octubre - October
@@ -1247,7 +1178,6 @@ febrero - February
 enero - January
 el cumpleaños - birthday
 16 de octubre de 2015 - 16 of Octobre, 2015
-
 el payaso - clown
 el anuncio - advertisement
 el creador - ceater
@@ -1268,7 +1198,6 @@ la esponja - sponge
 conjugar - asmenuoti
 presente - present (clause)
 mejorar - improve
-
 la lengua - language
 irlandés/a/irelanda - Ireland/Irelandian
 izquierdo - left
@@ -1289,7 +1218,6 @@ la clase - class
 el aula pequieño - small class
 terminar - finish
 normalmente - usually
-
 la foto - foto
 los artículos determinados - la
 los articulos indeterminados - un/una
@@ -1309,7 +1237,6 @@ cabeza - head
 bastante bien - good enough
 la lengua materna - mother tongue
 casi todo - almost all
-
 usuar - use
 pulsar - press
 el silencio - silence
@@ -1350,7 +1277,6 @@ comprendiéron - they you left
 comprendíste - you understand
 comprendió - he you it understood
 comprendí - i comprended
-
 vió - you saw
 ví - i saw
 hico - he she you did
@@ -1452,7 +1378,6 @@ tipicamente - normally
 podrías - could you?
 deber - must
 dener - owe
-
 traer - irregular word
 volver - irregular word
 volar - irregular word
@@ -1501,7 +1426,6 @@ conseguir: consigo, consigue, conseguimos - acieve
 comenzar: ie - star
 cocer: cozco, ue - boil
 caer: caigo - fall
-
 ¿tienes horas? - what time is it now
 ¿qué hora es? - what time is it now
 despertarse - dzovinti rankas
@@ -1552,8 +1476,6 @@ girar a la derecha - turn right
 entrevista de trabajo - appointment for work
 cita para médico - appointment for doctor
 cita para visa - appointment for visa
-
-
 irse - leave
 la pasada noche - last night
 es una historia interesante - its an interesting story
@@ -1563,8 +1485,6 @@ empiezar a hacer - start doing
 es muy común - tipical
 va a la universided - he, she goes to university
 es una coincidencia - its a coinsidence
-
-
 hacer puenting - bungee jumping
 incluir - include
 la oferta - offer
@@ -1573,8 +1493,6 @@ utilizar - use
 el castaño - kaštonas
 el dinero - money
 pagar dinero - moketi pinigus
-
-
 ... es lo mismo que... - the same as
 tan pronto - sooo early
 por supuesto - de acuerdo
@@ -1598,7 +1516,6 @@ llamo a mi madre - i call to my mother
 los compañeros de piso - flatmates
 la compañera - companion
 el compañero - companion
-
 depende de sus planes - depends on plans of theirs
 el descanso - a rest
 tener un descanso - take a rest
@@ -1619,7 +1536,6 @@ alguien - somebody
 mayor - older
 la apariencia - appearance
 la cuchilla - blade
-
 el autobús - bus
 coger el autobús - catch a bus
 la cuenta - account
@@ -1642,14 +1558,11 @@ primero/a - first
 preferiblemente - preferebly
 acabo mis deberes antes de dormir - i finish my homeworks before i go to sleep
 me ducho antes de cenar - i have a shower before having a dinner
-
 tengo un descanso de una hora - i take a rest for an hour
 camino a mi trabajo - i walk to my work
 después del tren, cojo... - after train, i catch...
 cuando - when, then
 me acuesto cuando tengo clases por la mañana - i go to sleep when i have classes in the morning
-
-
 gordito/a - thicker person
 oriental - chinese person
 pelirrojo - ryzas
@@ -1658,7 +1571,6 @@ joven - young
 mayor - older person
 bajito - lower peraon
 alto - high
-
 describir - describe
 tiene una reunión - have a meeting
 ir a una reunión - have a meeting
@@ -1677,8 +1589,6 @@ ser cerrado/a - be closed
 ser abierto/a - be open
 ser simpático/a - be pleasant
 ser horrible - be horrible
-
-
 ser malévolo/a - be malicious
 ser amable - be kind
 ser bueno/a - be good
@@ -1696,9 +1606,6 @@ hago lo mismo que Ryan - i do the same as ryan
 cerca de las dos - about two oclock
 sobre las dos - about 2 oclock
 despues de esto - after that
-
-
-
 quitarse - nusivilkt
 ponerse - apsivilkti
 detestar - hate
@@ -1723,8 +1630,6 @@ muchisimo - really a lot
 ?? dulce - a sweet
 dulce - sweet
 la gana - desire
-
-
 tren que viene de dos minutos - train which comes in two mins
 semana que viene - next week
 rendirse - surrender
@@ -1787,7 +1692,6 @@ morir por ti - die for you
 amar - love (husband)
 eterna - eternal
 cuidado - be careful
-
 urss - ssrs
 primera gerra mundial - first world war
 la biblioteca - library
@@ -1804,7 +1708,6 @@ fuiste - you were, you went
 fui - i was, i went
 aparecer - to appear
 ??turística - tourist (adj)
-
 probar - to taste, to try
 ver a una persona - see person
 han visto - they, Vds have seen
@@ -1839,7 +1742,6 @@ se alquilan - they are for rent
 se alquila - it is for rent
 traducir - translate
 el artículo - article
-
 novecientos - ninehundred
 setecientos - seven hundred
 quinientos - five hundred
@@ -1862,7 +1764,6 @@ elegir - choose
 la ubitación - location
 quienes - who plural
 toda la noche hasta de mañana - all night till the morning
-
 al menos - at least
 menos mal - luckily
 la flor - flower
@@ -1885,8 +1786,6 @@ el cuadrado - square
 el metro - meter
 una superficie de 253 metros cuadrados - area of 253 m2
 la superficie - area
-
-
 el piso compartido - shared flat
 compartido/a - shared
 el habitante - inhabitant
@@ -1915,7 +1814,6 @@ el aseo - restroom
 un balcón con vístas - balcony with the view
 el balcón - balcony
 americano/a - american
-
 un piso a 5 minutos del mar - flat 5 mins away from sea
 sin amueblar - unfurnished
 el ascensor - lift
@@ -1937,7 +1835,6 @@ listo para entrar a vivir - ready to start living
 el apartamento - flat
 un apartamento de 50 m2 - flat of 50 m2
 a 5 minutos de la playa - 5 mins away from beach
-
 piden - they, Vds order
 pedís - you order
 pedimos - we order
@@ -1980,7 +1877,6 @@ salimos - we left
 salió - she,he,Vd left
 saliste - you left
 salí - i left
-
 empezaron - they,Vds started
 empezasteis - you started
 empezamos - we started
@@ -2016,7 +1912,6 @@ quería - i would like
 disculpe, puedo coger la silla - i am sorry, could i take the chair?
 gracias por todo - thankyou for everything
 una grande opurtunidad - a great opportunity
-
 les sienta(n) - suits them,Vds
 os sienta(n) - suits you
 nos sienta(n) - suits us
@@ -2040,7 +1935,6 @@ no es un insulto - its not an insult
 quince de febrero - 15 of february
 no sé ninguna canción - i dont know any song
 estás muerto - you are dead
-
 jamás digas jamás - never say never
 duermen - they,Vds sleep
 dormís - you sleep
@@ -2061,7 +1955,6 @@ sigame - follow me! Vd
 la pesadilla - nightmare
 la voz - voice
 peligroso/a - dangerous
-
 han hecho - they, Vd have done
 habeís hecho - you have done
 hemos hecho - we have done
@@ -2086,7 +1979,6 @@ ha enseñado - he,she,Vd has tought
 has enseñado - you have tought
 he enseñado - i have tought
 recto - straight
-
 dispensable - dispensable
 la vigilante - guard
 el vigilante - guard
@@ -2105,8 +1997,6 @@ aprovecho - i take an advantage of
 aprovechar - take advantage of
 no me aburro - am i not bored
 aburrirse - be bored
-
-
 la cotorra - parrot
 alguién habla como una cotorra - someone talks a lot
 alguién - someone
@@ -2137,7 +2027,6 @@ no tantas personas - not so many persons
 la isla - island
 portugal/portugués(a) - portual/portuguese
 sudáfrica/sudafricano/a - south africa/southafrican
-
 la cárcel - jail
 la prisión - prison
 quisieron - they,Vds wanted
@@ -2156,8 +2045,6 @@ la escuela secundaria - secondary school
 la escuela primaria - primary school
 la escuela infantil - kindergarten
 la risa - laughter
-
-
 te - to you
 el té - tea
 cualquiera ciudad - any city
@@ -2179,7 +2066,6 @@ la tuya - yours
 el tuyo - yours
 la mía - mine
 el mío - mine
-
 el gusto - taste
 tenemos los mismos gustos - we have the same taste
 tenemos gustos muy diferentes - our testes are very different
@@ -2200,7 +2086,6 @@ una mesa de piedra - stone table
 una casa de ladrillo - brick house
 el armario - wardrobe
 ubicar - locate
-
 debajo del/de la - under
 encima del/de la - on top of
 detrás del/de la - behind
@@ -2226,7 +2111,6 @@ la alfombra - carpet
 la mesa de centro - coffee table
 el ordenador - computer
 el sillón - armchair
-
 dar una razón - give a reason
 la prueba - test
 el periodo de prueba - probation
@@ -2244,7 +2128,6 @@ a través de la puerta - through the door
 el espacio - space
 a través del espacio que entre...  y.. - through space between...  and...
 a través de tren - by train
-
 la risoterapia - laugh teraphy
 vamos a pasarlo bien - we are going to have a good time
 pasarlo bien - have a good time
@@ -2278,7 +2161,6 @@ sonriente - smiling
 primeramente - firstly
 me muero de risa - i am dying of laughing
 llover - rain
-
 alrededor del/de la - around
 alrededor de la mesa - around the table
 el problema - problem
@@ -2299,7 +2181,6 @@ no me puedo quejar - i cannot complain
 vijilar - to watch
 vijilar mi equipaje - watch my luggage
 el equipaje - luggage
-
 espacioso/a - spacious
 acogedor/a - cosy
 clasico/a - classical
@@ -2320,8 +2201,6 @@ cuánto tiempo?! - 100 metu
 ordenado/a - tidy
 limpio/a - clean
 puedes sentarte para trabajar con ella - can you sit to work with her
-
-
 intenso/s - intensive
 la época - period
 una época intensa - intense time
@@ -2343,7 +2222,6 @@ mi casa da a calle tranquila - my house is faced to the calm street
 mi casa da a calle peatonal - my house is faced to the pedestrian street
 pe!atonal - pedestrian
 que tal tu semana - how was your week
-
 igual!dad - equality
 inferioridad - inferiority
 superioridad - superiority
@@ -2389,7 +2267,6 @@ pedimos - we ordered
 pi!dió - she,he,Vd ordered
 pediste - you ordered
 pedí - i ordered
-
 repi!tieron - they, Vds repeated
 repetisteis - you repeat
 repi!tió - she,he,Vd repeated
@@ -2426,7 +2303,6 @@ decidimos - we decide
 decide - she,he,Vd decides
 decides - you decide
 decido - i decide
-
 resposan - they,Vds rest
 reposáis - you rest
 reposamos - we rest
@@ -2450,7 +2326,6 @@ ganar - win
 pues - well
 el confiar - trust
 la influencia - influence
-
 me gusta como eres - i like the way you are
 me encanta como eres - i love the way you are
 te gusto - tau patinku
@@ -2480,7 +2355,6 @@ por un lado - on the one hand
 el genio - genius
 responsable - responsible
 prestigioso/a - prestigious
-
 en cuestión de tecnología - in terms of techology
 la tecnología - technology
 no estoy sorprendido - i am not suprised
@@ -2508,7 +2382,6 @@ la herida - injury
 la herida - wound
 la basura - rubbish bin
 la basura - trash
-
 curar - treat
 curarse - to get better
 pelear - to fight
@@ -2541,10 +2414,6 @@ reducción de plantilla - reduce number of employees
 contradictorio/a - contradictory
 no se portan bien - they dont behave correctly
 portarse bien - behave well
-
-
-
-
 la suerte - fate
 está de moda - its a trend
 hablar de manera correcta - talk properly
@@ -2552,8 +2421,6 @@ dolió - hurted
 le importaría? - would it be important for you(Vd)?
 le importaría? - would you mind?
 al revés - vice versa
-
-
 puedo abrir la puerta? - can i open the doors?
 le importa si abro la puerta - do you mind if will open the doors?
 me abre la puerta, por favor? - open the doors for me,  please?
@@ -2575,7 +2442,6 @@ volar sobre Cádiz - fly over cadiz
 sobre - over
 la pasajera - pessanger
 el pasajero - pessanger
-
 hacer cordero asado - roast the lamb
 el cordero asado - roasted lamb
 quieres probarlo? - do you want to taste it?
@@ -2585,7 +2451,7 @@ buenísimo - really good
 jamón buenísimo - really good ham
 jamón - ham
 ahora estoy saliendo con Jorge - now i am dating Jorge
-llegar en el tren - arriving by train
+llegar en el tren - arrive by train
 esperar a Luis - wait for Luis
 ir en moto - go by moto
 ir al trabajo - go to work
@@ -2600,7 +2466,6 @@ el pañuelo - scarf
 es que tengo mucho calor - because its very hot for me
 le importa si abro la ventana? - do you mind if i open the window
 ¿estás saliendo con algién? - do you date anyone?
-
 es que me dejé el monedero en casa - it's just that i left the purse at home
 dejarse - leave (forget)
 me prestas 5 euros para desayunar? - will you lent me 5 euros for breakfast?
@@ -2622,7 +2487,6 @@ es que - it's just that
 la piel - skin
 la chaqueta - jacket
 la chaqueta de piel - leather jacket
-
 la chispa - spark
 pasarse - miss out
 pasarse una parada - miss a stop out
@@ -2654,4 +2518,5 @@ nos tocó la lotería - we won the lottery
 os tocó la lotería - you won the loterry
 les tocó la lotería - they, Vds won the lottery
 el árbol de Navidad - Christmas tree
-el árbol - tree
+hermoso/a - beautiful
+i'll be right back - ahora vuelvo

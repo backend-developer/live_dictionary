@@ -52,7 +52,7 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
         correctAnswerView = (TextView) findViewById(R.id.correct_answer);
         questionLabel = (TextView) findViewById(R.id.question_label);
 
-        publishNextWord();
+
 
         showTranslationButton = (Button) findViewById(R.id.show_translation_button);
         knownWordButton = (Button) findViewById(R.id.known_word_submision_button);
@@ -72,8 +72,7 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
         importDataFileEditText.setText(defaultImportFile.getAbsolutePath());
         exportDataFileEditText.setText(defaultExportFile.getAbsolutePath());
 
-
-        enableTranslationAndNotSubmittionButtons(true);
+        publishNextWord();
         showTranslationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -85,7 +84,6 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
             @Override
             public void onClick(View view) {
                 publishNextWord();
-                enableTranslationAndNotSubmittionButtons(true);
                 questionnaire.markKnown(currentTranslation);
             }
         });
@@ -94,7 +92,6 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
             @Override
             public void onClick(View view) {
                 publishNextWord();
-                enableTranslationAndNotSubmittionButtons(true);
                 questionnaire.markUnknown(currentTranslation);
             }
         });
@@ -158,6 +155,7 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
     private void publishNextWord() {
         try {
             currentTranslation = questionnaire.getRandomTranslation();
+            enableTranslationAndNotSubmittionButtons(true);
             askUserToTranslate();
         } catch (RuntimeException e) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);

@@ -49,11 +49,9 @@ public class AppIntegrationTest {
         DataImporterExporter dataImporterExporter = createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, new TranslationDaoStub());
         dataImporterExporter.export(EXPORT_FILE_NAME);
 
-        validateNumberOfEntriesInFile(EXPORT_FILE_NAME, 2521);
-        validateNumberOfEntriesInFile(IMPORT_FILE_NAME, 2657);
+        validateNumberOfEntriesInFile(EXPORT_FILE_NAME, 2522);
+        validateNumberOfEntriesInFile(IMPORT_FILE_NAME, 2522);
         validateImportedAndExportedFilesMatch(IMPORT_FILE_NAME, EXPORT_FILE_NAME);
-        assertThat(readFile(IMPORT_FILE_NAME).get(0), is(equalTo("morado - purple")));
-        assertThat(readFile(EXPORT_FILE_NAME).get(0), is(equalTo("morado - purple")));
     }
 
     @Test
