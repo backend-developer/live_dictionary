@@ -101,8 +101,6 @@ public class AppIntegrationTest {
         assertThat(newestCounter, is(greaterThan(eldestCounter)));
     }
 
-
-
     private DataImporterExporter createImportedAndimportDataToDao(String liveDataResourceName, TranslationDaoStub dao) throws URISyntaxException, IOException {
         URL resource = Resources.getResource(liveDataResourceName);
         File wordsToImport = new File(resource.toURI());

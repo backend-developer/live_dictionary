@@ -15,6 +15,8 @@ import uk.ignas.langlearn.core.*;
 import java.io.File;
 
 public class QuestionnaireActivity extends Activity implements OnModifyDictionaryClickListener.ModifyDictionaryListener, Supplier<Translation> {
+    private static final Translation EMPTY_TRANSLATION = new Translation(new ForeignWord(""), new NativeWord(""));
+
     private Button showTranslationButton;
     private Button knownWordButton;
     private Button unknownWordButton;
@@ -28,7 +30,7 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
     private TextView correctAnswerView;
     private TextView questionLabel;
 
-    private volatile Translation currentTranslation = new Translation(new ForeignWord("el valor por defecto"), new NativeWord("default"));
+    private volatile Translation currentTranslation = EMPTY_TRANSLATION;
     private Questionnaire questionnaire;
     private TranslationDaoSqlite dao;
 
@@ -155,8 +157,20 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
     private void publishNextWord() {
         try {
             currentTranslation = questionnaire.getRandomTranslation();
-            enableTranslationAndNotSubmittionButtons(true);
-            askUserToTranslate();
+        } catch (QuestionnaireException e) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("LangLearn")
+                    .setMessage("Error occured:" + e.getMessage())
+                    .setPositiveButton("button", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            currentTranslation = EMPTY_TRANSLATION;
+
         } catch (RuntimeException e) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("LangLearn")
@@ -170,6 +184,8 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
             AlertDialog dialog = builder.create();
             dialog.show();
         }
+        enableTranslationAndNotSubmittionButtons(true);
+        askUserToTranslate();
     }
 
     private void askUserToTranslate() {
