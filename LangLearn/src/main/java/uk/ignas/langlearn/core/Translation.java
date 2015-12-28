@@ -18,6 +18,7 @@ public class Translation {
         this.id = id;
         this.foreignWord = translation.getForeignWord();
         this.nativeWord = translation.getNativeWord();
+        this.metadata = translation.getMetadata();
     }
 
     public Translation(Integer id, ForeignWord foreignWord, NativeWord nativeWord) {

@@ -36,7 +36,7 @@ public class DataImporterExporter {
             }
         }
 
-        Set<Translation> translationsFromDb = dao.getAllTranslations().keySet();
+        List<Translation> translationsFromDb = dao.getAllTranslations();
         dao.delete(translationsFromDb);
 
         dao.insert(new ArrayList<>(translationsToInsert));
@@ -50,7 +50,7 @@ public class DataImporterExporter {
         }
 
         try {
-            writeTranslations(planeTextExportedPath, dao.getAllTranslations().keySet());
+            writeTranslations(planeTextExportedPath, dao.getAllTranslations());
         } catch (Exception e) {
             throw new RuntimeException();
         }
@@ -75,7 +75,7 @@ public class DataImporterExporter {
         return lines;
     }
 
-    private void writeTranslations(String path, Set<Translation> translations) throws IOException {
+    private void writeTranslations(String path, Collection<Translation> translations) throws IOException {
         File fout = new File(path);
         FileOutputStream fos = new FileOutputStream(fout);
 

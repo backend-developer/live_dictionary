@@ -7,9 +7,7 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class TranslationDaoSqlite extends SQLiteOpenHelper implements TranslationDao {
 
@@ -113,7 +111,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     }
 
     @Override
-    public void delete(Set<Translation> translations) {
+    public void delete(Collection<Translation> translations) {
         SQLiteDatabase db = this.getWritableDatabase();
         try {
             db.beginTransaction();
@@ -141,20 +139,19 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     }
 
     @Override
-    public LinkedHashMap<Translation, TranslationMetadata> getAllTranslations() {
-        LinkedHashMap<Translation, TranslationMetadata> translations = new LinkedHashMap<>();
+    public List<Translation> getAllTranslations() {
+        List<Translation> translations = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("select * from " + TRANSLATIONS_TABLE_NAME, null);
         res.moveToFirst();
 
         while (!res.isAfterLast()) {
-            translations.put(new Translation(
+            translations.add(new Translation(
                     res.getInt(res.getColumnIndex(COLUMN_ID)),
                     new ForeignWord(res.getString(res.getColumnIndex(COLUMN_FOREIGN_WORD))),
                     new NativeWord(res.getString(res.getColumnIndex(COLUMN_NATIVE_WORD))),
-                    new TranslationMetadata(Difficulty.valueOf(res.getString(res.getColumnIndex(COLUMN_WORD_DIFFICULTY))))),
-                    new TranslationMetadata(Difficulty.valueOf(res.getString(res.getColumnIndex(COLUMN_WORD_DIFFICULTY)))));
+                    new TranslationMetadata(Difficulty.valueOf(res.getString(res.getColumnIndex(COLUMN_WORD_DIFFICULTY))))));
             res.moveToNext();
         }
         res.close();

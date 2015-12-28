@@ -2,12 +2,12 @@ package uk.ignas.langlearn.testutils;
 
 import uk.ignas.langlearn.core.*;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 public class TranslationDaoStub implements TranslationDao {
-    private LinkedHashMap<Translation, TranslationMetadata> inMemoryTranslations = new LinkedHashMap<>();
+    private List<Translation> inMemoryTranslations = new ArrayList<>();
     private int sequence = 1;
     @Override
     public void insert(List<Translation> translations) {
@@ -18,11 +18,11 @@ public class TranslationDaoStub implements TranslationDao {
 
     @Override
     public boolean insertSingle(Translation translation) {
-        if (inMemoryTranslations.containsKey(translation)) {
+        if (inMemoryTranslations.contains(translation)) {
             return false;
         }
 
-        inMemoryTranslations.put(new Translation(sequence++, translation), new TranslationMetadata(Difficulty.EASY));
+        inMemoryTranslations.add(new Translation(sequence++, translation.getForeignWord(), translation.getNativeWord(), new TranslationMetadata(Difficulty.EASY)));
         return true;
     }
 
@@ -32,7 +32,7 @@ public class TranslationDaoStub implements TranslationDao {
         Translation oldTranslation = getTranslationById(id);
         if (oldTranslation != null) {
             inMemoryTranslations.remove(oldTranslation);
-            inMemoryTranslations.put(new Translation(id, translationsToUpgrade), new TranslationMetadata(difficulty));
+            inMemoryTranslations.add(new Translation(id, translationsToUpgrade));
             return 1;
         } else {
             return 0;
@@ -41,7 +41,7 @@ public class TranslationDaoStub implements TranslationDao {
 
     private Translation getTranslationById(int id) {
         Translation oldTranslation = null;
-        for (Translation t: inMemoryTranslations.keySet()) {
+        for (Translation t: inMemoryTranslations) {
             if (t.getId() == id) {
                 oldTranslation = t;
             }
@@ -50,14 +50,14 @@ public class TranslationDaoStub implements TranslationDao {
     }
 
     @Override
-    public void delete(Set<Translation> translations) {
+    public void delete(Collection<Translation> translations) {
         for (Translation t: translations) {
             inMemoryTranslations.remove(t);
         }
     }
 
     @Override
-    public LinkedHashMap<Translation, TranslationMetadata> getAllTranslations() {
-        return inMemoryTranslations;
+    public List<Translation> getAllTranslations() {
+        return new ArrayList<>(inMemoryTranslations);
     }
 }

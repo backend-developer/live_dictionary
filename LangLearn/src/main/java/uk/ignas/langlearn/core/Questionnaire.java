@@ -20,32 +20,15 @@ public class Questionnaire {
     }
 
     private void reloadTranslations() {
-        LinkedHashMap<Translation, TranslationMetadata> q = getTranslationsFromDb();
-        if (!(q instanceof LinkedHashMap)) {
-            throw new RuntimeException("translations containing data structure does not preserve order: " + q.getClass().getName());
-        }
-        this.questions = new ArrayList<>(q.keySet());
+        questions = dao.getAllTranslations();
+        Collections.reverse(questions);
         this.difficultTranslations.clear();
-        for (Translation t : q.keySet()) {
-            if (q.get(t).getDifficulty() == Difficulty.DIFFICULT) {
+        for (Translation t : new ArrayList<>(questions)) {
+            if (t.getMetadata().getDifficulty() == Difficulty.DIFFICULT) {
                 questions.remove(t);
                 difficultTranslations.add(t);
             }
         }
-    }
-
-    private LinkedHashMap<Translation, TranslationMetadata> getTranslationsFromDb() {
-        return reverseInsertionOrder(dao.getAllTranslations());
-    }
-
-    private LinkedHashMap<Translation, TranslationMetadata> reverseInsertionOrder(LinkedHashMap<Translation, TranslationMetadata> allTranslations) {
-        List<Translation> translations = new ArrayList<>(allTranslations.keySet());
-        Collections.reverse(translations);
-        LinkedHashMap<Translation, TranslationMetadata> allTranslationsReversed = new LinkedHashMap<>();
-        for (Translation translation : translations) {
-            allTranslationsReversed.put(translation, allTranslations.get(translation));
-        }
-        return allTranslationsReversed;
     }
 
     public Translation getRandomTranslation() {

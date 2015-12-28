@@ -1,6 +1,6 @@
 package uk.ignas.langlearn.core;
 
-import java.util.LinkedHashMap;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -11,7 +11,7 @@ public interface TranslationDao {
 
     int update(int id, ForeignWord foreignWord, NativeWord nativeWord, Difficulty difficulty);
 
-    void delete(Set<Translation> translations);
+    void delete(Collection<Translation> translations);
 
-    LinkedHashMap<Translation, TranslationMetadata> getAllTranslations();
+    List<Translation> getAllTranslations();
 }
