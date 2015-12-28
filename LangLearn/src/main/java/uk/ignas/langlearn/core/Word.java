@@ -33,7 +33,6 @@ public class Word {
         Word word1 = (Word) o;
 
         return word != null ? word.equals(word1.word) : word1.word == null;
-
     }
 
     @Override

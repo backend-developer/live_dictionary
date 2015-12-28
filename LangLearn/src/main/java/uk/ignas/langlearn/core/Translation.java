@@ -4,9 +4,14 @@ public class Translation {
     private Integer id;
     private ForeignWord foreignWord;
     private NativeWord nativeWord;
+    private TranslationMetadata metadata;
 
     public Translation(ForeignWord foreignWord, NativeWord nativeWord) {
-        this(null, foreignWord, nativeWord);
+        this(foreignWord, nativeWord, null);
+    }
+
+    public Translation(ForeignWord foreignWord, NativeWord nativeWord, TranslationMetadata metadata) {
+        this(null, foreignWord, nativeWord, metadata);
     }
 
     public Translation(Integer id, Translation translation) {
@@ -16,9 +21,14 @@ public class Translation {
     }
 
     public Translation(Integer id, ForeignWord foreignWord, NativeWord nativeWord) {
+        this(id, foreignWord, nativeWord, null);
+    }
+
+    public Translation(Integer id, ForeignWord foreignWord, NativeWord nativeWord, TranslationMetadata metadata) {
         this.id = id;
         this.foreignWord = foreignWord;
         this.nativeWord = nativeWord;
+        this.metadata = metadata;
     }
 
     public Integer getId() {
@@ -31,6 +41,10 @@ public class Translation {
 
     public NativeWord getNativeWord() {
         return nativeWord;
+    }
+
+    public TranslationMetadata getMetadata() {
+        return metadata;
     }
 
     @Override
@@ -58,6 +72,7 @@ public class Translation {
                 "id=" + id +
                 ", foreignWord=" + foreignWord +
                 ", nativeWord=" + nativeWord +
+                ", metadata=" + metadata +
                 '}';
     }
 }

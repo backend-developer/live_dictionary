@@ -152,7 +152,8 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
             translations.put(new Translation(
                     res.getInt(res.getColumnIndex(COLUMN_ID)),
                     new ForeignWord(res.getString(res.getColumnIndex(COLUMN_FOREIGN_WORD))),
-                    new NativeWord(res.getString(res.getColumnIndex(COLUMN_NATIVE_WORD)))),
+                    new NativeWord(res.getString(res.getColumnIndex(COLUMN_NATIVE_WORD))),
+                    new TranslationMetadata(Difficulty.valueOf(res.getString(res.getColumnIndex(COLUMN_WORD_DIFFICULTY))))),
                     new TranslationMetadata(Difficulty.valueOf(res.getString(res.getColumnIndex(COLUMN_WORD_DIFFICULTY)))));
             res.moveToNext();
         }
