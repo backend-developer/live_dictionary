@@ -25,9 +25,11 @@ public class Questionnaire {
             throw new RuntimeException("words containing data structure does not preserve order: " + q.getClass().getName());
         }
         this.questions = new ArrayList<>(q.keySet());
+        this.unknownQuestions.clear();
         for (Translation t : q.keySet()) {
             if (q.get(t) == Difficulty.HARD) {
-                markUnknown(t);
+                questions.remove(t);
+                unknownQuestions.add(t);
             }
         }
     }
@@ -87,17 +89,12 @@ public class Questionnaire {
         return translations.get(0);
     }
 
-    public void markKnown(Translation translation) {
-
-    }
-
-    public boolean markUnknown(Translation translation) {
+    public boolean mark(Translation translation, Difficulty difficulty) {
         if (translation.getId() == null) {
             return false;
         }
-        questions.remove(translation);
-        unknownQuestions.add(translation);
-        int recordsUpdated = dao.update(translation.getId(), translation.getForeignWord(), translation.getNativeWord(), Difficulty.HARD);
+        int recordsUpdated = dao.update(translation.getId(), translation.getForeignWord(), translation.getNativeWord(), difficulty);
+        reloadData();
         return recordsUpdated > 0;
     }
 
