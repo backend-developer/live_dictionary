@@ -94,6 +94,25 @@ public class QuestionnaireTest {
     }
 
     @Test
+    public void afterAnsweringAWordCorrectlyFor3TimesOthersShouldBeAsked() {
+        TranslationDao dao = new TranslationDaoStub();
+        dao.insertSingle(createForeignToNativeTranslation("la palabra", "word"));
+        dao.insertSingle(createForeignToNativeTranslation("la frase", "phrase"));
+        Translation easyTranslation = dao.getAllTranslations().get(0);
+        Translation otherTranslation = dao.getAllTranslations().get(1);
+        Questionnaire questionnaire = new Questionnaire(dao);
+
+        questionnaire.mark(easyTranslation, Difficulty.EASY);
+        questionnaire.mark(easyTranslation, Difficulty.EASY);
+        questionnaire.mark(easyTranslation, Difficulty.EASY);
+
+        List<Translation> retrieved = LiveDictionaryDsl.retrieveTranslationsNTimes(questionnaire, 10);
+
+        int percentage = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrieved, otherTranslation.getNativeWord().get());
+        assertThat(percentage, is(equalTo(100)));
+    }
+
+    @Test
     public void ifWordWasNotAnswered3TimesCorrectlyItStillShouldStillBeAsked() {
         TranslationDao dao = new TranslationDaoStub();
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));

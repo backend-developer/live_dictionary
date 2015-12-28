@@ -10,6 +10,7 @@ public class Questionnaire {
     public static final int PROBABILITY_OF_80_PERCENT = 80;
     private List<Translation> questions;
     private final Set<Translation> difficultTranslations = new HashSet<>();
+    private List<Translation> veryEasyQuestions = new ArrayList<>();
     private final Random random = new Random();
     private TranslationDao dao;
 
@@ -52,7 +53,13 @@ public class Questionnaire {
             }
         }
         if (translationToReturn.getMetadata().getRecentMarkingAsEasy().size() >= 3) {
-            throw new QuestionnaireException("There are no more difficult words");
+            if (questions.size() == 1) {
+                throw new QuestionnaireException("There are no more difficult words");
+            } else {
+                veryEasyQuestions.add(translationToReturn);
+                questions.remove(translationToReturn);
+                translationToReturn = getRandomTranslation();
+            }
         }
         return translationToReturn;
     }
