@@ -4,18 +4,18 @@
     <string name="app_name">LangLearn</string>
     <string name="hello_world">Hello world!</string>
 	<string name="show_answer">Show Answer</string>
-	<string name="known_word">Mark as known</string>
-    <string name="unknown_word">Mark as unknown</string>
+	<string name="easy_translation">Easy!</string>
+    <string name="difficult_translation">I needed to think!</string>
     <string name="export_data">Export Data</string>
     <string name="export_path">Export Path:</string>
-    <string name="add_word">Add word</string>
+    <string name="add_translation">Add translation</string>
     <string name="cancel">Cancel</string>
     <string name="foreign_word">Foreign</string>
     <string name="native_word">Native</string>
-    <string name="delete_word">Delete Word</string>
+    <string name="delete_translation">Delete Translation</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="update_word">Update Word</string>
+    <string name="update_translation">Update Translation</string>
     <string name="import_data">Import Data</string>
     <string name="import_path">Import Path</string>
 </resources>

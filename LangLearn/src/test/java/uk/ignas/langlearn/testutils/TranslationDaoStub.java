@@ -28,11 +28,11 @@ public class TranslationDaoStub implements TranslationDao {
 
     @Override
     public int update(int id, ForeignWord foreignWord, NativeWord nativeWord, Difficulty difficulty) {
-        Translation wordToUpgrade = new Translation(foreignWord, nativeWord);
+        Translation translationsToUpgrade = new Translation(foreignWord, nativeWord);
         Translation oldTranslation = getTranslationById(id);
         if (oldTranslation != null) {
             inMemoryTranslations.remove(oldTranslation);
-            inMemoryTranslations.put(new Translation(id, wordToUpgrade), difficulty);
+            inMemoryTranslations.put(new Translation(id, translationsToUpgrade), difficulty);
             return 1;
         } else {
             return 0;

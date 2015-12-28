@@ -7,15 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LiveDictionaryDsl {
-    public static List<Translation> retrieveWordsNTimes(Questionnaire questionnaire, int timesToExecute) {
-        final List<Translation> retrievedWords = new ArrayList<>();
+    public static List<Translation> retrieveTranslationsNTimes(Questionnaire questionnaire, int timesToExecute) {
+        final List<Translation> retrievedTranslations = new ArrayList<>();
         for (int i = 0; i < timesToExecute; i++) {
-            retrievedWords.add(questionnaire.getRandomTranslation());
+            retrievedTranslations.add(questionnaire.getRandomTranslation());
         }
-        return retrievedWords;
+        return retrievedTranslations;
     }
 
-    public static int countPercentageOfRetrievedNativeWordsInExpectedSet(List<Translation> retrieved, List<Translation> expectedSet) {
+    public static int countPercentageOfRetrievedNativeWordInExpectedSet(List<Translation> retrieved, List<Translation> expectedSet) {
         int timesInterested = 0;
         for (Translation t: retrieved) {
             if (expectedSet.contains(t)) {
@@ -26,14 +26,14 @@ public class LiveDictionaryDsl {
         return calculatePercentage(timesInterested, timesTotal);
     }
 
-    public static int countPercentageOfRetrievedNativeWordsHadExpectedPattern(List<Translation> retrievedWords, String expectedPattern) {
+    public static int countPercentageOfRetrievedNativeWordsHadExpectedPattern(List<Translation> retrievedTranslations, String expectedPattern) {
         int timesInterested = 0;
-        for (Translation w: retrievedWords) {
+        for (Translation w: retrievedTranslations) {
             if (w.getNativeWord().get().contains(expectedPattern)) {
                 timesInterested++;
             }
         }
-        int timesTotal = retrievedWords.size();
+        int timesTotal = retrievedTranslations.size();
         return calculatePercentage(timesInterested, timesTotal);
     }
 

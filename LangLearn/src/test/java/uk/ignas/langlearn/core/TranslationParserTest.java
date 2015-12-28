@@ -38,14 +38,14 @@ public class TranslationParserTest {
     }
 
     @Test
-    public void shouldNotParseStringWithoutTranslation() {
+    public void shouldNotParseStringWithoutNativeWord() {
         Translation translation = translationParser.parse("no traducido-");
         Assert.assertNull(translation);
     }
 
     @Test
-    public void shouldNotParseStringWithoutOrigWord() {
-        Translation translation = translationParser.parse("-native Word without translation");
+    public void shouldNotParseStringWithoutForeignWord() {
+        Translation translation = translationParser.parse("-native not-translated word");
         Assert.assertNull(translation);
     }
 

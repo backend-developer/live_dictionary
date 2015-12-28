@@ -5,11 +5,11 @@ import java.util.*;
 import static java.util.Collections.singleton;
 
 public class Questionnaire {
-    public static final int UNKNOWN_QUESTION_LIMIT = 20;
+    public static final int DIFFICULT_TRANSLATIONS_LIMIT = 20;
     public static final int NEWEST_100_QUESTIONS = 100;
     public static final int PROBABILITY_OF_80_PERCENT = 80;
     private List<Translation> questions;
-    private final Set<Translation> unknownQuestions = new HashSet<>();
+    private final Set<Translation> difficultTranslations = new HashSet<>();
     private final Random random = new Random();
     private TranslationDao dao;
 
@@ -22,14 +22,14 @@ public class Questionnaire {
     private void reloadTranslations() {
         LinkedHashMap<Translation, Difficulty> q = getTranslationsFromDb();
         if (!(q instanceof LinkedHashMap)) {
-            throw new RuntimeException("words containing data structure does not preserve order: " + q.getClass().getName());
+            throw new RuntimeException("translations containing data structure does not preserve order: " + q.getClass().getName());
         }
         this.questions = new ArrayList<>(q.keySet());
-        this.unknownQuestions.clear();
+        this.difficultTranslations.clear();
         for (Translation t : q.keySet()) {
             if (q.get(t) == Difficulty.DIFFICULT) {
                 questions.remove(t);
-                unknownQuestions.add(t);
+                difficultTranslations.add(t);
             }
         }
     }
@@ -54,9 +54,9 @@ public class Questionnaire {
         if (questions.size() == 0) {
             throw new QuestionnaireException("no questions found");
         }
-        if (unknownQuestions.size() > 0) {
-            if (unknownQuestions.size() > random.nextInt(UNKNOWN_QUESTION_LIMIT)) {
-                return getRandomUnknownQuestion();
+        if (difficultTranslations.size() > 0) {
+            if (difficultTranslations.size() > random.nextInt(DIFFICULT_TRANSLATIONS_LIMIT)) {
+                return getRandomDifficultTranslation();
             }
         }
         if (size <= NEWEST_100_QUESTIONS) {
@@ -83,8 +83,8 @@ public class Questionnaire {
         return questions.get(randomGreaterOrEqualsTo100);
     }
 
-    private Translation getRandomUnknownQuestion() {
-        ArrayList<Translation> translations = new ArrayList<>(unknownQuestions);
+    private Translation getRandomDifficultTranslation() {
+        ArrayList<Translation> translations = new ArrayList<>(difficultTranslations);
         Collections.shuffle(translations);
         return translations.get(0);
     }
@@ -103,8 +103,8 @@ public class Questionnaire {
         reloadTranslations();
     }
 
-    public void delete(Translation currentWord) {
-        dao.delete(singleton(currentWord));
+    public void delete(Translation translation) {
+        dao.delete(singleton(translation));
         reloadTranslations();
     }
 
@@ -113,13 +113,13 @@ public class Questionnaire {
             return false;
         }
 
-        boolean updatedWithHard = updateIfIsAnIdOfAnyOfWords(translation, unknownQuestions, Difficulty.DIFFICULT);
-        boolean updatedWithEasy = updateIfIsAnIdOfAnyOfWords(translation, questions, Difficulty.EASY);
+        boolean updatedAsDifficultCount = updateIfIsAnIdOfAnyOfTranslations(translation, difficultTranslations, Difficulty.DIFFICULT);
+        boolean updatedAsEasyCount = updateIfIsAnIdOfAnyOfTranslations(translation, questions, Difficulty.EASY);
         reloadTranslations();
-        return updatedWithHard || updatedWithEasy;
+        return updatedAsDifficultCount || updatedAsEasyCount;
     }
 
-    private boolean updateIfIsAnIdOfAnyOfWords(Translation translation, Collection<Translation> questions, Difficulty difficulty) {
+    private boolean updateIfIsAnIdOfAnyOfTranslations(Translation translation, Collection<Translation> questions, Difficulty difficulty) {
         for (Translation t : questions) {
             if (Objects.equals(t.getId(), translation.getId())) {
                 dao.update(translation.getId(), translation.getForeignWord(), translation.getNativeWord(), difficulty);

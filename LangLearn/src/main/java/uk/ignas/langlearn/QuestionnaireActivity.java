@@ -18,11 +18,11 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
     private static final Translation EMPTY_TRANSLATION = new Translation(new ForeignWord(""), new NativeWord(""));
 
     private Button showTranslationButton;
-    private Button knownWordButton;
-    private Button unknownWordButton;
-    private Button addWordButton;
-    private Button updateWordButton;
-    private Button deleteWordButton;
+    private Button markTranslationAsEasyButton;
+    private Button markTranslationAsDifficultButton;
+    private Button addTranslationButton;
+    private Button updateTranslationButton;
+    private Button deleteTranslationButton;
     private Button importDataButton;
     private Button exportDataButton;
     private EditText importDataFileEditText;
@@ -54,24 +54,24 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
         questionLabel = (TextView) findViewById(R.id.question_label);
 
         showTranslationButton = (Button) findViewById(R.id.show_translation_button);
-        knownWordButton = (Button) findViewById(R.id.known_word_submision_button);
-        unknownWordButton = (Button) findViewById(R.id.unknown_word_submision_button);
-        addWordButton = (Button) findViewById(R.id.add_word_button);
-        updateWordButton = (Button) findViewById(R.id.update_word_button);
-        deleteWordButton = (Button) findViewById(R.id.delete_word_button);
+        markTranslationAsEasyButton = (Button) findViewById(R.id.submit_translation_as_easy_button);
+        markTranslationAsDifficultButton = (Button) findViewById(R.id.submit_translation_as_difficult_button);
+        addTranslationButton = (Button) findViewById(R.id.add_translation_button);
+        updateTranslationButton = (Button) findViewById(R.id.update_translation_button);
+        deleteTranslationButton = (Button) findViewById(R.id.delete_translation_button);
         importDataButton = (Button) findViewById(R.id.import_data_button);
         exportDataButton = (Button) findViewById(R.id.export_data_button);
 
         importDataFileEditText = (EditText) findViewById(R.id.import_data_path_textedit);
         exportDataFileEditText = (EditText) findViewById(R.id.export_data_path_textedit);
 
-        final File defaultImportFile = new File(externalStoragePublicDirectory, "SpanishWords.txt");
+        final File defaultImportFile = new File(externalStoragePublicDirectory, "SpanishEnglishTranslations.txt");
         File defaultExportFile = new File(externalStoragePublicDirectory, "ExportedByUserRequest.txt");
 
         importDataFileEditText.setText(defaultImportFile.getAbsolutePath());
         exportDataFileEditText.setText(defaultExportFile.getAbsolutePath());
 
-        publishNextWord();
+        publishNextTranslation();
         showTranslationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -79,32 +79,32 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
             }
         });
 
-        knownWordButton.setOnClickListener(new View.OnClickListener() {
+        markTranslationAsEasyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                publishNextWord();
+                publishNextTranslation();
                 questionnaire.mark(currentTranslation, Difficulty.EASY);
             }
         });
 
-        unknownWordButton.setOnClickListener(new View.OnClickListener() {
+        markTranslationAsDifficultButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                publishNextWord();
+                publishNextTranslation();
                 questionnaire.mark(currentTranslation, Difficulty.DIFFICULT);
             }
         });
 
-        deleteWordButton.setOnClickListener(new View.OnClickListener() {
+        deleteTranslationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new AlertDialog.Builder(QuestionnaireActivity.this)
-                        .setMessage("Delete this word?")
+                        .setMessage("Delete this translation?")
                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 questionnaire.delete(currentTranslation);
-                                publishNextWord();
+                                publishNextTranslation();
                             }
                         })
                         .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -117,10 +117,10 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
             }
         });
 
-        View.OnClickListener onAddWordListener = OnModifyDictionaryClickListener.onInsertingWord(this);
-        addWordButton.setOnClickListener(onAddWordListener);
-        View.OnClickListener onUpdateWordListener = OnModifyDictionaryClickListener.onUpdatingWord(this, this);
-        updateWordButton.setOnClickListener(onUpdateWordListener);
+        View.OnClickListener onAddTranslationListener = OnModifyDictionaryClickListener.onInsertingTranslation(this);
+        addTranslationButton.setOnClickListener(onAddTranslationListener);
+        View.OnClickListener onUpdateTranslationListener = OnModifyDictionaryClickListener.onUpdatingTranslation(this, this);
+        updateTranslationButton.setOnClickListener(onUpdateTranslationListener);
 
         importDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,11 +155,11 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
     private void enableTranslationAndNotSubmittionButtons(boolean isTranslationPhase) {
         final boolean isSubmittionPhase = !isTranslationPhase;
         showTranslationButton.setEnabled(isTranslationPhase);
-        knownWordButton.setEnabled(isSubmittionPhase);
-        unknownWordButton.setEnabled(isSubmittionPhase);
+        markTranslationAsEasyButton.setEnabled(isSubmittionPhase);
+        markTranslationAsDifficultButton.setEnabled(isSubmittionPhase);
     }
 
-    private void publishNextWord() {
+    private void publishNextTranslation() {
         try {
             currentTranslation = questionnaire.getRandomTranslation();
         } catch (QuestionnaireException e) {

@@ -24,14 +24,14 @@ class OnModifyDictionaryClickListener implements View.OnClickListener {
     private Supplier<Translation> currentTranslation;
     private DictionaryActivity dictionaryActivity;
 
-    public enum DictionaryActivity {INSERTING_WORD, UPDATING_WORD}
+    public enum DictionaryActivity {INSERTING_TRANSLATION, UPDATING_TRANSLATION}
 
-    public static OnModifyDictionaryClickListener onInsertingWord(Activity context) {
-        return new OnModifyDictionaryClickListener(context, DictionaryActivity.INSERTING_WORD);
+    public static OnModifyDictionaryClickListener onInsertingTranslation(Activity context) {
+        return new OnModifyDictionaryClickListener(context, DictionaryActivity.INSERTING_TRANSLATION);
     }
 
-    public static OnModifyDictionaryClickListener onUpdatingWord(Activity context, Supplier<Translation> currentTranslation) {
-        return new OnModifyDictionaryClickListener(context, currentTranslation, DictionaryActivity.UPDATING_WORD);
+    public static OnModifyDictionaryClickListener onUpdatingTranslation(Activity context, Supplier<Translation> currentTranslation) {
+        return new OnModifyDictionaryClickListener(context, currentTranslation, DictionaryActivity.UPDATING_TRANSLATION);
     }
 
     private OnModifyDictionaryClickListener(Activity context, DictionaryActivity dictionaryActivity) {
@@ -68,7 +68,7 @@ class OnModifyDictionaryClickListener implements View.OnClickListener {
         final EditText nativeWordEditText = (EditText) inflatedDialogView.findViewById(R.id.native_language_word_edittext);
         foreignWordEditText.setText(currentTranslation.get().getForeignWord().get());
         nativeWordEditText.setText(currentTranslation.get().getNativeWord().get());
-        int okButtonResorce = dictionaryActivity == DictionaryActivity.INSERTING_WORD ? R.string.add_word : R.string.update_word;
+        int okButtonResorce = dictionaryActivity == DictionaryActivity.INSERTING_TRANSLATION ? R.string.add_translation : R.string.update_translation;
         final AlertDialog dialog = b
                 .setView(inflatedDialogView)
                 .setPositiveButton(okButtonResorce, new DialogInterface.OnClickListener() {
@@ -78,12 +78,12 @@ class OnModifyDictionaryClickListener implements View.OnClickListener {
                         String foreignWord = foreignWordEditText.getText().toString();
                         String nativeWord = nativeWordEditText.getText().toString();
                         switch (dictionaryActivity) {
-                            case INSERTING_WORD:
+                            case INSERTING_TRANSLATION:
                                 ((ModifyDictionaryListener)context).createTranslation(new Translation(
                                         new ForeignWord(foreignWord),
                                         new NativeWord(nativeWord)));
                                 break;
-                            case UPDATING_WORD:
+                            case UPDATING_TRANSLATION:
                                 ((ModifyDictionaryListener)context).updateTranslation(new Translation(
                                         currentTranslation.get().getId(),
                                         new ForeignWord(foreignWord),
@@ -100,7 +100,7 @@ class OnModifyDictionaryClickListener implements View.OnClickListener {
                     }
                 })
                 .create();
-        String titleMessage = dictionaryActivity == DictionaryActivity.INSERTING_WORD ? "Add new word" : "Update a word";
+        String titleMessage = dictionaryActivity == DictionaryActivity.INSERTING_TRANSLATION ? "Add new word" : "Update a word";
         dialog.setMessage(titleMessage);
         dialog.show();
     }

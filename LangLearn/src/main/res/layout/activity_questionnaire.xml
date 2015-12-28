@@ -32,36 +32,36 @@
 					android:layout_height="wrap_content"
 					android:text="@string/show_answer"/>
 			<Button
-					android:id="@+id/known_word_submision_button"
+					android:id="@+id/submit_translation_as_easy_button"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:text="@string/known_word"
+					android:text="@string/easy_translation"
 					android:textColor="@android:color/holo_green_dark"
 			/>
 			<Button
-					android:id="@+id/unknown_word_submision_button"
+					android:id="@+id/submit_translation_as_difficult_button"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:text="@string/unknown_word"
+					android:text="@string/difficult_translation"
 					android:textColor="@android:color/holo_red_dark"
 			/>
 			<Button
-					android:id="@+id/add_word_button"
+					android:id="@+id/add_translation_button"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:text="@string/add_word"
+					android:text="@string/add_translation"
 			/>
 			<Button
-					android:id="@+id/update_word_button"
+					android:id="@+id/update_translation_button"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:text="@string/update_word"
+					android:text="@string/update_translation"
 			/>
 			<Button
-					android:id="@+id/delete_word_button"
+					android:id="@+id/delete_translation_button"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:text="@string/delete_word"
+					android:text="@string/delete_translation"
 			/>
 			<TextView
 					android:id="@+id/path_to_import_textview"

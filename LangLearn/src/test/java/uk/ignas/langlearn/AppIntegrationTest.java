@@ -27,7 +27,7 @@ import static org.hamcrest.core.IsNot.not;
 public class AppIntegrationTest {
 
     public static final String IMPORT_FILE_NAME = "import.txt";
-    public static final String LIVE_DATA_RESOURCE_NAME = "exported_words.txt";
+    public static final String LIVE_DATA_RESOURCE_NAME = "exported_translations.txt";
     public static final String EXPORT_FILE_NAME = "export.txt";
 
     @After
@@ -76,12 +76,12 @@ public class AppIntegrationTest {
     @Test
     public void importedDataReplaceDbContents() throws IOException, URISyntaxException {
         TranslationDaoStub dao = new TranslationDaoStub();
-        Translation wordToBeReplaced = new Translation(new ForeignWord("palabra para borrar"), new NativeWord("word to delete"));
-        dao.insertSingle(wordToBeReplaced);
+        Translation translationsToBeReplaced = new Translation(new ForeignWord("palabra para borrar"), new NativeWord("word to delete"));
+        dao.insertSingle(translationsToBeReplaced);
 
         createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, dao);
 
-        assertThat(dao.getAllTranslations().keySet(), not(hasItem(wordToBeReplaced)));
+        assertThat(dao.getAllTranslations().keySet(), not(hasItem(translationsToBeReplaced)));
     }
 
     @Test
@@ -94,17 +94,17 @@ public class AppIntegrationTest {
         List<Translation> eldestTranslations = translations.subList(0, 100);
         List<Translation> newestTranslations = translations.subList(size - 100, size);
 
-        List<Translation> retrieved = LiveDictionaryDsl.retrieveWordsNTimes(q, 10);
+        List<Translation> retrieved = LiveDictionaryDsl.retrieveTranslationsNTimes(q, 10);
 
-        int eldestCounter = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsInExpectedSet(retrieved, eldestTranslations);
-        int newestCounter = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsInExpectedSet(retrieved, newestTranslations);
+        int eldestCounter = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordInExpectedSet(retrieved, eldestTranslations);
+        int newestCounter = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordInExpectedSet(retrieved, newestTranslations);
         assertThat(newestCounter, is(greaterThan(eldestCounter)));
     }
 
     private DataImporterExporter createImportedAndimportDataToDao(String liveDataResourceName, TranslationDaoStub dao) throws URISyntaxException, IOException {
         URL resource = Resources.getResource(liveDataResourceName);
-        File wordsToImport = new File(resource.toURI());
-        Files.copy(wordsToImport, new File(IMPORT_FILE_NAME));
+        File importFile = new File(resource.toURI());
+        Files.copy(importFile, new File(IMPORT_FILE_NAME));
         DataImporterExporter dataImporterExporter = new DataImporterExporter(dao);
 
         dataImporterExporter.importFromFile(IMPORT_FILE_NAME);
