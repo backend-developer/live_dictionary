@@ -105,7 +105,7 @@ public class AppIntegrationTest {
         URL resource = Resources.getResource(liveDataResourceName);
         File wordsToImport = new File(resource.toURI());
         Files.copy(wordsToImport, new File(IMPORT_FILE_NAME));
-        DataImporterExporter dataImporterExporter = new DataImporterExporter(dao, new File("."));
+        DataImporterExporter dataImporterExporter = new DataImporterExporter(dao);
 
         dataImporterExporter.importFromFile(IMPORT_FILE_NAME);
         return dataImporterExporter;

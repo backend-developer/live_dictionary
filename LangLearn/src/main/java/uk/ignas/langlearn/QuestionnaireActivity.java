@@ -46,15 +46,12 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
 
         File externalStoragePublicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
         dao = new TranslationDaoSqlite(QuestionnaireActivity.this);
-        final DataImporterExporter dataImporterExporter = new DataImporterExporter(dao, externalStoragePublicDirectory);
-        //dataImporterExporter.importTranslations();
+        final DataImporterExporter dataImporterExporter = new DataImporterExporter(dao);
 
         questionnaire = new Questionnaire(dao);
 
         correctAnswerView = (TextView) findViewById(R.id.correct_answer);
         questionLabel = (TextView) findViewById(R.id.question_label);
-
-
 
         showTranslationButton = (Button) findViewById(R.id.show_translation_button);
         knownWordButton = (Button) findViewById(R.id.known_word_submision_button);
@@ -128,7 +125,11 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
         importDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dataImporterExporter.importTranslations();
+                try {
+                    dataImporterExporter.importFromFile(importDataFileEditText.getText().toString());
+                } catch (RuntimeException e) {
+                    showErrorDialogAndContinue(e.getMessage());
+                }
                 questionnaire.reloadData();
             }
         });
@@ -136,7 +137,11 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
         exportDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dataImporterExporter.reexport(exportDataFileEditText.getText().toString());
+                try {
+                    dataImporterExporter.export(exportDataFileEditText.getText().toString());
+                } catch (RuntimeException e) {
+                    showErrorDialogAndContinue(e.getMessage());
+                }
             }
         });
     }
@@ -158,34 +163,37 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
         try {
             currentTranslation = questionnaire.getRandomTranslation();
         } catch (QuestionnaireException e) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("LangLearn")
-                    .setMessage("Error occured:" + e.getMessage())
-                    .setPositiveButton("button", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-
-                        }
-                    });
-            AlertDialog dialog = builder.create();
-            dialog.show();
+            showErrorDialogAndContinue(e.getMessage());
             currentTranslation = EMPTY_TRANSLATION;
-
         } catch (RuntimeException e) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("LangLearn")
-                    .setMessage("Error occured:" + e.getMessage())
-                    .setPositiveButton("button", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            finish();
-                        }
-                    });
-            AlertDialog dialog = builder.create();
-            dialog.show();
+            showErrorDialogAndExitActivity(e.getMessage());
         }
         enableTranslationAndNotSubmittionButtons(true);
         askUserToTranslate();
+    }
+
+    private void showErrorDialogAndExitActivity(String message) {
+        showErrorDialog(message, true);
+    }
+
+    private void showErrorDialogAndContinue(String message) {
+        showErrorDialog(message, false);
+    }
+
+    private void showErrorDialog(String message, final boolean shouldExitActivity) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Live Dictionary")
+                .setMessage("Error occured:" + message)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if (shouldExitActivity) {
+                            finish();
+                        }
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void askUserToTranslate() {
