@@ -1,10 +1,12 @@
 package uk.ignas.langlearn.core;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import uk.ignas.langlearn.testutils.LiveDictionaryDsl;
 import uk.ignas.langlearn.testutils.TranslationDaoStub;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -70,6 +72,53 @@ public class QuestionnaireTest {
         questionnaire.mark(translation, Difficulty.DIFFICULT);
 
         assertThat(dao.getAllTranslations().get(0).getMetadata().getDifficulty(), is(equalTo(Difficulty.DIFFICULT)));
+    }
+
+    @Test
+    public void afterAnsweringAWordCorrectlyFor3TimesTheWordShouldNotBeAsked() {
+        TranslationDao dao = new TranslationDaoStub();
+        dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
+        Translation translation = dao.getAllTranslations().get(0);
+        Questionnaire questionnaire = new Questionnaire(dao);
+
+        questionnaire.mark(translation, Difficulty.EASY);
+        questionnaire.mark(translation, Difficulty.EASY);
+        questionnaire.mark(translation, Difficulty.EASY);
+
+        try {
+            questionnaire.getRandomTranslation();
+            fail();
+        } catch (QuestionnaireException e) {
+            assertThat(e.getMessage(), Matchers.containsString("There are no more difficult words"));
+        }
+    }
+
+    @Test
+    public void ifWordWasNotAnswered3TimesCorrectlyItStillShouldStillBeAsked() {
+        TranslationDao dao = new TranslationDaoStub();
+        dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
+        Translation translation = dao.getAllTranslations().get(0);
+        Questionnaire questionnaire = new Questionnaire(dao);
+
+        questionnaire.mark(translation, Difficulty.EASY);
+        questionnaire.mark(translation, Difficulty.EASY);
+        questionnaire.mark(translation, Difficulty.DIFFICULT);
+        questionnaire.mark(translation, Difficulty.EASY);
+
+        questionnaire.getRandomTranslation();
+    }
+
+    @Test
+    public void afterAnsweringAWordCorrectlyFor2TimesTheWordShouldStillBeAsked() {
+        TranslationDao dao = new TranslationDaoStub();
+        dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
+        Translation translation = dao.getAllTranslations().get(0);
+        Questionnaire questionnaire = new Questionnaire(dao);
+        questionnaire.mark(translation, Difficulty.EASY);
+        questionnaire.mark(translation, Difficulty.EASY);
+
+        //should not throw
+        questionnaire.getRandomTranslation();
     }
 
     @Test
@@ -169,7 +218,7 @@ public class QuestionnaireTest {
         dao.insert(getNTranslationsWithNativeWordStartingWith(10, "DifficultWord"));
         for (Translation t: new HashSet<>(dao.getAllTranslations())) {
             if (t.getNativeWord().get().contains("DifficultWord")) {
-                dao.update(t.getId(), t.getForeignWord(), t.getNativeWord(), Difficulty.DIFFICULT);
+                dao.update(t.getId(), t.getForeignWord(), t.getNativeWord(), new TranslationMetadata(Difficulty.DIFFICULT, new ArrayList<Date>()));
             }
         }
         Questionnaire questionnaire = new Questionnaire(dao);

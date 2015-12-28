@@ -9,9 +9,11 @@ public interface TranslationDao {
 
     boolean insertSingle(Translation translation);
 
-    int update(int id, ForeignWord foreignWord, NativeWord nativeWord, Difficulty difficulty);
+    int update(int id, ForeignWord foreignWord, NativeWord nativeWord, TranslationMetadata metadata);
 
     void delete(Collection<Translation> translations);
 
     List<Translation> getAllTranslations();
+
+    Translation getById(int id);
 }

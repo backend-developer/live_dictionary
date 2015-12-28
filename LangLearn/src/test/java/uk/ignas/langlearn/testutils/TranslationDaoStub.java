@@ -4,6 +4,7 @@ import uk.ignas.langlearn.core.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 public class TranslationDaoStub implements TranslationDao {
@@ -22,13 +23,17 @@ public class TranslationDaoStub implements TranslationDao {
             return false;
         }
 
-        inMemoryTranslations.add(new Translation(sequence++, translation.getForeignWord(), translation.getNativeWord(), new TranslationMetadata(Difficulty.EASY)));
+        TranslationMetadata metadata = translation.getMetadata();
+        if (metadata == null) {
+            metadata = new TranslationMetadata(Difficulty.EASY, new ArrayList<Date>());
+        }
+        inMemoryTranslations.add(new Translation(sequence++, translation.getForeignWord(), translation.getNativeWord(), metadata));
         return true;
     }
 
     @Override
-    public int update(int id, ForeignWord foreignWord, NativeWord nativeWord, Difficulty difficulty) {
-        Translation translationsToUpgrade = new Translation(foreignWord, nativeWord, new TranslationMetadata(difficulty));
+    public int update(int id, ForeignWord foreignWord, NativeWord nativeWord, TranslationMetadata metadata) {
+        Translation translationsToUpgrade = new Translation(foreignWord, nativeWord, metadata);
         Translation oldTranslation = getTranslationById(id);
         if (oldTranslation != null) {
             inMemoryTranslations.remove(oldTranslation);
@@ -59,5 +64,15 @@ public class TranslationDaoStub implements TranslationDao {
     @Override
     public List<Translation> getAllTranslations() {
         return new ArrayList<>(inMemoryTranslations);
+    }
+
+    @Override
+    public Translation getById(int id) {
+        for (Translation t: inMemoryTranslations) {
+            if (t.getId() == id) {
+                return t;
+            }
+        }
+        throw new RuntimeException("record not found");
     }
 }

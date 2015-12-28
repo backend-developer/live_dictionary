@@ -41,15 +41,20 @@ public class Questionnaire {
                 return getRandomDifficultTranslation();
             }
         }
+        Translation translationToReturn;
         if (size <= NEWEST_100_QUESTIONS) {
-            return questions.get(random.nextInt(size));
+            translationToReturn = questions.get(random.nextInt(size));
         } else {
             if (is80PercentOfTimes()) {
-                return getOneOfTheNewest100Questions();
+                translationToReturn = getOneOfTheNewest100Questions();
             } else {
-                return getQuestionNotOutOf100Newest();
+                translationToReturn = getQuestionNotOutOf100Newest();
             }
         }
+        if (translationToReturn.getMetadata().getRecentMarkingAsEasy().size() >= 3) {
+            throw new QuestionnaireException("There are no more difficult words");
+        }
+        return translationToReturn;
     }
 
     private boolean is80PercentOfTimes() {
@@ -75,7 +80,21 @@ public class Questionnaire {
         if (translation.getId() == null) {
             return false;
         }
-        int recordsUpdated = dao.update(translation.getId(), translation.getForeignWord(), translation.getNativeWord(), difficulty);
+        Translation record;
+        try {
+            record = dao.getById(translation.getId());
+        } catch (RuntimeException e) {
+            return false;
+        }
+        TranslationMetadata metadata = record.getMetadata();
+        if (difficulty == Difficulty.EASY) {
+            if (metadata.getRecentMarkingAsEasy().size() < 3) {
+                metadata.getRecentMarkingAsEasy().add(new Date());
+            }
+        } else {
+            metadata.getRecentMarkingAsEasy().clear();
+        }
+        int recordsUpdated = dao.update(translation.getId(), translation.getForeignWord(), translation.getNativeWord(), new TranslationMetadata(difficulty, metadata.getRecentMarkingAsEasy()));
         reloadData();
         return recordsUpdated > 0;
     }
@@ -104,7 +123,9 @@ public class Questionnaire {
     private boolean updateIfIsAnIdOfAnyOfTranslations(Translation translation, Collection<Translation> questions, Difficulty difficulty) {
         for (Translation t : questions) {
             if (Objects.equals(t.getId(), translation.getId())) {
-                dao.update(translation.getId(), translation.getForeignWord(), translation.getNativeWord(), difficulty);
+                Translation byId = dao.getById(t.getId());
+
+                dao.update(translation.getId(), translation.getForeignWord(), translation.getNativeWord(), new TranslationMetadata(difficulty, byId.getMetadata().getRecentMarkingAsEasy()));
                 return true;
             }
         }
