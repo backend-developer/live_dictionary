@@ -49,8 +49,8 @@ public class AppIntegrationTest {
         DataImporterExporter dataImporterExporter = createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, new TranslationDaoStub());
         dataImporterExporter.export(EXPORT_FILE_NAME);
 
-        validateNumberOfEntriesInFile(EXPORT_FILE_NAME, 2522);
-        validateNumberOfEntriesInFile(IMPORT_FILE_NAME, 2522);
+        validateNumberOfEntriesInFile(EXPORT_FILE_NAME, 2552);
+        validateNumberOfEntriesInFile(IMPORT_FILE_NAME, 2552);
         validateImportedAndExportedFilesMatch(IMPORT_FILE_NAME, EXPORT_FILE_NAME);
     }
 
