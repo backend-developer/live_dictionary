@@ -20,29 +20,28 @@ public class Questionnaire {
     }
 
     private void reloadTranslations() {
-        LinkedHashMap<Translation, Difficulty> q = getTranslationsFromDb();
+        LinkedHashMap<Translation, TranslationMetadata> q = getTranslationsFromDb();
         if (!(q instanceof LinkedHashMap)) {
             throw new RuntimeException("translations containing data structure does not preserve order: " + q.getClass().getName());
         }
         this.questions = new ArrayList<>(q.keySet());
         this.difficultTranslations.clear();
         for (Translation t : q.keySet()) {
-            if (q.get(t) == Difficulty.DIFFICULT) {
+            if (q.get(t).getDifficulty() == Difficulty.DIFFICULT) {
                 questions.remove(t);
                 difficultTranslations.add(t);
             }
         }
     }
 
-    private LinkedHashMap<Translation, Difficulty> getTranslationsFromDb() {
-        LinkedHashMap<Translation, Difficulty> allTranslations = dao.getAllTranslations();
-        return reverseInsertionOrder(allTranslations);
+    private LinkedHashMap<Translation, TranslationMetadata> getTranslationsFromDb() {
+        return reverseInsertionOrder(dao.getAllTranslations());
     }
 
-    private LinkedHashMap<Translation, Difficulty> reverseInsertionOrder(LinkedHashMap<Translation, Difficulty> allTranslations) {
+    private LinkedHashMap<Translation, TranslationMetadata> reverseInsertionOrder(LinkedHashMap<Translation, TranslationMetadata> allTranslations) {
         List<Translation> translations = new ArrayList<>(allTranslations.keySet());
         Collections.reverse(translations);
-        LinkedHashMap<Translation, Difficulty> allTranslationsReversed = new LinkedHashMap<>();
+        LinkedHashMap<Translation, TranslationMetadata> allTranslationsReversed = new LinkedHashMap<>();
         for (Translation translation : translations) {
             allTranslationsReversed.put(translation, allTranslations.get(translation));
         }

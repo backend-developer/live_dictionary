@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 public class TranslationDaoStub implements TranslationDao {
-    private LinkedHashMap<Translation, Difficulty> inMemoryTranslations = new LinkedHashMap<>();
+    private LinkedHashMap<Translation, TranslationMetadata> inMemoryTranslations = new LinkedHashMap<>();
     private int sequence = 1;
     @Override
     public void insert(List<Translation> translations) {
@@ -22,7 +22,7 @@ public class TranslationDaoStub implements TranslationDao {
             return false;
         }
 
-        inMemoryTranslations.put(new Translation(sequence++, translation), Difficulty.EASY);
+        inMemoryTranslations.put(new Translation(sequence++, translation), new TranslationMetadata(Difficulty.EASY));
         return true;
     }
 
@@ -32,7 +32,7 @@ public class TranslationDaoStub implements TranslationDao {
         Translation oldTranslation = getTranslationById(id);
         if (oldTranslation != null) {
             inMemoryTranslations.remove(oldTranslation);
-            inMemoryTranslations.put(new Translation(id, translationsToUpgrade), difficulty);
+            inMemoryTranslations.put(new Translation(id, translationsToUpgrade), new TranslationMetadata(difficulty));
             return 1;
         } else {
             return 0;
@@ -57,7 +57,7 @@ public class TranslationDaoStub implements TranslationDao {
     }
 
     @Override
-    public LinkedHashMap<Translation, Difficulty> getAllTranslations() {
+    public LinkedHashMap<Translation, TranslationMetadata> getAllTranslations() {
         return inMemoryTranslations;
     }
 }

@@ -13,5 +13,5 @@ public interface TranslationDao {
 
     void delete(Set<Translation> translations);
 
-    LinkedHashMap<Translation, Difficulty> getAllTranslations();
+    LinkedHashMap<Translation, TranslationMetadata> getAllTranslations();
 }

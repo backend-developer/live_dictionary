@@ -69,7 +69,7 @@ public class QuestionnaireTest {
 
         questionnaire.mark(translation, Difficulty.DIFFICULT);
 
-        assertThat(dao.getAllTranslations().get(translation), is(equalTo(Difficulty.DIFFICULT)));
+        assertThat(dao.getAllTranslations().get(translation).getDifficulty(), is(equalTo(Difficulty.DIFFICULT)));
     }
 
     @Test

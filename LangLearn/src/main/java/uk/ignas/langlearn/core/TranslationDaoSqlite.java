@@ -141,8 +141,8 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     }
 
     @Override
-    public LinkedHashMap<Translation, Difficulty> getAllTranslations() {
-        LinkedHashMap<Translation, Difficulty> translations = new LinkedHashMap<>();
+    public LinkedHashMap<Translation, TranslationMetadata> getAllTranslations() {
+        LinkedHashMap<Translation, TranslationMetadata> translations = new LinkedHashMap<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("select * from " + TRANSLATIONS_TABLE_NAME, null);
@@ -153,7 +153,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
                     res.getInt(res.getColumnIndex(COLUMN_ID)),
                     new ForeignWord(res.getString(res.getColumnIndex(COLUMN_FOREIGN_WORD))),
                     new NativeWord(res.getString(res.getColumnIndex(COLUMN_NATIVE_WORD)))),
-                    Difficulty.valueOf(res.getString(res.getColumnIndex(COLUMN_WORD_DIFFICULTY))));
+                    new TranslationMetadata(Difficulty.valueOf(res.getString(res.getColumnIndex(COLUMN_WORD_DIFFICULTY)))));
             res.moveToNext();
         }
         res.close();

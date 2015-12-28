@@ -49,9 +49,8 @@ public class DataImporterExporter {
             throw new RuntimeException("folder to export to is not found");
         }
 
-        LinkedHashMap<Translation, Difficulty> translationsFromDb = dao.getAllTranslations();
         try {
-            writeTranslations(planeTextExportedPath, translationsFromDb.keySet());
+            writeTranslations(planeTextExportedPath, dao.getAllTranslations().keySet());
         } catch (Exception e) {
             throw new RuntimeException();
         }
