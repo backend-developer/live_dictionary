@@ -18,24 +18,28 @@ public class DataImporterExporter {
         }
 
         try {
-            List<String> planeText = readFile(planeTextFilePath);
-
-            LinkedHashSet<Translation> translationsToInsert = new LinkedHashSet<>();
-
-            for (String planeTextLine : planeText) {
-                Translation parsed = translationParser.parse(planeTextLine);
-                if (parsed != null) {
-                    translationsToInsert.add(parsed);
-                }
-            }
-
-            Set<Translation> translationsFromDb = dao.getAllTranslations().keySet();
-            dao.delete(translationsFromDb);
-
-            dao.insert(new ArrayList<>(translationsToInsert));
+            importOrThrow(planeTextFilePath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void importOrThrow(String planeTextFilePath) throws IOException {
+        List<String> planeText = readFile(planeTextFilePath);
+
+        LinkedHashSet<Translation> translationsToInsert = new LinkedHashSet<>();
+
+        for (String planeTextLine : planeText) {
+            Translation parsed = translationParser.parse(planeTextLine);
+            if (parsed != null) {
+                translationsToInsert.add(parsed);
+            }
+        }
+
+        Set<Translation> translationsFromDb = dao.getAllTranslations().keySet();
+        dao.delete(translationsFromDb);
+
+        dao.insert(new ArrayList<>(translationsToInsert));
     }
 
     public void export(String planeTextExportedPath) {
