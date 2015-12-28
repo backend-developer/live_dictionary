@@ -67,9 +67,9 @@ public class QuestionnaireTest {
         Translation translation = getOnlyElement(dao.getAllTranslations().keySet());
         Questionnaire questionnaire = new Questionnaire(dao);
 
-        questionnaire.mark(translation, Difficulty.HARD);
+        questionnaire.mark(translation, Difficulty.DIFFICULT);
 
-        assertThat(dao.getAllTranslations().get(translation), is(equalTo(Difficulty.HARD)));
+        assertThat(dao.getAllTranslations().get(translation), is(equalTo(Difficulty.DIFFICULT)));
     }
 
     @Test
@@ -109,7 +109,7 @@ public class QuestionnaireTest {
 
         for (Translation t: new HashSet<>(dao.getAllTranslations().keySet())) {
             if (t.getNativeWord().get().contains("UnknownWord")) {
-                questionnaire.mark(t, Difficulty.HARD);
+                questionnaire.mark(t, Difficulty.DIFFICULT);
             }
         }
         final List<Translation> retrievedWords = retrieveWordsNTimes(questionnaire, 100);
@@ -129,10 +129,10 @@ public class QuestionnaireTest {
 
         for (Translation t: new HashSet<>(dao.getAllTranslations().keySet())) {
             if (t.getNativeWord().get().contains("UnknownWord")) {
-                questionnaire.mark(t, Difficulty.HARD);
+                questionnaire.mark(t, Difficulty.DIFFICULT);
             }
             if (t.getNativeWord().get().contains("UnknownLearntWord")) {
-                questionnaire.mark(t, Difficulty.HARD);
+                questionnaire.mark(t, Difficulty.DIFFICULT);
                 questionnaire.mark(t, Difficulty.EASY);
             }
         }
@@ -151,7 +151,7 @@ public class QuestionnaireTest {
 
         for (Translation t: new HashSet<>(dao.getAllTranslations().keySet())) {
             if (t.getNativeWord().get().contains("UnknownWord")) {
-                questionnaire.mark(t, Difficulty.HARD);
+                questionnaire.mark(t, Difficulty.DIFFICULT);
             }
         }
         final List<Translation> retrievedWords = retrieveWordsNTimes(questionnaire, 1000);
@@ -169,7 +169,7 @@ public class QuestionnaireTest {
         dao.insert(getNTranslationsWithNativeWordStartingWith(10, "UnknownWord"));
         for (Translation t: new HashSet<>(dao.getAllTranslations().keySet())) {
             if (t.getNativeWord().get().contains("UnknownWord")) {
-                dao.update(t.getId(), t.getForeignWord(), t.getNativeWord(), Difficulty.HARD);
+                dao.update(t.getId(), t.getForeignWord(), t.getNativeWord(), Difficulty.DIFFICULT);
             }
         }
         Questionnaire questionnaire = new Questionnaire(dao);
@@ -225,7 +225,7 @@ public class QuestionnaireTest {
         TranslationDao dao = new TranslationDaoStub();
         Questionnaire questionnaire = new Questionnaire(dao);
 
-        boolean isUpdated = questionnaire.mark(createForeignToNativeTranslation("duplicate", "dup_translation"), Difficulty.HARD);
+        boolean isUpdated = questionnaire.mark(createForeignToNativeTranslation("duplicate", "dup_translation"), Difficulty.DIFFICULT);
 
         assertThat(isUpdated, is(false));
     }
@@ -236,7 +236,7 @@ public class QuestionnaireTest {
         Questionnaire questionnaire = new Questionnaire(dao);
         int nonexistentId = 8949861;
 
-        boolean isUpdated = questionnaire.mark(new Translation(nonexistentId, new ForeignWord("la duplicado"), new NativeWord("duplication")), Difficulty.HARD);
+        boolean isUpdated = questionnaire.mark(new Translation(nonexistentId, new ForeignWord("la duplicado"), new NativeWord("duplication")), Difficulty.DIFFICULT);
 
         assertThat(isUpdated, is(false));
     }
@@ -248,7 +248,7 @@ public class QuestionnaireTest {
         dao.insert(singletonList(createForeignToNativeTranslation("word", "la palabra")));
         Translation translation = dao.getAllTranslations().keySet().iterator().next();
 
-        boolean isUpdated = questionnaire.mark(translation, Difficulty.HARD);
+        boolean isUpdated = questionnaire.mark(translation, Difficulty.DIFFICULT);
 
         assertThat(isUpdated, is(true));
     }

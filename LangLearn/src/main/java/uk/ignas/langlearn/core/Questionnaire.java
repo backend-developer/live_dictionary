@@ -27,7 +27,7 @@ public class Questionnaire {
         this.questions = new ArrayList<>(q.keySet());
         this.unknownQuestions.clear();
         for (Translation t : q.keySet()) {
-            if (q.get(t) == Difficulty.HARD) {
+            if (q.get(t) == Difficulty.DIFFICULT) {
                 questions.remove(t);
                 unknownQuestions.add(t);
             }
@@ -113,7 +113,7 @@ public class Questionnaire {
             return false;
         }
 
-        boolean updatedWithHard = updateIfIsAnIdOfAnyOfWords(translation, unknownQuestions, Difficulty.HARD);
+        boolean updatedWithHard = updateIfIsAnIdOfAnyOfWords(translation, unknownQuestions, Difficulty.DIFFICULT);
         boolean updatedWithEasy = updateIfIsAnIdOfAnyOfWords(translation, questions, Difficulty.EASY);
         reloadTranslations();
         return updatedWithHard || updatedWithEasy;

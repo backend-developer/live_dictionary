@@ -91,7 +91,7 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
             @Override
             public void onClick(View view) {
                 publishNextWord();
-                questionnaire.mark(currentTranslation, Difficulty.HARD);
+                questionnaire.mark(currentTranslation, Difficulty.DIFFICULT);
             }
         });
 
