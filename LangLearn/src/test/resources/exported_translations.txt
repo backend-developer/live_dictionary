@@ -216,7 +216,7 @@ el chocolate caliente - hot chocolate
 la cola - colacola
 la limonada - lemonade
 la soda - soda water (sparkling water)
-El gas - dujos
+El gas - gas
 el agua con gas - sparkling water
 el agua mineral - mineral water
 Pedir bebidas - ordering drinks
@@ -751,7 +751,7 @@ me gusta mucho - i like it a lot
 me gusta quedar me - i like staying here
 le gusta - you like
 nos gusta - we like
-me lo manda - you are sending it to me
+me lo manda - you send it to me
 ba a mandar me lo - he will send it to me
 me lo mandara - he will send it to me
 se lo mando - i am sending it to you, the,
@@ -826,7 +826,7 @@ me gustaria - i would like to
 quisiera - i would like to
 le llamaré para saber - ill call you to know
 puede venir a ver lo - can come to see
-películar - movie
+la película - movie
 cutlery - cubiertos
 cuchara - spoon
 difícil - difficult
@@ -990,7 +990,7 @@ trabajar con cerámica - work with ceramics
 exacto - exactly
 la amistad - friendship
 las almendras - nuts
-simpático - sympathico
+simpático - sympathetic
 amable - sympathetic
 explorar cosas nuevas - explore new things
 perdón - disculpe
@@ -1682,7 +1682,7 @@ la partida - a match
 la partida - departure
 tu partida - your departure
 lograr - achieve
-tanto - so much
+tanto/tanta/tantos/tantas - so much
 imaginar - imagine
 pasar la calle - cross the street
 pasar una noche - spen night
@@ -1859,7 +1859,7 @@ nos acostamos - we go to sleep
 se acuesta - she,he,Vd go to sleep
 te acuestas - you go to sleep
 me acuesto - i go to sleep
-se pusieron - they,Vds put on
+se pusieron - they,Vds put on (past)
 os pusisteis - you put on
 nos pusimos - we put on
 se puso - she,he,Vd put on
@@ -2519,14 +2519,14 @@ os tocó la lotería - you won the loterry
 les tocó la lotería - they, Vds won the lottery
 el árbol de Navidad - Christmas tree
 hermoso/a - beautiful
-i'll be right back - ahora vuelvo
+ahora vuelvo - i'll be right back
 ser bueno en matemáticas - be good at maths
 ser malo en idiomas - be bad at languages
 lo mejor - the best (thing)
 perderse - miss
 perderse la clase - miss the class
 perderse algo interesante - miss something interesting
-pena - pity
+la pena - pity
 Qué pena que no ganaste - it's a pity you didn't win
 la peña - rock
 penoso/a - terrible
@@ -2535,7 +2535,7 @@ todo junto - all at once
 ocurrió todo junto - it happened all at once
 ocurrir - happen
 acordarse - remember
-me acuerdo que - i remember that
+me acuerdo que... - i remember that...
 recordar - remind
 quitar - remove
 no tengo hermanas tampoco - i don't have sisters too
@@ -2550,3 +2550,7 @@ el bolso - handbag
 India/indio/a - india/indian
 no es importante la parte de Alemania - it doesnt matter which part of Germany
 me invitaba a ir - she invited me to go (she still does not went)
+incluso - even
+makes sense - tiene sentido
+no tiene sentido - does not make sence
+el sentido - meaning
