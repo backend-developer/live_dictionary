@@ -1,14 +1,12 @@
 package uk.ignas.langlearn.core;
 
 import org.hamcrest.Matchers;
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.ignas.langlearn.testutils.LiveDictionaryDsl;
 import uk.ignas.langlearn.testutils.TranslationDaoStub;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static java.util.Collections.singletonList;
@@ -16,6 +14,8 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.ignas.langlearn.testutils.LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern;
 import static uk.ignas.langlearn.testutils.LiveDictionaryDsl.retrieveTranslationsNTimes;
 
@@ -94,6 +94,30 @@ public class QuestionnaireTest {
     }
 
     @Test
+    @Ignore
+    public void afterAnHourWordShouldBeAskedEvenIfWasAnsweredCorrectlyFor3Times() {
+        TranslationDao dao = new TranslationDaoStub();
+        dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
+        Translation translation = dao.getAllTranslations().get(0);
+        Clock clock = mock(Clock.class);
+        Calendar c = Calendar.getInstance();
+        c.set(2015, Calendar.JANUARY, 01, 12, 00);
+        Date now = c.getTime();
+        c.set(2015, Calendar.JANUARY, 01, 14, 00);
+        Date nowPlusTwoHours = c.getTime();
+        Questionnaire questionnaire = new Questionnaire(dao, clock);
+        when(clock.getTime()).thenReturn(now);
+        questionnaire.mark(translation, Difficulty.EASY);
+        questionnaire.mark(translation, Difficulty.EASY);
+        questionnaire.mark(translation, Difficulty.EASY);
+        when(clock.getTime()).thenReturn(nowPlusTwoHours);
+
+        Translation retrieved = questionnaire.getRandomTranslation();
+
+        assertThat(retrieved, is(equalTo(translation)));
+    }
+
+    @Test
     public void afterAnsweringAWordCorrectlyFor3TimesOthersShouldBeAsked() {
         TranslationDao dao = new TranslationDaoStub();
         dao.insertSingle(createForeignToNativeTranslation("la palabra", "word"));
@@ -118,13 +142,14 @@ public class QuestionnaireTest {
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslations().get(0);
         Questionnaire questionnaire = new Questionnaire(dao);
-
         questionnaire.mark(translation, Difficulty.EASY);
         questionnaire.mark(translation, Difficulty.EASY);
         questionnaire.mark(translation, Difficulty.DIFFICULT);
         questionnaire.mark(translation, Difficulty.EASY);
 
-        questionnaire.getRandomTranslation();
+        Translation retrieved = questionnaire.getRandomTranslation();
+
+        assertThat(retrieved, is(equalTo(translation)));
     }
 
     @Test

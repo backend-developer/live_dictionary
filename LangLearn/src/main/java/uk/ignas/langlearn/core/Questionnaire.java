@@ -13,9 +13,15 @@ public class Questionnaire {
     private List<Translation> veryEasyQuestions = new ArrayList<>();
     private final Random random = new Random();
     private TranslationDao dao;
+    private Clock clock;
 
     public Questionnaire(TranslationDao dao) {
+        this(dao, new Clock());
+    }
+
+    public Questionnaire(TranslationDao dao, Clock clock) {
         this.dao = dao;
+        this.clock = clock;
         //making sure data structure preserves insertion order even the code is changed
         reloadTranslations();
     }
