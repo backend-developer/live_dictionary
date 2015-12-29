@@ -4,13 +4,13 @@
 
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <application
-		android:name=".QuestionnaireApplication"
+		android:name=".LiveDictionaryApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".QuestionnaireActivity"
+            android:name=".LiveDictionaryActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

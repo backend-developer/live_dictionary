@@ -14,7 +14,7 @@ import uk.ignas.langlearn.core.*;
 
 import java.io.File;
 
-public class QuestionnaireActivity extends Activity implements OnModifyDictionaryClickListener.ModifyDictionaryListener, Supplier<Translation> {
+public class LiveDictionaryActivity extends Activity implements OnModifyDictionaryClickListener.ModifyDictionaryListener, Supplier<Translation> {
     private static final Translation EMPTY_TRANSLATION = new Translation(new ForeignWord(""), new NativeWord(""));
 
     private Button showTranslationButton;
@@ -31,7 +31,7 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
     private TextView questionLabel;
 
     private volatile Translation currentTranslation = EMPTY_TRANSLATION;
-    private Questionnaire questionnaire;
+    private Dictionary dictionary;
     private TranslationDaoSqlite dao;
 
     @Override
@@ -45,10 +45,10 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
         super.onResume();
 
         File externalStoragePublicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
-        dao = new TranslationDaoSqlite(QuestionnaireActivity.this);
+        dao = new TranslationDaoSqlite(LiveDictionaryActivity.this);
         final DataImporterExporter dataImporterExporter = new DataImporterExporter(dao);
 
-        questionnaire = new Questionnaire(dao);
+        dictionary = new Dictionary(dao);
 
         correctAnswerView = (TextView) findViewById(R.id.correct_answer);
         questionLabel = (TextView) findViewById(R.id.question_label);
@@ -83,7 +83,7 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
             @Override
             public void onClick(View view) {
                 publishNextTranslation();
-                questionnaire.mark(currentTranslation, Difficulty.EASY);
+                dictionary.mark(currentTranslation, Difficulty.EASY);
             }
         });
 
@@ -91,19 +91,19 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
             @Override
             public void onClick(View view) {
                 publishNextTranslation();
-                questionnaire.mark(currentTranslation, Difficulty.DIFFICULT);
+                dictionary.mark(currentTranslation, Difficulty.DIFFICULT);
             }
         });
 
         deleteTranslationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AlertDialog.Builder(QuestionnaireActivity.this)
+                new AlertDialog.Builder(LiveDictionaryActivity.this)
                         .setMessage("Delete this translation?")
                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                questionnaire.delete(currentTranslation);
+                                dictionary.delete(currentTranslation);
                                 publishNextTranslation();
                             }
                         })
@@ -130,7 +130,7 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
                 } catch (RuntimeException e) {
                     showErrorDialogAndContinue(e.getMessage());
                 }
-                questionnaire.reloadData();
+                dictionary.reloadData();
             }
         });
 
@@ -161,8 +161,8 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
 
     private void publishNextTranslation() {
         try {
-            currentTranslation = questionnaire.getRandomTranslation();
-        } catch (QuestionnaireException e) {
+            currentTranslation = dictionary.getRandomTranslation();
+        } catch (LiveDictionaryException e) {
             showErrorDialogAndContinue(e.getMessage());
             currentTranslation = EMPTY_TRANSLATION;
         } catch (RuntimeException e) {
@@ -203,12 +203,12 @@ public class QuestionnaireActivity extends Activity implements OnModifyDictionar
 
     @Override
     public void createTranslation(Translation translation) {
-        questionnaire.insert(translation);
+        dictionary.insert(translation);
     }
 
     @Override
     public void updateTranslation(Translation translation) {
-        questionnaire.update(translation);
+        dictionary.update(translation);
         currentTranslation = translation;
         showTranslation();
     }

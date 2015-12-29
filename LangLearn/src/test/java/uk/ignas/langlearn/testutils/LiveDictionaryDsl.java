@@ -1,16 +1,16 @@
 package uk.ignas.langlearn.testutils;
 
-import uk.ignas.langlearn.core.Questionnaire;
+import uk.ignas.langlearn.core.Dictionary;
 import uk.ignas.langlearn.core.Translation;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class LiveDictionaryDsl {
-    public static List<Translation> retrieveTranslationsNTimes(Questionnaire questionnaire, int timesToExecute) {
+    public static List<Translation> retrieveTranslationsNTimes(Dictionary dictionary, int timesToExecute) {
         final List<Translation> retrievedTranslations = new ArrayList<>();
         for (int i = 0; i < timesToExecute; i++) {
-            retrievedTranslations.add(questionnaire.getRandomTranslation());
+            retrievedTranslations.add(dictionary.getRandomTranslation());
         }
         return retrievedTranslations;
     }

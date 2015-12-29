@@ -5,23 +5,23 @@ import java.util.concurrent.TimeUnit;
 
 import static java.util.Collections.singleton;
 
-public class Questionnaire {
+public class Dictionary {
     public static final int DIFFICULT_TRANSLATIONS_LIMIT = 20;
     public static final int NEWEST_100_QUESTIONS = 100;
     public static final int PROBABILITY_OF_80_PERCENT = 80;
     public static final int VERY_EASY_TRANSLATION_MARK = 3;
     private List<Translation> questions;
     private final Set<Translation> difficultTranslations = new HashSet<>();
-    private List<Translation> veryEasyQuestions = new ArrayList<>();
+    private List<Translation> veryEasyTranslations = new ArrayList<>();
     private final Random random = new Random();
     private TranslationDao dao;
     private Clock clock;
 
-    public Questionnaire(TranslationDao dao) {
+    public Dictionary(TranslationDao dao) {
         this(dao, new Clock());
     }
 
-    public Questionnaire(TranslationDao dao, Clock clock) {
+    public Dictionary(TranslationDao dao, Clock clock) {
         this.dao = dao;
         this.clock = clock;
         //making sure data structure preserves insertion order even the code is changed
@@ -43,13 +43,13 @@ public class Questionnaire {
 
     public Translation getRandomTranslation() {
         if (questions.size() == 0) {
-            throw new QuestionnaireException("no questions found");
+            throw new LiveDictionaryException("no questions found");
         }
         Translation translationToReturn = chooseTranslationPreferingDifficultOrNewer();
         int easyCountsInAnHour = countMarkingAsEasyInLastHour(translationToReturn);
 
         if (easyCountsInAnHour >= VERY_EASY_TRANSLATION_MARK) {
-            veryEasyQuestions.add(translationToReturn);
+            veryEasyTranslations.add(translationToReturn);
             questions.remove(translationToReturn);
             translationToReturn = findAnotherWord();
         }
@@ -59,7 +59,7 @@ public class Questionnaire {
     private Translation findAnotherWord() {
         Translation translationToReturn;
         if (questions.size() == 0) {
-            throw new QuestionnaireException("There are no more difficult words");
+            throw new LiveDictionaryException("There are no more difficult words");
         } else {
             translationToReturn = getRandomTranslation();
         }
@@ -93,9 +93,9 @@ public class Questionnaire {
             translationToReturn = questions.get(random.nextInt(size));
         } else {
             if (is80PercentOfTimes()) {
-                translationToReturn = getOneOfTheNewest100Questions();
+                translationToReturn = getOneOfTheNewest100Translations();
             } else {
-                translationToReturn = getQuestionNotOutOf100Newest();
+                translationToReturn = getTranslationNotOutOf100Newest();
             }
         }
         return translationToReturn;
@@ -105,11 +105,11 @@ public class Questionnaire {
         return random.nextInt(100) < PROBABILITY_OF_80_PERCENT;
     }
 
-    private Translation getOneOfTheNewest100Questions() {
+    private Translation getOneOfTheNewest100Translations() {
         return questions.get(random.nextInt(NEWEST_100_QUESTIONS));
     }
 
-    private Translation getQuestionNotOutOf100Newest() {
+    private Translation getTranslationNotOutOf100Newest() {
         int randomGreaterOrEqualsTo100 = random.nextInt(questions.size() - NEWEST_100_QUESTIONS) + NEWEST_100_QUESTIONS;
         return questions.get(randomGreaterOrEqualsTo100);
     }

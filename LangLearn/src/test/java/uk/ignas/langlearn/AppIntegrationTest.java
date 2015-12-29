@@ -5,6 +5,7 @@ import com.google.common.io.Resources;
 import org.junit.After;
 import org.junit.Test;
 import uk.ignas.langlearn.core.*;
+import uk.ignas.langlearn.core.Dictionary;
 import uk.ignas.langlearn.testutils.LiveDictionaryDsl;
 import uk.ignas.langlearn.testutils.TranslationDaoStub;
 
@@ -85,10 +86,10 @@ public class AppIntegrationTest {
     }
 
     @Test
-    public void newestQuestionsShouldBeMixedUpWitOldestOnes() throws IOException, URISyntaxException {
+    public void newestTranslationsShouldBeMixedUpWithOldestOnes() throws IOException, URISyntaxException {
         TranslationDaoStub dao = new TranslationDaoStub();
         createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, dao);
-        Questionnaire q = new Questionnaire(dao);
+        Dictionary q = new Dictionary(dao);
         List<Translation> translations = dao.getAllTranslations();
         int size = translations.size();
         List<Translation> eldestTranslations = translations.subList(0, 100);
