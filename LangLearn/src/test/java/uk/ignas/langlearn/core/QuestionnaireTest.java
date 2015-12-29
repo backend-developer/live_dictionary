@@ -1,7 +1,6 @@
 package uk.ignas.langlearn.core;
 
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.ignas.langlearn.testutils.LiveDictionaryDsl;
 import uk.ignas.langlearn.testutils.TranslationDaoStub;
@@ -73,8 +72,6 @@ public class QuestionnaireTest {
 
         assertThat(dao.getAllTranslations().get(0).getMetadata().getDifficulty(), is(equalTo(Difficulty.DIFFICULT)));
     }
-
-
 
     @Test
     public void afterAnHourWordShouldBeAskedEvenIfWasAnsweredCorrectlyFor3Times() {

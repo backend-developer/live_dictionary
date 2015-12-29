@@ -9,6 +9,7 @@ public class Questionnaire {
     public static final int DIFFICULT_TRANSLATIONS_LIMIT = 20;
     public static final int NEWEST_100_QUESTIONS = 100;
     public static final int PROBABILITY_OF_80_PERCENT = 80;
+    public static final int VERY_EASY_TRANSLATION_MARK = 3;
     private List<Translation> questions;
     private final Set<Translation> difficultTranslations = new HashSet<>();
     private List<Translation> veryEasyQuestions = new ArrayList<>();
@@ -41,16 +42,53 @@ public class Questionnaire {
     }
 
     public Translation getRandomTranslation() {
-        int size = questions.size();
         if (questions.size() == 0) {
             throw new QuestionnaireException("no questions found");
         }
-        if (difficultTranslations.size() > 0) {
-            if (difficultTranslations.size() > random.nextInt(DIFFICULT_TRANSLATIONS_LIMIT)) {
-                return getRandomDifficultTranslation();
+        Translation translationToReturn = chooseTranslationPreferingDifficultOrNewer();
+        int easyCountsInAnHour = countMarkingAsEasyInLastHour(translationToReturn);
+
+        if (easyCountsInAnHour >= VERY_EASY_TRANSLATION_MARK) {
+            veryEasyQuestions.add(translationToReturn);
+            questions.remove(translationToReturn);
+            translationToReturn = findAnotherWord();
+        }
+        return translationToReturn;
+    }
+
+    private Translation findAnotherWord() {
+        Translation translationToReturn;
+        if (questions.size() == 0) {
+            throw new QuestionnaireException("There are no more difficult words");
+        } else {
+            translationToReturn = getRandomTranslation();
+        }
+        return translationToReturn;
+    }
+
+    private int countMarkingAsEasyInLastHour(Translation translationToReturn) {
+        int counter = 0;
+        for (Date dateMarkingAsEasy : translationToReturn.getMetadata().getRecentMarkingAsEasy()) {
+            if (TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - dateMarkingAsEasy.getTime()) < 1) {
+                counter++;
             }
         }
+        return counter;
+    }
+
+    private Translation chooseTranslationPreferingDifficultOrNewer() {
         Translation translationToReturn;
+        if (difficultTranslations.size() > 0 && difficultTranslations.size() > random.nextInt(DIFFICULT_TRANSLATIONS_LIMIT)) {
+            translationToReturn = getRandomDifficultTranslation();
+        } else {
+            translationToReturn = chooseTranslationPreferringNewer();
+        }
+        return translationToReturn;
+    }
+
+    private Translation chooseTranslationPreferringNewer() {
+        Translation translationToReturn;
+        int size = questions.size();
         if (size <= NEWEST_100_QUESTIONS) {
             translationToReturn = questions.get(random.nextInt(size));
         } else {
@@ -58,21 +96,6 @@ public class Questionnaire {
                 translationToReturn = getOneOfTheNewest100Questions();
             } else {
                 translationToReturn = getQuestionNotOutOf100Newest();
-            }
-        }
-        Iterator<Date> iter = translationToReturn.getMetadata().getRecentMarkingAsEasy().iterator();
-        while (iter.hasNext()) {
-            if (TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - iter.next().getTime()) >= 1) {
-                iter.remove();
-            }
-        }
-        if (translationToReturn.getMetadata().getRecentMarkingAsEasy().size() >= 3) {
-            if (questions.size() == 1) {
-                throw new QuestionnaireException("There are no more difficult words");
-            } else {
-                veryEasyQuestions.add(translationToReturn);
-                questions.remove(translationToReturn);
-                translationToReturn = getRandomTranslation();
             }
         }
         return translationToReturn;

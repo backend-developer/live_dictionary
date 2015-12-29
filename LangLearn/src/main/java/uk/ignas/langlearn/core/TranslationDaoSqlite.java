@@ -45,6 +45,10 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
                         ")"
         );
 
+        insertSeedData(db);
+    }
+
+    private void insertSeedData(SQLiteDatabase db) {
         insertSingleUsingDb(new Translation(new ForeignWord("morado"), new NativeWord("purple")), db);
         insertSingleUsingDb(new Translation(new ForeignWord("verde"), new NativeWord("green")), db);
         insertSingleUsingDb(new Translation(new ForeignWord("rosa"), new NativeWord("pink")), db);
@@ -165,19 +169,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         res.moveToFirst();
 
         while (!res.isAfterLast()) {
-            List<Date> recentLatestDatesWhenMarketAsEasy = new ArrayList<>();
-            long easyLatestTimestamp1 = res.getInt(res.getColumnIndex(COLUMN_EASY_LATEST_1));
-            long easyLatestTimestamp2 = res.getInt(res.getColumnIndex(COLUMN_EASY_LATEST_2));
-            long easyLatestTimestamp3 = res.getInt(res.getColumnIndex(COLUMN_EASY_LATEST_3));
-            if (easyLatestTimestamp1 != 0) {
-                recentLatestDatesWhenMarketAsEasy.add(new Date(easyLatestTimestamp1));
-            }
-            if (easyLatestTimestamp2 != 0) {
-                recentLatestDatesWhenMarketAsEasy.add(new Date(easyLatestTimestamp2));
-            }
-            if (easyLatestTimestamp3 != 0) {
-                recentLatestDatesWhenMarketAsEasy.add(new Date(easyLatestTimestamp3));
-            }
+            List<Date> recentLatestDatesWhenMarketAsEasy = collectDatesForRecentMarkingsAsEasy(res);
 
             translations.add(new Translation(
                     res.getInt(res.getColumnIndex(COLUMN_ID)),
@@ -191,13 +183,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         return translations;
     }
 
-    @Override
-    public Translation getById(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.query(TRANSLATIONS_TABLE_NAME,
-                null, " id = ? ", new String[] {String.valueOf(id)}, null, null, null);
-        res.moveToFirst();
-
+    private List<Date> collectDatesForRecentMarkingsAsEasy(Cursor res) {
         List<Date> recentLatestDatesWhenMarketAsEasy = new ArrayList<>();
         long easyLatestTimestamp1 = res.getInt(res.getColumnIndex(COLUMN_EASY_LATEST_1));
         long easyLatestTimestamp2 = res.getInt(res.getColumnIndex(COLUMN_EASY_LATEST_2));
@@ -211,7 +197,17 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         if (easyLatestTimestamp3 != 0) {
             recentLatestDatesWhenMarketAsEasy.add(new Date(easyLatestTimestamp3));
         }
+        return recentLatestDatesWhenMarketAsEasy;
+    }
 
+    @Override
+    public Translation getById(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.query(TRANSLATIONS_TABLE_NAME,
+                null, " id = ? ", new String[] {String.valueOf(id)}, null, null, null);
+        res.moveToFirst();
+
+        List<Date> recentLatestDatesWhenMarketAsEasy = collectDatesForRecentMarkingsAsEasy(res);
         Translation translation = new Translation(
                     res.getInt(res.getColumnIndex(COLUMN_ID)),
                     new ForeignWord(res.getString(res.getColumnIndex(COLUMN_FOREIGN_WORD))),
