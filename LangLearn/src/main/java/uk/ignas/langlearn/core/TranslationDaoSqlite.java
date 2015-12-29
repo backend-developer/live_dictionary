@@ -22,7 +22,6 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     public static final String COLUMN_EASY_LATEST_2 = "marked_as_easy_latest2";
     public static final String COLUMN_EASY_LATEST_3 = "marked_as_easy_latest3";
 
-
     public static final int ERROR_OCURRED = -1;
 
     public TranslationDaoSqlite(Context context) {

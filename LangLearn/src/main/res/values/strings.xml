@@ -5,7 +5,7 @@
     <string name="hello_world">Hello world!</string>
 	<string name="show_answer">Show Answer</string>
 	<string name="easy_translation">Easy!</string>
-    <string name="difficult_translation">I needed to think!</string>
+    <string name="difficult_translation">Ask me it more often!</string>
     <string name="export_data">Export Data</string>
     <string name="export_path">Export Path:</string>
     <string name="add_translation">Add translation</string>
