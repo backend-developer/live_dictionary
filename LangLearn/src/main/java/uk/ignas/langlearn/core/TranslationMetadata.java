@@ -13,6 +13,13 @@ public class TranslationMetadata {
         this.recentMarkingAsEasy = recentMarkingAsEasy;
     }
 
+    public static TranslationMetadata copy(TranslationMetadata from) {
+        return new TranslationMetadata(
+                from.getDifficulty(),
+                new ArrayList<>(from.getRecentMarkingAsEasy())
+        );
+    }
+
     public Difficulty getDifficulty() {
         return difficulty;
     }

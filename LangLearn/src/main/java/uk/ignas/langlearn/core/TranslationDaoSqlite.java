@@ -21,6 +21,8 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     public static final String COLUMN_EASY_LATEST_1 = "marked_as_easy_latest1";
     public static final String COLUMN_EASY_LATEST_2 = "marked_as_easy_latest2";
     public static final String COLUMN_EASY_LATEST_3 = "marked_as_easy_latest3";
+
+
     public static final int ERROR_OCURRED = -1;
 
     public TranslationDaoSqlite(Context context) {
@@ -164,17 +166,16 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
 
         while (!res.isAfterLast()) {
             List<Date> recentLatestDatesWhenMarketAsEasy = new ArrayList<>();
-            Date now = new Date();
             long easyLatestTimestamp1 = res.getInt(res.getColumnIndex(COLUMN_EASY_LATEST_1));
             long easyLatestTimestamp2 = res.getInt(res.getColumnIndex(COLUMN_EASY_LATEST_2));
             long easyLatestTimestamp3 = res.getInt(res.getColumnIndex(COLUMN_EASY_LATEST_3));
-            if (easyLatestTimestamp1 != 0 && TimeUnit.MILLISECONDS.toHours(now.getTime() - easyLatestTimestamp1) > 1) {
+            if (easyLatestTimestamp1 != 0) {
                 recentLatestDatesWhenMarketAsEasy.add(new Date(easyLatestTimestamp1));
             }
-            if (easyLatestTimestamp2 != 0 && TimeUnit.MILLISECONDS.toHours(now.getTime() - easyLatestTimestamp2) > 1) {
+            if (easyLatestTimestamp2 != 0) {
                 recentLatestDatesWhenMarketAsEasy.add(new Date(easyLatestTimestamp2));
             }
-            if (easyLatestTimestamp3 != 0 && TimeUnit.MILLISECONDS.toHours(now.getTime() - easyLatestTimestamp3) > 1) {
+            if (easyLatestTimestamp3 != 0) {
                 recentLatestDatesWhenMarketAsEasy.add(new Date(easyLatestTimestamp3));
             }
 
@@ -198,17 +199,16 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         res.moveToFirst();
 
         List<Date> recentLatestDatesWhenMarketAsEasy = new ArrayList<>();
-        Date now = new Date();
         long easyLatestTimestamp1 = res.getInt(res.getColumnIndex(COLUMN_EASY_LATEST_1));
         long easyLatestTimestamp2 = res.getInt(res.getColumnIndex(COLUMN_EASY_LATEST_2));
         long easyLatestTimestamp3 = res.getInt(res.getColumnIndex(COLUMN_EASY_LATEST_3));
-        if (easyLatestTimestamp1 != 0 && TimeUnit.MILLISECONDS.toHours(now.getTime() - easyLatestTimestamp1) > 1) {
+        if (easyLatestTimestamp1 != 0) {
             recentLatestDatesWhenMarketAsEasy.add(new Date(easyLatestTimestamp1));
         }
-        if (easyLatestTimestamp2 != 0 && TimeUnit.MILLISECONDS.toHours(now.getTime() - easyLatestTimestamp2) > 1) {
+        if (easyLatestTimestamp2 != 0) {
             recentLatestDatesWhenMarketAsEasy.add(new Date(easyLatestTimestamp2));
         }
-        if (easyLatestTimestamp3 != 0 && TimeUnit.MILLISECONDS.toHours(now.getTime() - easyLatestTimestamp3) > 1) {
+        if (easyLatestTimestamp3 != 0) {
             recentLatestDatesWhenMarketAsEasy.add(new Date(easyLatestTimestamp3));
         }
 

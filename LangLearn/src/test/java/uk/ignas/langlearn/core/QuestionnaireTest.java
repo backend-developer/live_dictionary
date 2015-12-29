@@ -74,36 +74,18 @@ public class QuestionnaireTest {
         assertThat(dao.getAllTranslations().get(0).getMetadata().getDifficulty(), is(equalTo(Difficulty.DIFFICULT)));
     }
 
-    @Test
-    public void afterAnsweringAWordCorrectlyFor3TimesTheWordShouldNotBeAsked() {
-        TranslationDao dao = new TranslationDaoStub();
-        dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
-        Translation translation = dao.getAllTranslations().get(0);
-        Questionnaire questionnaire = new Questionnaire(dao);
 
-        questionnaire.mark(translation, Difficulty.EASY);
-        questionnaire.mark(translation, Difficulty.EASY);
-        questionnaire.mark(translation, Difficulty.EASY);
-
-        try {
-            questionnaire.getRandomTranslation();
-            fail();
-        } catch (QuestionnaireException e) {
-            assertThat(e.getMessage(), Matchers.containsString("There are no more difficult words"));
-        }
-    }
 
     @Test
-    @Ignore
     public void afterAnHourWordShouldBeAskedEvenIfWasAnsweredCorrectlyFor3Times() {
         TranslationDao dao = new TranslationDaoStub();
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslations().get(0);
         Clock clock = mock(Clock.class);
         Calendar c = Calendar.getInstance();
-        c.set(2015, Calendar.JANUARY, 01, 12, 00);
+        c.set(2015, Calendar.JANUARY, 1, 12, 0);
         Date now = c.getTime();
-        c.set(2015, Calendar.JANUARY, 01, 14, 00);
+        c.set(2015, Calendar.JANUARY, 1, 13, 1);
         Date nowPlusTwoHours = c.getTime();
         Questionnaire questionnaire = new Questionnaire(dao, clock);
         when(clock.getTime()).thenReturn(now);
@@ -115,6 +97,32 @@ public class QuestionnaireTest {
         Translation retrieved = questionnaire.getRandomTranslation();
 
         assertThat(retrieved, is(equalTo(translation)));
+    }
+
+    @Test
+    public void wordShouldNotBeAskedEvenIfWasNottAnsweredCorrectlyFor3TimesInLastHour() {
+        TranslationDao dao = new TranslationDaoStub();
+        dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
+        Translation translation = dao.getAllTranslations().get(0);
+        Clock clock = mock(Clock.class);
+        Calendar c = Calendar.getInstance();
+        c.set(2015, Calendar.JANUARY, 1, 12, 0);
+        Date now = c.getTime();
+        c.set(2015, Calendar.JANUARY, 1, 12, 59);
+        Date nowPlusTwoHours = c.getTime();
+        Questionnaire questionnaire = new Questionnaire(dao, clock);
+        when(clock.getTime()).thenReturn(now);
+        questionnaire.mark(translation, Difficulty.EASY);
+        questionnaire.mark(translation, Difficulty.EASY);
+        questionnaire.mark(translation, Difficulty.EASY);
+        when(clock.getTime()).thenReturn(nowPlusTwoHours);
+
+        try {
+            questionnaire.getRandomTranslation();
+            fail();
+        } catch (QuestionnaireException e) {
+            assertThat(e.getMessage(), Matchers.containsString("There are no more difficult words"));
+        }
     }
 
     @Test

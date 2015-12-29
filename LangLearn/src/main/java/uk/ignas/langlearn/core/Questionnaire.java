@@ -1,6 +1,7 @@
 package uk.ignas.langlearn.core;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.Collections.singleton;
 
@@ -36,6 +37,7 @@ public class Questionnaire {
                 difficultTranslations.add(t);
             }
         }
+
     }
 
     public Translation getRandomTranslation() {
@@ -56,6 +58,12 @@ public class Questionnaire {
                 translationToReturn = getOneOfTheNewest100Questions();
             } else {
                 translationToReturn = getQuestionNotOutOf100Newest();
+            }
+        }
+        Iterator<Date> iter = translationToReturn.getMetadata().getRecentMarkingAsEasy().iterator();
+        while (iter.hasNext()) {
+            if (TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - iter.next().getTime()) >= 1) {
+                iter.remove();
             }
         }
         if (translationToReturn.getMetadata().getRecentMarkingAsEasy().size() >= 3) {
@@ -102,7 +110,7 @@ public class Questionnaire {
         TranslationMetadata metadata = record.getMetadata();
         if (difficulty == Difficulty.EASY) {
             if (metadata.getRecentMarkingAsEasy().size() < 3) {
-                metadata.getRecentMarkingAsEasy().add(new Date());
+                metadata.getRecentMarkingAsEasy().add(clock.getTime());
             }
         } else {
             metadata.getRecentMarkingAsEasy().clear();

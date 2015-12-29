@@ -63,14 +63,27 @@ public class TranslationDaoStub implements TranslationDao {
 
     @Override
     public List<Translation> getAllTranslations() {
-        return new ArrayList<>(inMemoryTranslations);
+        List<Translation> copy = new ArrayList<>();
+        for (Translation t : inMemoryTranslations) {
+            copy.add(new Translation(
+                    t.getId(),
+                    t.getForeignWord(),
+                    t.getNativeWord(),
+                    TranslationMetadata.copy(t.getMetadata())));
+        }
+
+        return copy;
     }
 
     @Override
     public Translation getById(int id) {
         for (Translation t: inMemoryTranslations) {
             if (t.getId() == id) {
-                return t;
+                return new Translation(
+                        t.getId(),
+                        t.getForeignWord(),
+                        t.getNativeWord(),
+                        TranslationMetadata.copy(t.getMetadata()));
             }
         }
         throw new RuntimeException("record not found");
