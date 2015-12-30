@@ -1,6 +1,7 @@
 package uk.ignas.langlearn.core;
 
 import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.Test;
 import uk.ignas.langlearn.testutils.LiveDictionaryDsl;
 import uk.ignas.langlearn.testutils.TranslationDaoStub;
@@ -22,10 +23,10 @@ public class DictionaryTest {
 
     private static int uniqueSequence = 0;
 
+    private TranslationDao dao = new TranslationDaoStub();
+
     @Test
     public void shouldThrowWhenIfThereAreNoTranslationToRetrieve() {
-        TranslationDao dao = new TranslationDaoStub();
-
         Dictionary dictionary = new Dictionary(dao);
         try {
             dictionary.getRandomTranslation();
@@ -41,7 +42,6 @@ public class DictionaryTest {
 
     @Test
     public void shouldNotCrashWhenThereAreFewTranslations() {
-        TranslationDao dao = new TranslationDaoStub();
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
 
         Dictionary dictionary = new Dictionary(dao);
@@ -51,7 +51,6 @@ public class DictionaryTest {
 
     @Test
     public void shouldSynchronizeWithDbOnDemand() {
-        TranslationDao dao = new TranslationDaoStub();
         Dictionary dictionary = new Dictionary(dao);
         dao.insertSingle(createForeignToNativeTranslation("la palabra", "word"));
 
@@ -63,7 +62,6 @@ public class DictionaryTest {
 
     @Test
     public void shouldPersistDifficultTranslations() {
-        TranslationDao dao = new TranslationDaoStub();
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = getOnlyElement(dao.getAllTranslations());
         Dictionary dictionary = new Dictionary(dao);
@@ -75,7 +73,6 @@ public class DictionaryTest {
 
     @Test
     public void afterAnHourWordShouldBeAskedEvenIfWasAnsweredCorrectlyFor3Times() {
-        TranslationDao dao = new TranslationDaoStub();
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslations().get(0);
         Clock clock = mock(Clock.class);
@@ -98,7 +95,6 @@ public class DictionaryTest {
 
     @Test
     public void translationShouldNotBeAskedEvenIfWasNotAnsweredCorrectlyFor3TimesInLastHour() {
-        TranslationDao dao = new TranslationDaoStub();
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslations().get(0);
         Clock clock = mock(Clock.class);
@@ -130,7 +126,6 @@ public class DictionaryTest {
 
     @Test
     public void afterAnsweringAWordCorrectlyFor3TimesOthersShouldBeAsked() {
-        TranslationDao dao = new TranslationDaoStub();
         dao.insertSingle(createForeignToNativeTranslation("la palabra", "word"));
         dao.insertSingle(createForeignToNativeTranslation("la frase", "phrase"));
         Translation easyTranslation = dao.getAllTranslations().get(0);
@@ -149,7 +144,6 @@ public class DictionaryTest {
 
     @Test
     public void ifWordWasNotAnswered3TimesCorrectlyItStillShouldStillBeAsked() {
-        TranslationDao dao = new TranslationDaoStub();
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslations().get(0);
         Dictionary dictionary = new Dictionary(dao);
@@ -165,7 +159,6 @@ public class DictionaryTest {
 
     @Test
     public void afterAnsweringAWordCorrectlyFor2TimesTheWordShouldStillBeAsked() {
-        TranslationDao dao = new TranslationDaoStub();
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslations().get(0);
         Dictionary dictionary = new Dictionary(dao);
@@ -178,7 +171,6 @@ public class DictionaryTest {
 
     @Test
     public void shouldGetNewest100TranslationsWith80PercentProbability() {
-        TranslationDao dao = new TranslationDaoStub();
         dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
         dao.insert(getNTranslationsWithNativeWordStartingWith(100, "LastQ"));
         Dictionary dictionary = new Dictionary(dao);
@@ -192,7 +184,6 @@ public class DictionaryTest {
     @Test
     public void shouldHandle100Translations() {
         for (int i = 0; i < 100; i++) {
-            TranslationDao dao = new TranslationDaoStub();
             dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Any"));
             Dictionary dictionary = new Dictionary(dao);
 
@@ -205,7 +196,6 @@ public class DictionaryTest {
 
     @Test
     public void afterFinding20DifficultTranslationsShouldNeverAskForOthers() {
-        TranslationDao dao = new TranslationDaoStub();
         dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
         dao.insert(getNTranslationsWithNativeWordStartingWith(20, "DifficultWord"));
 
@@ -224,7 +214,6 @@ public class DictionaryTest {
 
     @Test
     public void diffucultTranslationsWhichAreAlreadyBecameEasyShouldStopBeingAskedEvery20thTime() {
-        TranslationDao dao = new TranslationDaoStub();
         dao.insert(getNTranslationsWithNativeWordStartingWith(80, "Other"));
         dao.insert(getNTranslationsWithNativeWordStartingWith(10, "DifficultWord"));
         dao.insert(getNTranslationsWithNativeWordStartingWith(10, "WasDifficultButNowEasyWord"));
@@ -248,7 +237,6 @@ public class DictionaryTest {
 
     @Test
     public void difficultTranslationsShouldBeAskedEvery20thTime() {
-        TranslationDao dao = new TranslationDaoStub();
         dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
         dao.insert(getNTranslationsWithNativeWordStartingWith(10, "DifficultWord"));
         Dictionary dictionary = new Dictionary(dao);
@@ -268,7 +256,6 @@ public class DictionaryTest {
 
     @Test
     public void difficultTranslationsShouldBeAskedEvery20thTimeEvenIfTheyWerePassedInitially() {
-        TranslationDao dao = new TranslationDaoStub();
         dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
         dao.insert(getNTranslationsWithNativeWordStartingWith(10, "DifficultWord"));
         for (Translation t: new HashSet<>(dao.getAllTranslations())) {
@@ -286,7 +273,6 @@ public class DictionaryTest {
 
     @Test
     public void shouldInsertTranslation() {
-        TranslationDao dao = new TranslationDaoStub();
         Dictionary dictionary = new Dictionary(dao);
 
         dictionary.insert(createForeignToNativeTranslation("la palabra", "word"));
@@ -297,7 +283,6 @@ public class DictionaryTest {
 
     @Test
     public void shouldNotInsertDuplicates() {
-        TranslationDao dao = new TranslationDaoStub();
         Dictionary dictionary = new Dictionary(dao);
 
         dictionary.insert(createForeignToNativeTranslation("duplicate", "dup_translation"));
@@ -308,7 +293,6 @@ public class DictionaryTest {
 
     @Test
     public void shouldDeleteTranslation() {
-        TranslationDao dao = new TranslationDaoStub();
         Translation translation = createForeignToNativeTranslation("word", "la palabra");
         dao.insertSingle(translation);
         Dictionary dictionary = new Dictionary(dao);
@@ -326,7 +310,6 @@ public class DictionaryTest {
 
     @Test
     public void shouldNotMarkDifficultyForRecordsWithoutId() {
-        TranslationDao dao = new TranslationDaoStub();
         Dictionary dictionary = new Dictionary(dao);
 
         boolean isUpdated = dictionary.mark(createForeignToNativeTranslation("duplicate", "dup_translation"), Difficulty.DIFFICULT);
@@ -336,7 +319,6 @@ public class DictionaryTest {
 
     @Test
     public void shouldNotMarkDifficultyForRecordsNotInDb() {
-        TranslationDao dao = new TranslationDaoStub();
         Dictionary dictionary = new Dictionary(dao);
         int nonexistentId = 8949861;
 
@@ -347,7 +329,6 @@ public class DictionaryTest {
 
     @Test
     public void shouldMarkDifficulty() {
-        TranslationDao dao = new TranslationDaoStub();
         Dictionary dictionary = new Dictionary(dao);
         dao.insert(singletonList(createForeignToNativeTranslation("word", "la palabra")));
         Translation translation = dao.getAllTranslations().iterator().next();
@@ -359,7 +340,6 @@ public class DictionaryTest {
 
     @Test
     public void shouldUpdateTranslation() {
-        TranslationDao dao = new TranslationDaoStub();
         dao.insert(singletonList(createForeignToNativeTranslation("la palabra", "word")));
         Dictionary dictionary = new Dictionary(dao);
         Translation translation = dao.getAllTranslations().iterator().next();
