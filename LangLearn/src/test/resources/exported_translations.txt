@@ -406,7 +406,7 @@ La ropa - clothing
 la ciruela - plum
 la pera - peardz
 la sandía - watermelon
-el melón - melonx
+el melón - melon
 la granada - pomegranate
 la piña - pineapple
 la uva - grape
@@ -417,7 +417,7 @@ la toronja - grapefruit
 El limón - lemon
 la lima - lime
 la cereza - cherryd zxfd
-la fresa - strawberryr
+la fresa - strawberry
 la zarzamora - blackberryz
 la frambuesa - raspberrxdzxdy
 el arándano rojo - cranberry
@@ -911,7 +911,8 @@ corregir - irregular word
 trabajo en <luego> - i word at
 cuántos años tiene - how old are you
 en qué trabajas - where do you work
-bombero - fireman
+el bombero - a fireman
+la bombera - a fireman
 presentación personal - preseting yourself
 pequeño - small
 escuela - school?
@@ -942,7 +943,7 @@ profesor/a - teacher/profesor
 es posible los dos - both aare possible
 portugués/a/portugal - Portugal/Portuguese
 brsileño/a/brasil - brasilia/brasilian
-estadounidense - de los estados unidos
+los estados unidos/estadounidense - USA/person from USA
 ruso/a/rusia - Russia/russian
 indio/a/india - India/Indian
 argentino/a/argentina - Argentina/argentinian
@@ -995,7 +996,7 @@ amable - sympathetic
 explorar cosas nuevas - explore new things
 perdón - disculpe
 estar muerto - is dead
-en qué trabaja / soy... - what do you work as. / i am ..
+en qué trabajas / soy... - what do you work as. / i am ..
 presidente/a - president
 cantante - singer
 famoso _ - famous
@@ -1133,7 +1134,7 @@ nativo - native
 particular - private
 privado/privada - private
 el partido - match
-exposicion de diseño - design exposition
+la exposición de diseño - design exposition
 exposición sobre al diseño - design exposition
 ver la partida - see match
 ir a bailar salsa - go to dance
@@ -1438,7 +1439,7 @@ peinarse - comb ones hair
 maquillarse - put make up
 cepillarse los dientes - brush my teehs
 ducharse - maudytis in shower
-bañarse - maudytis in bath
+bañarse - have a bath
 vestirse - dress up
 desvestirse - undress
 la perilla - pointed beard on the chin
@@ -1450,7 +1451,7 @@ abrocharse el botón de la camisa - susisegti sagas
 tumbarse en la sofá, en la cama, en la arena, en el suelo - guleti
 despertarse, despierto - wake up
 durante el dia - during day
-hacer algo por la tarde - in the evening
+hacer algo por la tarde - do something in the evening
 tener tiempo libre - have free time
 ocho de la tarde - eight in the evening
 nueve de la noche - nine in the night
@@ -2255,7 +2256,7 @@ nos vestimos - we got dressed
 se vestió - she,he,Vd got dressed
 te vestiste - you got dressed
 me vestí - i got dressed
-se acostaron - they,Vds went to be
+se acostaron - they,Vds went to bed
 os acostasteis - you went to bed
 nos acostamos - we went to bed
 se acostó - she,he,Vd went to bed
@@ -2523,7 +2524,7 @@ ahora vuelvo - i'll be right back
 ser bueno en matemáticas - be good at maths
 ser malo en idiomas - be bad at languages
 lo mejor - the best (thing)
-perderse - miss
+perderse - to miss
 perderse la clase - miss the class
 perderse algo interesante - miss something interesting
 la pena - pity
@@ -2551,6 +2552,36 @@ India/indio/a - india/indian
 no es importante la parte de Alemania - it doesnt matter which part of Germany
 me invitaba a ir - she invited me to go (she still does not went)
 incluso - even
-makes sense - tiene sentido
+tiene sentido - makes sense
 no tiene sentido - does not make sence
 el sentido - meaning
+bromear - joke
+la broma - a joke
+consciente - conscious
+estar consciente - to be conscious
+ser consciente de - to be aware of
+la venganza - revenge
+el accidente - crash
+una accidente de coche - a car accident
+darse cuenta de - find out
+ellos se dan cuenta - they find out
+me di cuenta cómo era realmente - i found out what he was really like
+equivocado/a - wrong
+el número equivocado - a wrong number
+estoy equivocado - i am wrong
+aprender es fácil - learning is easy
+confundir - to confuse
+me confundo - confuses me
+el sueño - a dream
+mi sueño es vivir - my dream is live
+en mi sueño - i had a dream
+inesperadamente - unexpectedly
+inesperadamente - out of the blue
+la burbuja - a bubble
+el amigo falso - a false friend
+en realidad - actually
+actualmente - nowadays
+la pescadilla que se muerde la cola - vicious circle
+la pescadilla - whiting (name of fish)
+morder - to bite
+la cola - a tail
