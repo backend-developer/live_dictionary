@@ -1,12 +1,13 @@
 package uk.ignas.langlearn.core;
 
-import org.hamcrest.Matchers;
-import org.junit.Before;
 import org.junit.Test;
 import uk.ignas.langlearn.testutils.LiveDictionaryDsl;
 import uk.ignas.langlearn.testutils.TranslationDaoStub;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static java.util.Collections.singletonList;
@@ -14,12 +15,11 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static uk.ignas.langlearn.testutils.LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern;
 import static uk.ignas.langlearn.testutils.LiveDictionaryDsl.retrieveTranslationsNTimes;
 
 public class DictionaryTest {
+
 
     private static int uniqueSequence = 0;
 
@@ -71,103 +71,6 @@ public class DictionaryTest {
         assertThat(dao.getAllTranslations().get(0).getMetadata().getDifficulty(), is(equalTo(Difficulty.DIFFICULT)));
     }
 
-    @Test
-    public void afterAnHourWordShouldBeAskedEvenIfWasAnsweredCorrectlyFor3Times() {
-        dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
-        Translation translation = dao.getAllTranslations().get(0);
-        Clock clock = mock(Clock.class);
-        Calendar c = Calendar.getInstance();
-        c.set(2015, Calendar.JANUARY, 1, 12, 0);
-        Date now = c.getTime();
-        c.set(2015, Calendar.JANUARY, 1, 13, 1);
-        Date nowPlusTwoHours = c.getTime();
-        Dictionary dictionary = new Dictionary(dao, clock);
-        when(clock.getTime()).thenReturn(now);
-        dictionary.mark(translation, Difficulty.EASY);
-        dictionary.mark(translation, Difficulty.EASY);
-        dictionary.mark(translation, Difficulty.EASY);
-        when(clock.getTime()).thenReturn(nowPlusTwoHours);
-
-        Translation retrieved = dictionary.getRandomTranslation();
-
-        assertThat(retrieved, is(equalTo(translation)));
-    }
-
-    @Test
-    public void translationShouldNotBeAskedEvenIfWasNotAnsweredCorrectlyFor3TimesInLastHour() {
-        dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
-        Translation translation = dao.getAllTranslations().get(0);
-        Clock clock = mock(Clock.class);
-        Calendar c = Calendar.getInstance();
-        c.set(2015, Calendar.JANUARY, 1, 12, 0);
-        Date now = c.getTime();
-        c.set(2015, Calendar.JANUARY, 1, 12, 59);
-        Date nowPlusTwoHours = c.getTime();
-        Dictionary dictionary = new Dictionary(dao, clock);
-        when(clock.getTime()).thenReturn(now);
-        dictionary.mark(translation, Difficulty.EASY);
-        dictionary.mark(translation, Difficulty.EASY);
-        dictionary.mark(translation, Difficulty.EASY);
-        when(clock.getTime()).thenReturn(nowPlusTwoHours);
-
-        try {
-            dictionary.getRandomTranslation();
-            fail();
-        } catch (LiveDictionaryException e) {
-            assertThat(e.getMessage(), Matchers.containsString("There are no more difficult words"));
-        }
-        try {
-            dictionary.getRandomTranslation();
-            fail();
-        } catch (LiveDictionaryException e) {
-            assertThat(e.getMessage(), Matchers.containsString("There are no more difficult words"));
-        }
-    }
-
-    @Test
-    public void afterAnsweringAWordCorrectlyFor3TimesOthersShouldBeAsked() {
-        dao.insertSingle(createForeignToNativeTranslation("la palabra", "word"));
-        dao.insertSingle(createForeignToNativeTranslation("la frase", "phrase"));
-        Translation easyTranslation = dao.getAllTranslations().get(0);
-        Translation otherTranslation = dao.getAllTranslations().get(1);
-        Dictionary dictionary = new Dictionary(dao);
-
-        dictionary.mark(easyTranslation, Difficulty.EASY);
-        dictionary.mark(easyTranslation, Difficulty.EASY);
-        dictionary.mark(easyTranslation, Difficulty.EASY);
-
-        List<Translation> retrieved = LiveDictionaryDsl.retrieveTranslationsNTimes(dictionary, 10);
-
-        int percentage = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrieved, otherTranslation.getNativeWord().get());
-        assertThat(percentage, is(equalTo(100)));
-    }
-
-    @Test
-    public void ifWordWasNotAnswered3TimesCorrectlyItStillShouldStillBeAsked() {
-        dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
-        Translation translation = dao.getAllTranslations().get(0);
-        Dictionary dictionary = new Dictionary(dao);
-        dictionary.mark(translation, Difficulty.EASY);
-        dictionary.mark(translation, Difficulty.EASY);
-        dictionary.mark(translation, Difficulty.DIFFICULT);
-        dictionary.mark(translation, Difficulty.EASY);
-
-        Translation retrieved = dictionary.getRandomTranslation();
-
-        assertThat(retrieved, is(equalTo(translation)));
-    }
-
-    @Test
-    public void afterAnsweringAWordCorrectlyFor2TimesTheWordShouldStillBeAsked() {
-        dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
-        Translation translation = dao.getAllTranslations().get(0);
-        Dictionary dictionary = new Dictionary(dao);
-        dictionary.mark(translation, Difficulty.EASY);
-        dictionary.mark(translation, Difficulty.EASY);
-
-        //should not throw
-        dictionary.getRandomTranslation();
-    }
 
     @Test
     public void shouldGetNewest100TranslationsWith80PercentProbability() {

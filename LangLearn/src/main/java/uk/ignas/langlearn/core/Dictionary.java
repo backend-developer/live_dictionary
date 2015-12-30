@@ -9,7 +9,8 @@ public class Dictionary {
     public static final int DIFFICULT_TRANSLATIONS_LIMIT = 20;
     public static final int NEWEST_100_QUESTIONS = 100;
     public static final int PROBABILITY_OF_80_PERCENT = 80;
-    public static final int VERY_EASY_TRANSLATION_MARK = 3;
+    public static final int VERY_EASY_TRANSLATION_MARK = 2;
+    public static final int PERIOD_IN_HOURS_TO_REACH_LEVEL_2 = 4;
     private List<Translation> questions;
     private final Set<Translation> difficultTranslations = new HashSet<>();
     private List<Translation> veryEasyTranslations = new ArrayList<>();
@@ -51,7 +52,7 @@ public class Dictionary {
                 throw new LiveDictionaryException("There are no more difficult words");
             }
             Translation candidateTranslation = chooseTranslationPreferingDifficultOrNewer();
-            int easyCountsInAnHour = countMarkingAsEasyInLastHour(candidateTranslation);
+            int easyCountsInAnHour = countMarkingsAsEasyInLast4Hours(candidateTranslation);
 
             if (easyCountsInAnHour >= VERY_EASY_TRANSLATION_MARK) {
                 veryEasyTranslations.add(candidateTranslation);
@@ -63,10 +64,10 @@ public class Dictionary {
         return translationToReturn;
     }
 
-    private int countMarkingAsEasyInLastHour(Translation translationToReturn) {
+    private int countMarkingsAsEasyInLast4Hours(Translation translationToReturn) {
         int counter = 0;
         for (Date dateMarkingAsEasy : translationToReturn.getMetadata().getRecentMarkingAsEasy()) {
-            if (TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - dateMarkingAsEasy.getTime()) < 1) {
+            if (TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - dateMarkingAsEasy.getTime()) < PERIOD_IN_HOURS_TO_REACH_LEVEL_2) {
                 counter++;
             }
         }
