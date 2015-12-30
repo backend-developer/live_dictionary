@@ -26,6 +26,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
 
     public TranslationDaoSqlite(Context context) {
         super(context, DATABASE_NAME, null, 1);
+
     }
 
     @Override
@@ -43,7 +44,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
                         "CONSTRAINT uniqueWT UNIQUE (" + COLUMN_NATIVE_WORD + ", " + COLUMN_FOREIGN_WORD + ")" +
                         ")"
         );
-
+        onCreateAnswers(db);
         insertSeedData(db);
     }
 
@@ -70,6 +71,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TRANSLATIONS_TABLE_NAME);
+        onUpgradeAnswers(db, oldVersion, newVersion);
         onCreate(db);
     }
 
@@ -164,70 +166,138 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         List<Translation> translations = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery("select * from " + TRANSLATIONS_TABLE_NAME, null);
-        res.moveToFirst();
+        String thisTranslationId = "this_translation_id";
+        Cursor res = null;
+        try {
+            res = db.rawQuery("select " +
+                    TRANSLATIONS_TABLE_NAME + "." + COLUMN_ID + " as " + thisTranslationId + ", " +
+                    COLUMN_FOREIGN_WORD + ", " +
+                    COLUMN_NATIVE_WORD + ", " +
+                    COLUMN_TIME_ANSWERED + ", " +
+                    COLUMN_WORD_DIFFICULTY
+                    + " from " + TRANSLATIONS_TABLE_NAME + " LEFT JOIN " + ANSWERS_LOG_TABLE_NAME + " ON " + TRANSLATIONS_TABLE_NAME + "." + COLUMN_ID + " = " + ANSWERS_LOG_TABLE_NAME + "." + COLUMN_TRANSLATION_ID + " ORDER BY " + COLUMN_TRANSLATION_ID, null);
+            res.moveToFirst();
+            Translation currentTranslation = null;
+            int lastTranslation = -1;
+            while (!res.isAfterLast()) {
+                int newTranslationId = res.getInt(res.getColumnIndex(thisTranslationId));
+                if (newTranslationId != lastTranslation) {
+                    currentTranslation = new Translation(
+                            newTranslationId,
+                            new ForeignWord(res.getString(res.getColumnIndex(COLUMN_FOREIGN_WORD))),
+                            new NativeWord(res.getString(res.getColumnIndex(COLUMN_NATIVE_WORD))),
+                            new TranslationMetadata(Difficulty.valueOf(res.getString(res.getColumnIndex(COLUMN_WORD_DIFFICULTY))),
+                                    new ArrayList<Date>()));
+                    translations.add(currentTranslation);
+                    lastTranslation = newTranslationId;
+                }
 
-        while (!res.isAfterLast()) {
-            List<Date> recentLatestDatesWhenMarketAsEasy = collectDatesForRecentMarkingsAsEasy(res);
+                long easyLatestTimestamp1 = res.getLong(res.getColumnIndex(COLUMN_TIME_ANSWERED));
+                currentTranslation.getMetadata().getRecentMarkingAsEasy().add(new Date(easyLatestTimestamp1));
 
-            translations.add(new Translation(
-                    res.getInt(res.getColumnIndex(COLUMN_ID)),
-                    new ForeignWord(res.getString(res.getColumnIndex(COLUMN_FOREIGN_WORD))),
-                    new NativeWord(res.getString(res.getColumnIndex(COLUMN_NATIVE_WORD))),
-                    new TranslationMetadata(Difficulty.valueOf(res.getString(res.getColumnIndex(COLUMN_WORD_DIFFICULTY))),
-                            recentLatestDatesWhenMarketAsEasy)));
-            res.moveToNext();
+                res.moveToNext();
+            }
+        } finally {
+             if (res != null) {
+                 res.close();
+             }
         }
-        res.close();
         return translations;
     }
 
-    private List<Date> collectDatesForRecentMarkingsAsEasy(Cursor res) {
-        List<Date> recentLatestDatesWhenMarketAsEasy = new ArrayList<>();
-        long easyLatestTimestamp1 = res.getInt(res.getColumnIndex(COLUMN_EASY_LATEST_1));
-        long easyLatestTimestamp2 = res.getInt(res.getColumnIndex(COLUMN_EASY_LATEST_2));
-        long easyLatestTimestamp3 = res.getInt(res.getColumnIndex(COLUMN_EASY_LATEST_3));
-        if (easyLatestTimestamp1 != 0) {
-            recentLatestDatesWhenMarketAsEasy.add(new Date(easyLatestTimestamp1));
-        }
-        if (easyLatestTimestamp2 != 0) {
-            recentLatestDatesWhenMarketAsEasy.add(new Date(easyLatestTimestamp2));
-        }
-        if (easyLatestTimestamp3 != 0) {
-            recentLatestDatesWhenMarketAsEasy.add(new Date(easyLatestTimestamp3));
-        }
-        return recentLatestDatesWhenMarketAsEasy;
+    private List<Date> collectDatesForRecentMarkingsAsEasy(int id) {
+        return getAnswersForTranslation(id);
     }
 
     @Override
     public Translation getById(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.query(TRANSLATIONS_TABLE_NAME,
-                null, " id = ? ", new String[] {String.valueOf(id)}, null, null, null);
-        res.moveToFirst();
+        Cursor res = null;
+        Translation translation = null;
+        try {
+            res = db.query(TRANSLATIONS_TABLE_NAME,
+                null, " id = ? ", new String[]{String.valueOf(id)}, null, null, null);
+            res.moveToFirst();
 
-        List<Date> recentLatestDatesWhenMarketAsEasy = collectDatesForRecentMarkingsAsEasy(res);
-        Translation translation = new Translation(
-                    res.getInt(res.getColumnIndex(COLUMN_ID)),
+            int translationId = res.getInt(res.getColumnIndex(COLUMN_ID));
+            List<Date> recentLatestDatesWhenMarketAsEasy = collectDatesForRecentMarkingsAsEasy(translationId);
+            translation = new Translation(
+                    translationId,
                     new ForeignWord(res.getString(res.getColumnIndex(COLUMN_FOREIGN_WORD))),
                     new NativeWord(res.getString(res.getColumnIndex(COLUMN_NATIVE_WORD))),
                     new TranslationMetadata(Difficulty.valueOf(res.getString(res.getColumnIndex(COLUMN_WORD_DIFFICULTY))),
                             recentLatestDatesWhenMarketAsEasy));
-        res.close();
+        } finally {
+            if (res != null) {
+                close();
+            }
+        }
+
         return translation;
+    }
+
+    public static final String ANSWERS_LOG_TABLE_NAME = "answer_log";
+
+    public static final String COLUMN_TRANSLATION_ID = "translation_id";
+    public static final String COLUMN_TIME_ANSWERED = "time_answered";
+    public static final String COLUMN_IS_CORRECT = "is_correct";
+
+    public void onCreateAnswers(SQLiteDatabase db) {
+        db.execSQL(
+                "create table " + ANSWERS_LOG_TABLE_NAME + " " +
+                        "(" +
+                        COLUMN_ID + " integer primary key, " +
+                        COLUMN_TRANSLATION_ID + " integer," +
+                        COLUMN_TIME_ANSWERED + " integer, " +
+                        COLUMN_IS_CORRECT + " integer" +
+                        ")"
+        );
+    }
+
+
+    public void onUpgradeAnswers(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + ANSWERS_LOG_TABLE_NAME);
+        onCreate(db);
     }
 
     @Override
     public boolean logAnswer(Translation translation, Difficulty difficulty, Date time) {
-        TranslationMetadata metadata = translation.getMetadata();
+        SQLiteDatabase db = this.getWritableDatabase();
         if (difficulty == Difficulty.EASY) {
-            if (metadata.getRecentMarkingAsEasy().size() < 3) {
-                metadata.getRecentMarkingAsEasy().add(time);
-            }
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(COLUMN_TRANSLATION_ID, translation.getId());
+            contentValues.put(COLUMN_TIME_ANSWERED, time.getTime());
+            contentValues.put(COLUMN_IS_CORRECT, true);
+            long id = db.insert(ANSWERS_LOG_TABLE_NAME, null, contentValues);
+            return id != ERROR_OCURRED;
         } else {
-            metadata.getRecentMarkingAsEasy().clear();
+            db.execSQL("DELETE FROM " + ANSWERS_LOG_TABLE_NAME + " WHERE translation_id = " + translation.getId());
+            return true;
         }
-        int recordsUpdated = update(translation.getId(), translation.getForeignWord(), translation.getNativeWord(), new TranslationMetadata(difficulty, metadata.getRecentMarkingAsEasy()));
-        return recordsUpdated > 0;
+    }
+
+    public List<Date> getAnswersForTranslation(int translationId) {
+        List<Date> dates = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = null;
+        try {
+            res = db.query(ANSWERS_LOG_TABLE_NAME, new String[]{COLUMN_TIME_ANSWERED}, " " + COLUMN_TRANSLATION_ID + " = ? ", new String[]{String.valueOf(translationId)}, null, null, null);
+            res.moveToFirst();
+
+            List<Date> recentLatestDatesWhenMarketAsEasy = new ArrayList<>();
+            while (!res.isAfterLast()) {
+
+                long easyLatestTimestamp1 = res.getInt(res.getColumnIndex(COLUMN_TIME_ANSWERED));
+                if (easyLatestTimestamp1 != 0) {
+                    recentLatestDatesWhenMarketAsEasy.add(new Date(easyLatestTimestamp1));
+                }
+            }
+            dates = recentLatestDatesWhenMarketAsEasy;
+        } finally {
+            if (res != null) {
+                res.close();
+            }
+        }
+        return dates;
     }
 }

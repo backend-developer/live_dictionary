@@ -97,7 +97,7 @@ public class DictionaryTest {
     }
 
     @Test
-    public void wordShouldNotBeAskedEvenIfWasNottAnsweredCorrectlyFor3TimesInLastHour() {
+    public void translationShouldNotBeAskedEvenIfWasNotAnsweredCorrectlyFor3TimesInLastHour() {
         TranslationDao dao = new TranslationDaoStub();
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslations().get(0);
@@ -114,6 +114,12 @@ public class DictionaryTest {
         dictionary.mark(translation, Difficulty.EASY);
         when(clock.getTime()).thenReturn(nowPlusTwoHours);
 
+        try {
+            dictionary.getRandomTranslation();
+            fail();
+        } catch (LiveDictionaryException e) {
+            assertThat(e.getMessage(), Matchers.containsString("There are no more difficult words"));
+        }
         try {
             dictionary.getRandomTranslation();
             fail();

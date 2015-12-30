@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,6 +17,7 @@ import java.io.File;
 
 public class LiveDictionaryActivity extends Activity implements OnModifyDictionaryClickListener.ModifyDictionaryListener, Supplier<Translation> {
     private static final Translation EMPTY_TRANSLATION = new Translation(new ForeignWord(""), new NativeWord(""));
+    public static final String TAG = LiveDictionaryActivity.class.getName();
 
     private Button showTranslationButton;
     private Button markTranslationAsEasyButton;
@@ -48,7 +50,12 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
         dao = new TranslationDaoSqlite(LiveDictionaryActivity.this);
         final DataImporterExporter dataImporterExporter = new DataImporterExporter(dao);
 
-        dictionary = new Dictionary(dao);
+        try {
+            dictionary = new Dictionary(dao);
+        }catch (Exception e){
+            Log.e(TAG, "critical error ", e);
+            showErrorDialogAndExitActivity(e.getMessage());
+        }
 
         correctAnswerView = (TextView) findViewById(R.id.correct_answer);
         questionLabel = (TextView) findViewById(R.id.question_label);

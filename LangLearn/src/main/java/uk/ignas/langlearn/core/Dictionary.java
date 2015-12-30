@@ -42,7 +42,7 @@ public class Dictionary {
     }
 
     public Translation getRandomTranslation() {
-        if (questions.size() == 0) {
+        if (questions.size() == 0 && difficultTranslations.size() == 0 && veryEasyTranslations.size() == 0) {
             throw new LiveDictionaryException("no questions found");
         }
         Translation translationToReturn = null;
@@ -121,13 +121,12 @@ public class Dictionary {
         if (translation.getId() == null) {
             return false;
         }
-        Translation record;
+        boolean result;
         try {
-            record = dao.getById(translation.getId());
+            result = dao.logAnswer(translation, difficulty, clock.getTime());
         } catch (RuntimeException e) {
             return false;
         }
-        boolean result = dao.logAnswer(translation, difficulty, clock.getTime());
         reloadData();
         return result;
     }
