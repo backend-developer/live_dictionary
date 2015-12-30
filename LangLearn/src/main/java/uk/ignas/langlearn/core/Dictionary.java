@@ -52,6 +52,7 @@ public class Dictionary {
                 throw new LiveDictionaryException("There are no more difficult words");
             }
             Translation candidateTranslation = chooseTranslationPreferingDifficultOrNewer();
+
             int easyCountsInAnHour = countMarkingsAsEasyInLast4Hours(candidateTranslation);
 
             if (easyCountsInAnHour >= VERY_EASY_TRANSLATION_MARK) {

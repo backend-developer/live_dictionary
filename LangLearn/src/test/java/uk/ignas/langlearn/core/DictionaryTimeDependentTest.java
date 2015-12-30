@@ -1,6 +1,7 @@
 package uk.ignas.langlearn.core;
 
 import org.hamcrest.Matchers;
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.ignas.langlearn.testutils.LiveDictionaryDsl;
 import uk.ignas.langlearn.testutils.TranslationDaoStub;
@@ -25,13 +26,13 @@ public class DictionaryTimeDependentTest {
         NOW = c.getTime();
     }
 
-    public static final Date NOW_PLUS_4_HOURS = createDateDifferingBy(NOW, 4, Calendar.HOUR);
-    public static final Date NOW_PLUS_ALMOST_4_HOURS = createDateDifferingBy(NOW, 3*60+59, Calendar.MINUTE);
+    public static final Date LEVEL_1_STAGING_PERIOD_PASSED = createDateDifferingBy(NOW, 4, Calendar.HOUR);
+    public static final Date LEVEL_1_STAGING_PERIOD_NOT_YET_PASSED = createDateDifferingBy(NOW, 3*60+59, Calendar.MINUTE);
 
     private TranslationDao dao = new TranslationDaoStub();
 
     @Test
-    public void onceStagedTranslationShouldNotBeAsked() {
+    public void onceStagedZeroLevelTranslationShouldNotBeAsked() {
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslations().get(0);
         Clock clock = mock(Clock.class);
@@ -39,7 +40,7 @@ public class DictionaryTimeDependentTest {
         when(clock.getTime()).thenReturn(NOW);
         dictionary.mark(translation, Difficulty.EASY);
         dictionary.mark(translation, Difficulty.EASY);
-        when(clock.getTime()).thenReturn(NOW_PLUS_ALMOST_4_HOURS);
+        when(clock.getTime()).thenReturn(LEVEL_1_STAGING_PERIOD_NOT_YET_PASSED);
 
         try {
             dictionary.getRandomTranslation();
@@ -56,7 +57,7 @@ public class DictionaryTimeDependentTest {
     }
 
     @Test
-    public void onceZeroLevelTranslationIsAnsweredCorrectlyTwiceOthersShouldNotBeAsked() {
+    public void onceZerothLevelTranslationIsStagedOthersShouldBeAsked() {
         dao.insertSingle(createForeignToNativeTranslation("la palabra", "word"));
         dao.insertSingle(createForeignToNativeTranslation("la frase", "phrase"));
         Translation easyTranslation = dao.getAllTranslations().get(0);
@@ -73,12 +74,28 @@ public class DictionaryTimeDependentTest {
     }
 
     @Test
-    public void afterMistakeTranslationIsStagedToLevel1() {
+    public void afterMistakingTranslationIsStagedToLevel1() {
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslations().get(0);
         Dictionary dictionary = new Dictionary(dao);
         dictionary.mark(translation, Difficulty.EASY);
         dictionary.mark(translation, Difficulty.DIFFICULT);
+        dictionary.mark(translation, Difficulty.EASY);
+
+        Translation retrieved = dictionary.getRandomTranslation();
+
+        assertThat(retrieved, is(equalTo(translation)));
+    }
+
+    @Test
+    @Ignore
+    public void itIsNotEnoughToAnswerLevel1OnceToStageIt() {
+        dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
+        Translation translation = dao.getAllTranslations().get(0);
+        Dictionary dictionary = new Dictionary(dao);
+        dictionary.mark(translation, Difficulty.EASY);
+        dictionary.mark(translation, Difficulty.DIFFICULT);
+        dictionary.mark(translation, Difficulty.EASY);
         dictionary.mark(translation, Difficulty.EASY);
 
         Translation retrieved = dictionary.getRandomTranslation();
@@ -95,7 +112,7 @@ public class DictionaryTimeDependentTest {
         when(clock.getTime()).thenReturn(NOW);
         dictionary.mark(translation, Difficulty.EASY);
         dictionary.mark(translation, Difficulty.EASY);
-        when(clock.getTime()).thenReturn(NOW_PLUS_4_HOURS);
+        when(clock.getTime()).thenReturn(LEVEL_1_STAGING_PERIOD_PASSED);
 
         Translation retrieved = dictionary.getRandomTranslation();
 
