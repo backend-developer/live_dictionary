@@ -88,4 +88,18 @@ public class TranslationDaoStub implements TranslationDao {
         }
         throw new RuntimeException("record not found");
     }
+
+    @Override
+    public boolean logAnswer(Translation translation, Difficulty difficulty, Date time) {
+        TranslationMetadata metadata = translation.getMetadata();
+        if (difficulty == Difficulty.EASY) {
+            if (metadata.getRecentMarkingAsEasy().size() < 3) {
+                metadata.getRecentMarkingAsEasy().add(time);
+            }
+        } else {
+            metadata.getRecentMarkingAsEasy().clear();
+        }
+        int recordsUpdated = update(translation.getId(), translation.getForeignWord(), translation.getNativeWord(), new TranslationMetadata(difficulty, metadata.getRecentMarkingAsEasy()));
+        return recordsUpdated > 0;
+    }
 }

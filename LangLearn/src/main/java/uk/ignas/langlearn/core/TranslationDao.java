@@ -1,8 +1,8 @@
 package uk.ignas.langlearn.core;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 public interface TranslationDao {
     void insert(List<Translation> translations);
@@ -16,4 +16,6 @@ public interface TranslationDao {
     List<Translation> getAllTranslations();
 
     Translation getById(int id);
+
+    boolean logAnswer(Translation translation, Difficulty difficulty, Date time);
 }

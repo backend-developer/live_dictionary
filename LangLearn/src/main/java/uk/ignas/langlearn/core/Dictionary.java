@@ -127,17 +127,9 @@ public class Dictionary {
         } catch (RuntimeException e) {
             return false;
         }
-        TranslationMetadata metadata = record.getMetadata();
-        if (difficulty == Difficulty.EASY) {
-            if (metadata.getRecentMarkingAsEasy().size() < 3) {
-                metadata.getRecentMarkingAsEasy().add(clock.getTime());
-            }
-        } else {
-            metadata.getRecentMarkingAsEasy().clear();
-        }
-        int recordsUpdated = dao.update(translation.getId(), translation.getForeignWord(), translation.getNativeWord(), new TranslationMetadata(difficulty, metadata.getRecentMarkingAsEasy()));
+        boolean result = dao.logAnswer(translation, difficulty, clock.getTime());
         reloadData();
-        return recordsUpdated > 0;
+        return result;
     }
 
     public void insert(Translation translation) {
