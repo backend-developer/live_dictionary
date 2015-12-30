@@ -45,23 +45,20 @@ public class Dictionary {
         if (questions.size() == 0) {
             throw new LiveDictionaryException("no questions found");
         }
-        Translation translationToReturn = chooseTranslationPreferingDifficultOrNewer();
-        int easyCountsInAnHour = countMarkingAsEasyInLastHour(translationToReturn);
+        Translation translationToReturn = null;
+        while (translationToReturn == null) {
+            if (questions.size() == 0) {
+                throw new LiveDictionaryException("There are no more difficult words");
+            }
+            Translation candidateTranslation = chooseTranslationPreferingDifficultOrNewer();
+            int easyCountsInAnHour = countMarkingAsEasyInLastHour(candidateTranslation);
 
-        if (easyCountsInAnHour >= VERY_EASY_TRANSLATION_MARK) {
-            veryEasyTranslations.add(translationToReturn);
-            questions.remove(translationToReturn);
-            translationToReturn = findAnotherWord();
-        }
-        return translationToReturn;
-    }
-
-    private Translation findAnotherWord() {
-        Translation translationToReturn;
-        if (questions.size() == 0) {
-            throw new LiveDictionaryException("There are no more difficult words");
-        } else {
-            translationToReturn = getRandomTranslation();
+            if (easyCountsInAnHour >= VERY_EASY_TRANSLATION_MARK) {
+                veryEasyTranslations.add(candidateTranslation);
+                questions.remove(candidateTranslation);
+            } else {
+                translationToReturn = candidateTranslation;
+            }
         }
         return translationToReturn;
     }
