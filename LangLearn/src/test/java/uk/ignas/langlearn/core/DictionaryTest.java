@@ -163,7 +163,7 @@ public class DictionaryTest {
         dao.insert(getNTranslationsWithNativeWordStartingWith(10, "DifficultWord"));
         for (Translation t: new HashSet<>(dao.getAllTranslations())) {
             if (t.getNativeWord().get().contains("DifficultWord")) {
-                dao.update(t.getId(), t.getForeignWord(), t.getNativeWord(), new TranslationMetadata(Difficulty.DIFFICULT, new ArrayList<Date>()));
+                dao.logAnswer(t, Difficulty.DIFFICULT, new Date());
             }
         }
         Dictionary dictionary = new Dictionary(dao);

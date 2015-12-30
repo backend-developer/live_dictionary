@@ -25,7 +25,7 @@ public class TranslationDaoStub implements TranslationDao {
 
         TranslationMetadata metadata = translation.getMetadata();
         if (metadata == null) {
-            metadata = new TranslationMetadata(Difficulty.EASY, new ArrayList<Date>());
+            metadata = new TranslationMetadata(Difficulty.EASY, new ArrayList<DifficultyAtTime>());
         }
         inMemoryTranslations.add(new Translation(sequence++, translation.getForeignWord(), translation.getNativeWord(), metadata));
         return true;
@@ -91,15 +91,12 @@ public class TranslationDaoStub implements TranslationDao {
 
     @Override
     public boolean logAnswer(Translation translation, Difficulty difficulty, Date time) {
-        TranslationMetadata metadata = translation.getMetadata();
-        if (difficulty == Difficulty.EASY) {
-            if (metadata.getRecentMarkingAsEasy().size() < 3) {
-                metadata.getRecentMarkingAsEasy().add(time);
+
+        for (Translation t: inMemoryTranslations) {
+            if (t.getId() == translation.getId()) {
+                return t.getMetadata().getRecentDifficulty().add(new DifficultyAtTime(time, difficulty));
             }
-        } else {
-            metadata.getRecentMarkingAsEasy().clear();
         }
-        int recordsUpdated = update(translation.getId(), translation.getForeignWord(), translation.getNativeWord(), new TranslationMetadata(difficulty, metadata.getRecentMarkingAsEasy()));
-        return recordsUpdated > 0;
+        return false;
     }
 }

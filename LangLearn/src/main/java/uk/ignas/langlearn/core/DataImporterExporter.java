@@ -52,7 +52,7 @@ public class DataImporterExporter {
         try {
             writeTranslations(planeTextExportedPath, dao.getAllTranslations());
         } catch (Exception e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 

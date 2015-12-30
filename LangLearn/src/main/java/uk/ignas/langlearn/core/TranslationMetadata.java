@@ -1,30 +1,33 @@
 package uk.ignas.langlearn.core;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class TranslationMetadata {
     private Difficulty difficulty;
-    private List<Date> recentMarkingAsEasy = new ArrayList<>();
+    private List<DifficultyAtTime> recentDifficulty = new ArrayList<>();
 
-    public TranslationMetadata(Difficulty difficulty, List<Date> recentMarkingAsEasy) {
+    public TranslationMetadata(Difficulty difficulty, List<DifficultyAtTime> recentDifficulty) {
         this.difficulty = difficulty;
-        this.recentMarkingAsEasy = recentMarkingAsEasy;
+        this.recentDifficulty = recentDifficulty;
     }
 
     public static TranslationMetadata copy(TranslationMetadata from) {
         return new TranslationMetadata(
                 from.getDifficulty(),
-                new ArrayList<>(from.getRecentMarkingAsEasy())
+                new ArrayList<>(from.getRecentDifficulty())
         );
     }
 
     public Difficulty getDifficulty() {
-        return difficulty;
+        if (recentDifficulty.size() == 0) {
+            return Difficulty.EASY;
+        } else {
+            return recentDifficulty.get(recentDifficulty.size() - 1).getDifficulty();
+        }
     }
 
-    public List<Date> getRecentMarkingAsEasy() {
-        return recentMarkingAsEasy;
+    public List<DifficultyAtTime> getRecentDifficulty() {
+        return recentDifficulty;
     }
 }

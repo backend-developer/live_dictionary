@@ -46,6 +46,7 @@ public class Dictionary {
         if (questions.size() == 0 && difficultTranslations.size() == 0 && veryEasyTranslations.size() == 0) {
             throw new LiveDictionaryException("no questions found");
         }
+        System.out.println("q=" + questions.size() + ";dif=" + difficultTranslations.size() + ";easy=" + veryEasyTranslations.size());
         Translation translationToReturn = null;
         while (translationToReturn == null) {
             if (questions.size() == 0) {
@@ -67,9 +68,13 @@ public class Dictionary {
 
     private int countMarkingsAsEasyInLast4Hours(Translation translationToReturn) {
         int counter = 0;
-        for (Date dateMarkingAsEasy : translationToReturn.getMetadata().getRecentMarkingAsEasy()) {
-            if (TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - dateMarkingAsEasy.getTime()) < PERIOD_IN_HOURS_TO_REACH_LEVEL_2) {
-                counter++;
+        for (DifficultyAtTime difficultyAtTime : translationToReturn.getMetadata().getRecentDifficulty()) {
+            if (difficultyAtTime.getDifficulty() == Difficulty.EASY) {
+                if (TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - difficultyAtTime.getTimepoint().getTime()) < PERIOD_IN_HOURS_TO_REACH_LEVEL_2) {
+                    counter++;
+                }
+            } else {
+                counter = 0;
             }
         }
         return counter;
@@ -159,7 +164,7 @@ public class Dictionary {
             if (Objects.equals(t.getId(), translation.getId())) {
                 Translation byId = dao.getById(t.getId());
 
-                dao.update(translation.getId(), translation.getForeignWord(), translation.getNativeWord(), new TranslationMetadata(difficulty, byId.getMetadata().getRecentMarkingAsEasy()));
+                dao.update(translation.getId(), translation.getForeignWord(), translation.getNativeWord(), new TranslationMetadata(difficulty, byId.getMetadata().getRecentDifficulty()));
                 return true;
             }
         }
