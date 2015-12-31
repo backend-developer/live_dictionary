@@ -167,6 +167,21 @@ public class ReminderTest {
     }
 
     @Test
+    public void brandNewTranslationShouldNotBeAskedMoreThanTwiceIfAskedLessRarelyThanItIsPromotionPeriodDuringLevel1PromotionPeriod() {
+        Clock clock = mock(Clock.class);
+        Reminder reminder = new Reminder(clock);
+        when(clock.getTime()).thenReturn(LEVEL_1_PERIOD_PASSED);
+        TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, asList(
+                new DifficultyAtTime(NOW, Difficulty.EASY),
+                new DifficultyAtTime(LEVEL_1_PERIOD_PASSED, Difficulty.EASY)
+        ));
+
+        boolean shouldRemind = reminder.shouldBeReminded(metadata);
+
+        assertThat(shouldRemind, is(true));
+    }
+
+    @Test
     public void translationShouldBeRemindedAfterLevel1PromotionPeriodHasPassed() {
         Clock clock = mock(Clock.class);
         Reminder reminder = new Reminder(clock);

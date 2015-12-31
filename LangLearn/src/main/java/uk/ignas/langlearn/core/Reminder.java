@@ -17,6 +17,7 @@ public class Reminder {
         int counterForLastCorrectSequence = successAfterLastFailure.size();
         boolean canRemind = false;
         if (wasEverFailed) {
+
             if (counterForLastCorrectSequence <= 3) {
                 if (counterForLastCorrectSequence <= 2 || countInNRecentHours(successAfterLastFailure.subList(0, 3), 4) <= 2) {
                     canRemind = true;
@@ -27,6 +28,11 @@ public class Reminder {
                 }
             }
         } else {
+            int index = findIndex(successAfterLastFailure, 4);
+
+            if (index == -1) {
+                canRemind = true;
+            }
             if (counterForLastCorrectSequence <= 2) {
                 if (counterForLastCorrectSequence <= 1 || countInNRecentHours(successAfterLastFailure.subList(0, 2), 4) <= 1) {
                     canRemind = true;
@@ -34,6 +40,8 @@ public class Reminder {
             } else if (counterForLastCorrectSequence <= 4) {
                 if (counterForLastCorrectSequence <= 3 || countInNRecentHours(successAfterLastFailure.subList(2, 4), 20) <= 1) {
                     canRemind = true;
+                } else {
+                    canRemind = false;
                 }
             }
         }
@@ -51,6 +59,22 @@ public class Reminder {
             }
         }
         return successLogAfterLastFailure;
+    }
+
+    private int findIndex(List<DifficultyAtTime> difficultyAtTimes, int hours) {
+        int counter = 0;
+        for (int i = 0; i < difficultyAtTimes.size(); i++) {
+            DifficultyAtTime difficultyAtTime = difficultyAtTimes.get(i);
+            if (TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - difficultyAtTime.getTimepoint().getTime()) < hours) {
+                counter++;
+            } else {
+                counter = 0;
+            }
+            if (counter == 2) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private int countInNRecentHours(List<DifficultyAtTime> difficultyAtTimes, int hours) {
