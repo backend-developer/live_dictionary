@@ -1,6 +1,7 @@
 package uk.ignas.langlearn.core;
 
 import org.hamcrest.Matchers;
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.ignas.langlearn.testutils.LiveDictionaryDsl;
 import uk.ignas.langlearn.testutils.TranslationDaoStub;
@@ -18,14 +19,16 @@ import static org.mockito.Mockito.when;
 
 public class DictionaryTimeDependentTest {
     private static final Date NOW;
-
     static {
         Calendar c = Calendar.getInstance();
         c.set(2015, Calendar.JANUARY, 1, 12, 0);
         NOW = c.getTime();
     }
 
+    public static final Date LEVEL_0_STAGING_PERIOD_PASSED = createDateDifferingBy(NOW, 4, Calendar.HOUR);
     public static final Date LEVEL_1_STAGING_PERIOD_PASSED = createDateDifferingBy(NOW, 4, Calendar.HOUR);
+    private static final Date LEVEL_0_AND_LEVEL_2_STAGING_PERIOD_PASSED = createDateDifferingBy(NOW, 4 + 24, Calendar.HOUR);
+    private static final Date TWO_LEVEL_0_STAGING_PERIODS_PASSED = createDateDifferingBy(NOW, 4 * 2, Calendar.HOUR);
     public static final Date LEVEL_1_STAGING_PERIOD_NOT_YET_PASSED = createDateDifferingBy(NOW, 3*60+59, Calendar.MINUTE);
 
     private TranslationDao dao = new TranslationDaoStub();
@@ -41,18 +44,45 @@ public class DictionaryTimeDependentTest {
         dictionary.mark(translation, Difficulty.EASY);
         when(clock.getTime()).thenReturn(LEVEL_1_STAGING_PERIOD_NOT_YET_PASSED);
 
-        try {
-            dictionary.getRandomTranslation();
-            fail();
-        } catch (LiveDictionaryException e) {
-            assertThat(e.getMessage(), Matchers.containsString("There are no more difficult words"));
-        }
-        try {
-            dictionary.getRandomTranslation();
-            fail();
-        } catch (LiveDictionaryException e) {
-            assertThat(e.getMessage(), Matchers.containsString("There are no more difficult words"));
-        }
+        gettingNextTranslationShouldThroughLDEwithMessage(dictionary, "There are no more difficult words");
+        gettingNextTranslationShouldThroughLDEwithMessage(dictionary, "There are no more difficult words");
+    }
+
+    @Test
+    @Ignore
+    public void translationShouldNoLongerBeInLevel0AfterStangingPeriodFinishes() {
+        dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
+        Translation translation = dao.getAllTranslations().get(0);
+        Clock clock = mock(Clock.class);
+        Dictionary dictionary = new Dictionary(dao, clock);
+        when(clock.getTime()).thenReturn(NOW);
+        dictionary.mark(translation, Difficulty.EASY);
+        dictionary.mark(translation, Difficulty.EASY);
+        when(clock.getTime()).thenReturn(LEVEL_0_STAGING_PERIOD_PASSED);
+        dictionary.mark(translation, Difficulty.EASY);
+        dictionary.mark(translation, Difficulty.EASY);
+        when(clock.getTime()).thenReturn(TWO_LEVEL_0_STAGING_PERIODS_PASSED);
+
+        gettingNextTranslationShouldThroughLDEwithMessage(dictionary, "There are no more difficult words");
+    }
+
+    @Test
+    public void level0translationShouldBeInLevel2AfterStagingPeriodFinishes() {
+        dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
+        Translation translation = dao.getAllTranslations().get(0);
+        Clock clock = mock(Clock.class);
+        Dictionary dictionary = new Dictionary(dao, clock);
+        when(clock.getTime()).thenReturn(NOW);
+        dictionary.mark(translation, Difficulty.EASY);
+        dictionary.mark(translation, Difficulty.EASY);
+        when(clock.getTime()).thenReturn(LEVEL_0_STAGING_PERIOD_PASSED);
+        dictionary.mark(translation, Difficulty.EASY);
+        dictionary.mark(translation, Difficulty.EASY);
+        when(clock.getTime()).thenReturn(LEVEL_0_AND_LEVEL_2_STAGING_PERIOD_PASSED);
+
+        Translation retrieved = dictionary.getRandomTranslation();
+
+        assertThat(retrieved, is(equalTo(translation)));
     }
 
     @Test
@@ -112,12 +142,7 @@ public class DictionaryTimeDependentTest {
         dictionary.mark(translation, Difficulty.EASY);
         dictionary.mark(translation, Difficulty.EASY);
 
-        try {
-            dictionary.getRandomTranslation();
-            fail();
-        } catch (LiveDictionaryException e) {
-            assertThat(e.getMessage(), Matchers.containsString("There are no more difficult words"));
-        }
+        gettingNextTranslationShouldThroughLDEwithMessage(dictionary, "There are no more difficult words");
     }
 
     @Test
@@ -134,6 +159,15 @@ public class DictionaryTimeDependentTest {
         Translation retrieved = dictionary.getRandomTranslation();
 
         assertThat(retrieved, is(equalTo(translation)));
+    }
+
+    private void gettingNextTranslationShouldThroughLDEwithMessage(Dictionary dictionary, String message) {
+        try {
+            dictionary.getRandomTranslation();
+            fail();
+        } catch (LiveDictionaryException e) {
+            assertThat(e.getMessage(), Matchers.containsString(message));
+        }
     }
 
     private Translation createForeignToNativeTranslation(String foreignWord, String nativeWord) {
