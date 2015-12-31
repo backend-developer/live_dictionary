@@ -9,7 +9,8 @@ public class Dictionary {
     public static final int DIFFICULT_TRANSLATIONS_LIMIT = 20;
     public static final int NEWEST_100_QUESTIONS = 100;
     public static final int PROBABILITY_OF_80_PERCENT = 80;
-    public static final int VERY_EASY_TRANSLATION_MARK = 2;
+    public static final int TIMES_TO_SUCCEED_IN_0_LEVEL_FOR_STAGING = 2;
+    public static final double TIMES_TO_SUCCEED_IN_1_LEVEL_FOR_STAGING = 3;
     public static final int PERIOD_IN_HOURS_TO_REACH_LEVEL_2 = 4;
     private List<Translation> questions;
     private final Set<Translation> difficultTranslations = new HashSet<>();
@@ -46,7 +47,6 @@ public class Dictionary {
         if (questions.size() == 0 && difficultTranslations.size() == 0 && veryEasyTranslations.size() == 0) {
             throw new LiveDictionaryException("no questions found");
         }
-        System.out.println("q=" + questions.size() + ";dif=" + difficultTranslations.size() + ";easy=" + veryEasyTranslations.size());
         Translation translationToReturn = null;
         while (translationToReturn == null) {
             if (questions.size() == 0) {
@@ -54,9 +54,17 @@ public class Dictionary {
             }
             Translation candidateTranslation = chooseTranslationPreferingDifficultOrNewer();
 
-            int easyCountsInAnHour = countMarkingsAsEasyInLast4Hours(candidateTranslation);
+            int level = 0;
+            for (DifficultyAtTime difficultyAtTime : candidateTranslation.getMetadata().getRecentDifficulty()) {
+                if (difficultyAtTime.getDifficulty() == Difficulty.DIFFICULT) {
+                    level = 1;
+                }
+            }
 
-            if (easyCountsInAnHour >= VERY_EASY_TRANSLATION_MARK) {
+            int successCountInAnHour = countMarkingsAsEasyInLast4Hours(candidateTranslation);
+
+            if (level == 0 && successCountInAnHour >= TIMES_TO_SUCCEED_IN_0_LEVEL_FOR_STAGING ||
+                    level == 1 && successCountInAnHour >= TIMES_TO_SUCCEED_IN_1_LEVEL_FOR_STAGING) {
                 veryEasyTranslations.add(candidateTranslation);
                 questions.remove(candidateTranslation);
             } else {

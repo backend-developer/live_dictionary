@@ -88,7 +88,7 @@ public class DictionaryTimeDependentTest {
     }
 
     @Test
-    @Ignore
+
     public void itIsNotEnoughToAnswerLevel1OnceToStageIt() {
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslations().get(0);
