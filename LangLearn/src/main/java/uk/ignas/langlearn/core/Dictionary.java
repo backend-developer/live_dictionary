@@ -10,7 +10,8 @@ public class Dictionary {
     public static final int NEWEST_100_QUESTIONS = 100;
     public static final int PROBABILITY_OF_80_PERCENT = 80;
     public static final int TIMES_TO_SUCCEED_IN_0_LEVEL_FOR_STAGING = 2;
-    public static final double TIMES_TO_SUCCEED_IN_1_LEVEL_FOR_STAGING = 3;
+    public static final int TIMES_TO_SUCCEED_IN_1_LEVEL_FOR_STAGING = 3;
+
     public static final int PERIOD_IN_HOURS_TO_REACH_LEVEL_2 = 4;
     private List<Translation> questions;
     private final Set<Translation> difficultTranslations = new HashSet<>();
@@ -61,10 +62,10 @@ public class Dictionary {
                 }
             }
 
-            int successCountInAnHour = countMarkingsAsEasyInLast4Hours(candidateTranslation);
+            int successCountInLast4Hours = countMarkingsAsEasyInLast4Hours(candidateTranslation);
 
-            if (level == 0 && successCountInAnHour >= TIMES_TO_SUCCEED_IN_0_LEVEL_FOR_STAGING ||
-                    level == 1 && successCountInAnHour >= TIMES_TO_SUCCEED_IN_1_LEVEL_FOR_STAGING) {
+            if (level == 0 && successCountInLast4Hours >= TIMES_TO_SUCCEED_IN_0_LEVEL_FOR_STAGING ||
+                    level == 1 && successCountInLast4Hours >= TIMES_TO_SUCCEED_IN_1_LEVEL_FOR_STAGING) {
                 veryEasyTranslations.add(candidateTranslation);
                 questions.remove(candidateTranslation);
             } else {

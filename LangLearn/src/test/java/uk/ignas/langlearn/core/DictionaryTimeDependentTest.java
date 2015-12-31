@@ -1,7 +1,6 @@
 package uk.ignas.langlearn.core;
 
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.ignas.langlearn.testutils.LiveDictionaryDsl;
 import uk.ignas.langlearn.testutils.TranslationDaoStub;
@@ -88,8 +87,7 @@ public class DictionaryTimeDependentTest {
     }
 
     @Test
-
-    public void itIsNotEnoughToAnswerLevel1OnceToStageIt() {
+    public void itIsNotEnoughToAnswerCorrectlyLevel1TranslationOnceToStageIt() {
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslations().get(0);
         Dictionary dictionary = new Dictionary(dao);
@@ -101,6 +99,25 @@ public class DictionaryTimeDependentTest {
         Translation retrieved = dictionary.getRandomTranslation();
 
         assertThat(retrieved, is(equalTo(translation)));
+    }
+
+    @Test
+    public void itIsEnoughToAnswerCorrectlyLevel1TranslationThreeTimesToStageIt() {
+        dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
+        Translation translation = dao.getAllTranslations().get(0);
+        Dictionary dictionary = new Dictionary(dao);
+        dictionary.mark(translation, Difficulty.EASY);
+        dictionary.mark(translation, Difficulty.DIFFICULT);
+        dictionary.mark(translation, Difficulty.EASY);
+        dictionary.mark(translation, Difficulty.EASY);
+        dictionary.mark(translation, Difficulty.EASY);
+
+        try {
+            dictionary.getRandomTranslation();
+            fail();
+        } catch (LiveDictionaryException e) {
+            assertThat(e.getMessage(), Matchers.containsString("There are no more difficult words"));
+        }
     }
 
     @Test
