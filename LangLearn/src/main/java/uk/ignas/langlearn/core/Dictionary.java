@@ -1,7 +1,6 @@
 package uk.ignas.langlearn.core;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 import static java.util.Collections.singleton;
 
@@ -9,12 +8,10 @@ public class Dictionary {
     public static final int DIFFICULT_TRANSLATIONS_LIMIT = 20;
     public static final int NEWEST_100_QUESTIONS = 100;
     public static final int PROBABILITY_OF_80_PERCENT = 80;
-    public static final int TIMES_TO_SUCCEED_IN_0_LEVEL_FOR_STAGING = 2;
-    public static final int TIMES_TO_SUCCEED_IN_1_LEVEL_FOR_STAGING = 3;
 
-    public static final int PERIOD_IN_HOURS_TO_REACH_LEVEL_2 = 4;
     private List<Translation> questions;
     private final Set<Translation> difficultTranslations = new HashSet<>();
+    private final Reminder reminder;
     private List<Translation> veryEasyTranslations = new ArrayList<>();
     private final Random random = new Random();
     private TranslationDao dao;
@@ -27,6 +24,7 @@ public class Dictionary {
     public Dictionary(TranslationDao dao, Clock clock) {
         this.dao = dao;
         this.clock = clock;
+        reminder = new Reminder(clock);
         //making sure data structure preserves insertion order even the code is changed
         reloadTranslations();
     }
@@ -55,39 +53,19 @@ public class Dictionary {
             }
             Translation candidateTranslation = chooseTranslationPreferingDifficultOrNewer();
 
-            int level = 0;
-            for (DifficultyAtTime difficultyAtTime : candidateTranslation.getMetadata().getRecentDifficulty()) {
-                if (difficultyAtTime.getDifficulty() == Difficulty.DIFFICULT) {
-                    level = 1;
-                }
-            }
-
-            int successCountInLast4Hours = countMarkingsAsEasyInLast4Hours(candidateTranslation);
-
-            if (level == 0 && successCountInLast4Hours >= TIMES_TO_SUCCEED_IN_0_LEVEL_FOR_STAGING ||
-                    level == 1 && successCountInLast4Hours >= TIMES_TO_SUCCEED_IN_1_LEVEL_FOR_STAGING) {
+            if (reminder.shouldBeReminded(candidateTranslation.getMetadata())) {
+                translationToReturn = candidateTranslation;
+            } else {
                 veryEasyTranslations.add(candidateTranslation);
                 questions.remove(candidateTranslation);
-            } else {
-                translationToReturn = candidateTranslation;
             }
         }
         return translationToReturn;
     }
 
-    private int countMarkingsAsEasyInLast4Hours(Translation translationToReturn) {
-        int counter = 0;
-        for (DifficultyAtTime difficultyAtTime : translationToReturn.getMetadata().getRecentDifficulty()) {
-            if (difficultyAtTime.getDifficulty() == Difficulty.EASY) {
-                if (TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - difficultyAtTime.getTimepoint().getTime()) < PERIOD_IN_HOURS_TO_REACH_LEVEL_2) {
-                    counter++;
-                }
-            } else {
-                counter = 0;
-            }
-        }
-        return counter;
-    }
+
+
+
 
     private Translation chooseTranslationPreferingDifficultOrNewer() {
         Translation translationToReturn;
