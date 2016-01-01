@@ -28,14 +28,26 @@ public class Reminder {
         int counterForLastCorrectSequence = successAfterLastFailure.size();
         boolean shouldRemind = false;
         if (wasEverFailed) {
-            if (counterForLastCorrectSequence <= 3) {
-                if (counterForLastCorrectSequence <= 2 || countInNRecentHours(successAfterLastFailure.subList(0, 3), 4) <= 2) {
-                    shouldRemind = true;
+            List<List<DifficultyAtTime>> groups = findPairsFitting4And20HoursPeriodInOrder(successAfterLastFailure,
+                    new MsgCountAndNumOfHours(3, 4),
+                    new MsgCountAndNumOfHours(2, 20)
+            );
+            int promotionLevel = 1;
+            if (promotionLevel == 1) {
+                List<DifficultyAtTime> messages = groups.get(0);
+                boolean isLevelPromoted = !messages.isEmpty() && !isMessagesNewerThanNHours(messages.get(0), 4);
+                if (isLevelPromoted) {
+                    promotionLevel++;
                 }
-            } else if (counterForLastCorrectSequence <= 5) {
-                if (counterForLastCorrectSequence <= 4 || countInNRecentHours(successAfterLastFailure.subList(3, 5), 20) <= 1) {
-                    shouldRemind = true;
+                shouldRemind = messages.isEmpty() || !isMessagesNewerThanNHours(messages.get(0), 4);
+            }
+            if (promotionLevel == 2) {
+                List<DifficultyAtTime> messages = groups.get(1);
+                boolean isLevelPromoted = !messages.isEmpty() && !isMessagesNewerThanNHours(messages.get(0), 20);
+                if (isLevelPromoted) {
+                    promotionLevel++;
                 }
+                shouldRemind = messages.isEmpty() || !isMessagesNewerThanNHours(messages.get(0), 20);
             }
         } else {
             List<List<DifficultyAtTime>> groups = findPairsFitting4And20HoursPeriodInOrder(successAfterLastFailure,
@@ -81,7 +93,7 @@ public class Reminder {
             groups.get(0).add(messages.get(index));
         }
         if (!groups.get(0).isEmpty()) {
-            List<DifficultyAtTime> sublist = messages.subList(indiceForGroupZero.get(1) + 1, messages.size());
+            List<DifficultyAtTime> sublist = messages.subList(indiceForGroupZero.get(indiceForGroupZero.size() - 1) + 1, messages.size());
             List<Integer> indiceForGroupOne = findIndexesForFirstNumOfMsgsSubmittedWithinNHours(sublist, countInPeriod2);
 
             for (Integer index : indiceForGroupOne) {

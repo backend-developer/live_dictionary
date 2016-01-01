@@ -1,6 +1,5 @@
 package uk.ignas.langlearn.core;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -242,7 +241,6 @@ public class ReminderTest {
     }
 
     @Test
-    @Ignore
     public void mistakenTranslationShouldContinueToBeAskedIfIsBeingAskedLessRarelyThanItIsPromotionPeriodDuringLevel2PromotionPeriod() {
         Clock clock = mock(Clock.class);
         Reminder reminder = new Reminder(clock);
