@@ -223,7 +223,7 @@ public class ReminderTest {
     }
 
     @Test
-    public void ranslationShouldContinueToBeAskedIfIsBeingAskedLessRarelyThanItIsPromotionPeriodDuringLevel2PromotionPeriod() {
+    public void translationShouldContinueToBeAskedIfIsBeingAskedLessRarelyThanItIsPromotionPeriodDuringLevel2PromotionPeriod() {
         Clock clock = mock(Clock.class);
         Reminder reminder = new Reminder(clock);
         when(clock.getTime()).thenReturn(LEVEL_1_PASSED_AND_2_PERIOD_PASSED_TWICE);

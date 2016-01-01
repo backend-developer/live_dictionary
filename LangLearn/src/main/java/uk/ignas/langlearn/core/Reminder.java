@@ -31,22 +31,21 @@ public class Reminder {
             List<List<DifficultyAtTime>> groups = findPairsFitting4And20HoursPeriodInOrder(successAfterLastFailure
             );
             int promotionLevel = 1;
-
-            List<DifficultyAtTime> msgsDuringLevel1PromotionPeriod = groups.get(0);
-            shouldRemind = msgsDuringLevel1PromotionPeriod.isEmpty() || !isMessagesNewerThanNHours(msgsDuringLevel1PromotionPeriod.get(0), 4);
-            boolean isLevelPromoted = !msgsDuringLevel1PromotionPeriod.isEmpty() && !isMessagesNewerThanNHours(msgsDuringLevel1PromotionPeriod.get(0), 4);
-            if (isLevelPromoted) {
-                promotionLevel++;
-            }
-            if (promotionLevel == 2) {
-                if (groups.get(1).isEmpty()) {
-                    shouldRemind = true;
-                } else if (isMessagesNewerThanNHours(groups.get(1).get(0), 20)) {
-                    shouldRemind = false;
-                } else {
-                    shouldRemind = true;
+            if (promotionLevel == 1) {
+                List<DifficultyAtTime> messages = groups.get(0);
+                boolean isLevelPromoted = !messages.isEmpty() && !isMessagesNewerThanNHours(messages.get(0), 4);
+                if (isLevelPromoted) {
                     promotionLevel++;
                 }
+                shouldRemind = messages.isEmpty() || !isMessagesNewerThanNHours(messages.get(0), 4);
+            }
+            if (promotionLevel == 2) {
+                List<DifficultyAtTime> messages = groups.get(1);
+                boolean isLevelPromoted = !messages.isEmpty() && !isMessagesNewerThanNHours(messages.get(0), 20);
+                if (isLevelPromoted) {
+                    promotionLevel++;
+                }
+                shouldRemind = messages.isEmpty() || !isMessagesNewerThanNHours(messages.get(0), 20);
             }
         }
 
