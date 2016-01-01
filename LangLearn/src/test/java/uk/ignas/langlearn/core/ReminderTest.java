@@ -5,7 +5,6 @@ import org.junit.Test;
 import uk.ignas.langlearn.testutils.PromotionPeriod;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -399,7 +398,6 @@ public class ReminderTest {
     }
 
     @Test
-    @Ignore
     public void translationShouldNotBeRemindedSecondTimeDuringPromotionPeriodOfLevel3To8() {
         List<PromotionPeriod> levelsRequiringSingleAnswer = asList(LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_8);
         for (int i = 0; i < levelsRequiringSingleAnswer.size(); i++) {
@@ -458,5 +456,6 @@ public class ReminderTest {
             assertThat("test failed on level: " + levelToTest, shouldRemind, is(true));
         }
     }
+
 
 }

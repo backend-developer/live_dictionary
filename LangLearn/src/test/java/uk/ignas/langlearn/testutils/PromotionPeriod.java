@@ -69,7 +69,7 @@ public enum PromotionPeriod {
     private static Date now(){
         Calendar c = Calendar.getInstance();
         c.set(2015, Calendar.JANUARY, 1, 12, 0, 0);
-        c.setTimeInMillis(0);
+        c.set(Calendar.MILLISECOND, 0);
         return c.getTime();
     }
 

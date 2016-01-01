@@ -39,18 +39,20 @@ public class Reminder {
             }
             isBeingPromoted = !messages.isEmpty() && isMessagesNewerThanNHours(messages.get(0), 20);
         }
-        if (promotionLevel == 3) {
-            DifficultyAtTime message = Iterables.getOnlyElement(promotionPeriodJumpers.get(2), null);
-            boolean isLevelPromoted = message != null && !isMessagesNewerThanNHours(message, 24);
-            if (isLevelPromoted) {
-                promotionLevel++;
+        for (int promotionLevell = 3; promotionLevell < 7; promotionLevell++) {
+            if (promotionLevel == promotionLevell) {
+                DifficultyAtTime message = Iterables.getOnlyElement(promotionPeriodJumpers.get(promotionLevel - 1), null);
+                boolean isLevelPromoted = message != null && !isMessagesNewerThanNHours(message, 24 * (1 << (promotionLevel - 3)));
+                if (isLevelPromoted) {
+                    promotionLevel++;
+                }
+                isBeingPromoted = message != null && isMessagesNewerThanNHours(message, 24 * (1 << (promotionLevel - 3)));
             }
-            isBeingPromoted = message != null && isMessagesNewerThanNHours(message, 24);
         }
-        if (promotionLevel == 4) {
-            DifficultyAtTime message = Iterables.getOnlyElement(promotionPeriodJumpers.get(3), null);
+        if (promotionLevel == 7) {
+            DifficultyAtTime message = Iterables.getOnlyElement(promotionPeriodJumpers.get(6), null);
 
-            isBeingPromoted = message != null && isMessagesNewerThanNHours(message, 48);
+            isBeingPromoted = message != null && isMessagesNewerThanNHours(message, 24*(1<<4));
         }
 
         return isBeingPromoted;
@@ -72,21 +74,17 @@ public class Reminder {
             );
         }
         List<DifficultyAtTime> lastGroup = groups.get(groups.size() - 1);
+        int indexOfLastANalysedMessage = -1;
         if (!lastGroup.isEmpty()) {
             DifficultyAtTime lastMessage = lastGroup.get(lastGroup.size() - 1);
-            int indexOfLastANalysedMessage = metadata.getRecentDifficulty().indexOf(lastMessage);
-            if (indexOfLastANalysedMessage + 1 < metadata.getRecentDifficulty().size()) {
-                groups.add(Collections.singletonList(metadata.getRecentDifficulty().get(indexOfLastANalysedMessage + 1)));
-            } else {
-                groups.add(new ArrayList<DifficultyAtTime>());
+            indexOfLastANalysedMessage = metadata.getRecentDifficulty().indexOf(lastMessage);
+        }
+        for (int i = indexOfLastANalysedMessage + 1; i < metadata.getRecentDifficulty().size(); i++) {
+            if (i < metadata.getRecentDifficulty().size()) {
+                groups.add(Collections.singletonList(metadata.getRecentDifficulty().get(i)));
             }
-            if (indexOfLastANalysedMessage + 2 < metadata.getRecentDifficulty().size()) {
-                groups.add(Collections.singletonList(metadata.getRecentDifficulty().get(indexOfLastANalysedMessage + 2)));
-            } else {
-                groups.add(new ArrayList<DifficultyAtTime>());
-            }
-        } else {
-            groups.add(new ArrayList<DifficultyAtTime>());
+        }
+        for (int i = groups.size(); i < 9; i++) {
             groups.add(new ArrayList<DifficultyAtTime>());
         }
         return groups;
@@ -160,5 +158,4 @@ public class Reminder {
             this.numOfHours = numOfHours;
         }
     }
-
 }
