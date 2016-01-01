@@ -12,20 +12,38 @@ public class Reminder {
         this.clock = clock;
     }
 
-    class MsgCountAndNumOfHours {
-        private final int msgCount;
-        private final int numOfHours;
-
-        public MsgCountAndNumOfHours(int msgCount, int numOfHours) {
-            this.msgCount = msgCount;
-            this.numOfHours = numOfHours;
-        }
-    }
 
     public boolean shouldBeReminded(TranslationMetadata metadata) {
+        List<List<DifficultyAtTime>> promotionPeriodJumpers = getPromotionPeriodsJumpingGroups(metadata);
+        return !isBeingPromoted(promotionPeriodJumpers);
+    }
+
+    private boolean isBeingPromoted(List<List<DifficultyAtTime>> promotionPeriodJumpers) {
+        boolean isBeingPromoted = false;
+        int promotionLevel = 1;
+        if (promotionLevel == 1) {
+            List<DifficultyAtTime> messages = promotionPeriodJumpers.get(0);
+            boolean isLevelPromoted = !messages.isEmpty() && !isMessagesNewerThanNHours(messages.get(0), 4);
+            if (isLevelPromoted) {
+                promotionLevel++;
+            }
+            isBeingPromoted = !messages.isEmpty() && isMessagesNewerThanNHours(messages.get(0), 4);
+        }
+        if (promotionLevel == 2) {
+            List<DifficultyAtTime> messages = promotionPeriodJumpers.get(1);
+            boolean isLevelPromoted = !messages.isEmpty() && !isMessagesNewerThanNHours(messages.get(0), 20);
+            if (isLevelPromoted) {
+                promotionLevel++;
+            }
+            isBeingPromoted = !messages.isEmpty() && isMessagesNewerThanNHours(messages.get(0), 20);
+        }
+        return isBeingPromoted;
+    }
+
+    private List<List<DifficultyAtTime>> getPromotionPeriodsJumpingGroups(TranslationMetadata metadata) {
         List<DifficultyAtTime> successAfterLastFailure = getSuccessLogAfterLastFailure(metadata);
-        boolean wasEverFailed = successAfterLastFailure.size() != metadata.getRecentDifficulty().size();
         List<List<DifficultyAtTime>> groups;
+        boolean wasEverFailed = successAfterLastFailure.size() != metadata.getRecentDifficulty().size();
         if (wasEverFailed) {
             groups = findMsgGroupsFittingPeriodsInOrder(successAfterLastFailure,
                     new MsgCountAndNumOfHours(3, 4),
@@ -37,27 +55,7 @@ public class Reminder {
                     new MsgCountAndNumOfHours(2, 20)
             );
         }
-
-        boolean shouldRemind = false;
-        int promotionLevel = 1;
-        if (promotionLevel == 1) {
-            List<DifficultyAtTime> messages = groups.get(0);
-            boolean isLevelPromoted = !messages.isEmpty() && !isMessagesNewerThanNHours(messages.get(0), 4);
-            if (isLevelPromoted) {
-                promotionLevel++;
-            }
-            shouldRemind = messages.isEmpty() || !isMessagesNewerThanNHours(messages.get(0), 4);
-        }
-        if (promotionLevel == 2) {
-            List<DifficultyAtTime> messages = groups.get(1);
-            boolean isLevelPromoted = !messages.isEmpty() && !isMessagesNewerThanNHours(messages.get(0), 20);
-            if (isLevelPromoted) {
-                promotionLevel++;
-            }
-            shouldRemind = messages.isEmpty() || !isMessagesNewerThanNHours(messages.get(0), 20);
-        }
-
-        return shouldRemind;
+        return groups;
     }
 
     private boolean isMessagesNewerThanNHours(DifficultyAtTime difficultyAtTime, int hours) {
@@ -118,13 +116,14 @@ public class Reminder {
         return foundMessages;
     }
 
-    private int countInNRecentHours(List<DifficultyAtTime> difficultyAtTimes, int hours) {
-        int counter = 0;
-        for (DifficultyAtTime difficultyAtTime : difficultyAtTimes) {
-            if (isMessagesNewerThanNHours(difficultyAtTime, hours)) {
-                counter++;
-            }
+    class MsgCountAndNumOfHours {
+        private final int msgCount;
+        private final int numOfHours;
+
+        public MsgCountAndNumOfHours(int msgCount, int numOfHours) {
+            this.msgCount = msgCount;
+            this.numOfHours = numOfHours;
         }
-        return counter;
     }
+
 }
