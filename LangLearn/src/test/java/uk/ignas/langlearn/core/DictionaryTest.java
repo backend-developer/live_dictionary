@@ -1,13 +1,11 @@
 package uk.ignas.langlearn.core;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import uk.ignas.langlearn.testutils.LiveDictionaryDsl;
 import uk.ignas.langlearn.testutils.TranslationDaoStub;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static java.util.Collections.singletonList;
@@ -15,11 +13,24 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.ignas.langlearn.testutils.LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern;
 import static uk.ignas.langlearn.testutils.LiveDictionaryDsl.retrieveTranslationsNTimes;
 
 public class DictionaryTest {
 
+
+    private static final Date NOW;
+
+
+    static {
+        Calendar c = Calendar.getInstance();
+        c.set(2015, Calendar.JANUARY, 1, 12, 0);
+        NOW = c.getTime();
+    }
+
+    public static final Date LEVEL_1_STAGING_PERIOD_NOT_YET_PASSED = createDateDifferingBy(NOW, 3*60+59, Calendar.MINUTE);
 
     private static int uniqueSequence = 0;
 
@@ -114,6 +125,8 @@ public class DictionaryTest {
         assertThat(percentage, is(equalTo(100)));
     }
 
+
+
     @Test
     public void diffucultTranslationsWhichAreAlreadyBecameEasyShouldStopBeingAskedEvery20thTime() {
         dao.insert(getNTranslationsWithNativeWordStartingWith(80, "Other"));
@@ -154,8 +167,6 @@ public class DictionaryTest {
         assertThat(percentage, allOf(greaterThan(45), lessThan(55)));
     }
 
-
-
     @Test
     public void difficultTranslationsShouldBeAskedEvery20thTimeEvenIfTheyWerePassedInitially() {
         dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
@@ -172,6 +183,53 @@ public class DictionaryTest {
         int percentage = countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrievedTranslations, "DifficultWord");
         assertThat(percentage, allOf(greaterThan(45), lessThan(55)));
     }
+    @Test
+    public void mistakenTranslationShouldBeAsked3TimesToEngagePromotion() {
+        dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
+        Translation translation = dao.getAllTranslations().get(0);
+        Dictionary dictionary = new Dictionary(dao);
+        dictionary.mark(translation, Difficulty.EASY);
+        dictionary.mark(translation, Difficulty.DIFFICULT);
+        dictionary.mark(translation, Difficulty.EASY);
+        dictionary.mark(translation, Difficulty.EASY);
+        dictionary.mark(translation, Difficulty.EASY);
+
+        gettingNextTranslationShouldThroughLDEwithMessage(dictionary, "There are no more difficult words");
+    }
+
+    @Test
+    public void onceStagedZeroLevelTranslationShouldNotBeAsked() {
+        dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
+        Translation translation = dao.getAllTranslations().get(0);
+        Clock clock = mock(Clock.class);
+        Dictionary dictionary = new Dictionary(dao, clock);
+        when(clock.getTime()).thenReturn(NOW);
+        dictionary.mark(translation, Difficulty.EASY);
+        dictionary.mark(translation, Difficulty.EASY);
+        when(clock.getTime()).thenReturn(LEVEL_1_STAGING_PERIOD_NOT_YET_PASSED);
+
+        gettingNextTranslationShouldThroughLDEwithMessage(dictionary, "There are no more difficult words");
+        gettingNextTranslationShouldThroughLDEwithMessage(dictionary, "There are no more difficult words");
+    }
+
+    @Test
+    public void onceZerothLevelTranslationIsStagedOthersShouldBeAsked() {
+        dao.insertSingle(createForeignToNativeTranslation("la palabra", "word"));
+        dao.insertSingle(createForeignToNativeTranslation("la frase", "phrase"));
+        Translation easyTranslation = dao.getAllTranslations().get(0);
+        Translation otherTranslation = dao.getAllTranslations().get(1);
+        Dictionary dictionary = new Dictionary(dao);
+
+        dictionary.mark(easyTranslation, Difficulty.EASY);
+        dictionary.mark(easyTranslation, Difficulty.EASY);
+
+        List<Translation> notYetStaged = LiveDictionaryDsl.retrieveTranslationsNTimes(dictionary, 10);
+
+        int percentage = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern(notYetStaged, otherTranslation.getNativeWord().get());
+        assertThat(percentage, is(equalTo(100)));
+    }
+
+
 
     @Test
     public void shouldInsertTranslation() {
@@ -253,6 +311,22 @@ public class DictionaryTest {
         assertThat(modifiedWord.getForeignWord().get(), is(equalTo("la palabra cambiada")));
         assertThat(modifiedWord.getNativeWord().get(), is(equalTo("modified word")));
         assertThat(dictionary.getRandomTranslation().getNativeWord().get(), is("modified word"));
+    }
+
+    private static Date createDateDifferingBy(Date now, int amount, int calendarField) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(now);
+        c.add(calendarField, amount);
+        return c.getTime();
+    }
+
+    private void gettingNextTranslationShouldThroughLDEwithMessage(Dictionary dictionary, String message) {
+        try {
+            dictionary.getRandomTranslation();
+            fail();
+        } catch (LiveDictionaryException e) {
+            assertThat(e.getMessage(), Matchers.containsString(message));
+        }
     }
 
     public List<Translation> getNTranslationsWithNativeWordStartingWith(int n, String prefix) {
