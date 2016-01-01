@@ -103,16 +103,16 @@ public class ReminderTest {
     @Test
     public void mistakenTranslationShouldReturnWordBackToLevel1PromotionPeriod() {
         Clock clock = mock(Clock.class);
-        when(clock.getTime()).thenReturn(NOW);
+        when(clock.getTime()).thenReturn(LEVEL_1_PERIOD_PASSED);
         Reminder reminder = new Reminder(clock);
         TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, asList(
                 new DifficultyAtTime(NOW, Difficulty.EASY),
                 new DifficultyAtTime(NOW, Difficulty.EASY),
-                new DifficultyAtTime(NOW, Difficulty.EASY),
-                new DifficultyAtTime(NOW, Difficulty.EASY),
-                new DifficultyAtTime(NOW, Difficulty.DIFFICULT),
-                new DifficultyAtTime(NOW, Difficulty.EASY),
-                new DifficultyAtTime(NOW, Difficulty.EASY)
+                new DifficultyAtTime(LEVEL_1_PERIOD_PASSED, Difficulty.EASY),
+                new DifficultyAtTime(LEVEL_1_PERIOD_PASSED, Difficulty.EASY),
+                new DifficultyAtTime(LEVEL_1_PERIOD_PASSED, Difficulty.DIFFICULT),
+                new DifficultyAtTime(LEVEL_1_PERIOD_PASSED, Difficulty.EASY),
+                new DifficultyAtTime(LEVEL_1_PERIOD_PASSED, Difficulty.EASY)
 
         ));
 
