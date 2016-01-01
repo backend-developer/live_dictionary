@@ -12,6 +12,17 @@ public class Reminder {
         this.clock = clock;
     }
 
+    class MsgCountAndNumOfHours {
+        private final int msgCount;
+        private final int numOfHours;
+
+        public MsgCountAndNumOfHours(int msgCount, int numOfHours) {
+            this.msgCount = msgCount;
+            this.numOfHours = numOfHours;
+        }
+    }
+
+
     public boolean shouldBeReminded(TranslationMetadata metadata) {
         List<DifficultyAtTime> successAfterLastFailure = getSuccessLogAfterLastFailure(metadata);
         boolean wasEverFailed = successAfterLastFailure.size() != metadata.getRecentDifficulty().size();
@@ -28,7 +39,9 @@ public class Reminder {
                 }
             }
         } else {
-            List<List<DifficultyAtTime>> groups = findPairsFitting4And20HoursPeriodInOrder(successAfterLastFailure
+            List<List<DifficultyAtTime>> groups = findPairsFitting4And20HoursPeriodInOrder(successAfterLastFailure,
+                    new MsgCountAndNumOfHours(2, 4),
+                    new MsgCountAndNumOfHours(2, 20)
             );
             int promotionLevel = 1;
             if (promotionLevel == 1) {
@@ -56,19 +69,21 @@ public class Reminder {
         return TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - difficultyAtTime.getTimepoint().getTime()) < hours;
     }
 
-    private List<List<DifficultyAtTime>> findPairsFitting4And20HoursPeriodInOrder(List<DifficultyAtTime> difficulty) {
+    private List<List<DifficultyAtTime>> findPairsFitting4And20HoursPeriodInOrder(List<DifficultyAtTime> messages,
+                                                                                  MsgCountAndNumOfHours countInPeriod1,
+                                                                                  MsgCountAndNumOfHours countInPeriod2) {
         List<List<DifficultyAtTime>> groups = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
             groups.add(new ArrayList<DifficultyAtTime>());
         }
 
-        List<Integer> indiceForGroupZero = findIndexesForFirstPairSubmittedWithinNHours(difficulty,  4);
+        List<Integer> indiceForGroupZero = findIndexesForFirstNumOfMsgsSubmittedWithinNHours(messages, countInPeriod1);
         for (Integer index : indiceForGroupZero) {
-            groups.get(0).add(difficulty.get(index));
+            groups.get(0).add(messages.get(index));
         }
         if (!groups.get(0).isEmpty()) {
-            List<DifficultyAtTime> sublist = difficulty.subList(indiceForGroupZero.get(1) + 1, difficulty.size());
-            List<Integer> indiceForGroupOne = findIndexesForFirstPairSubmittedWithinNHours(sublist, 20);
+            List<DifficultyAtTime> sublist = messages.subList(indiceForGroupZero.get(1) + 1, messages.size());
+            List<Integer> indiceForGroupOne = findIndexesForFirstNumOfMsgsSubmittedWithinNHours(sublist, countInPeriod2);
 
             for (Integer index : indiceForGroupOne) {
                 groups.get(1).add(sublist.get(index));
@@ -89,19 +104,20 @@ public class Reminder {
         return successLogAfterLastFailure;
     }
 
-    private List<Integer> findIndexesForFirstPairSubmittedWithinNHours(List<DifficultyAtTime> difficultyAtTimes, int hours) {
+    private List<Integer> findIndexesForFirstNumOfMsgsSubmittedWithinNHours(List<DifficultyAtTime> difficultyAtTimes, MsgCountAndNumOfHours msgCountAndNumOfHours) {
+        int msgCount = msgCountAndNumOfHours.msgCount;
+        int hours = msgCountAndNumOfHours.numOfHours;
         List<Integer> foundMessages = new ArrayList<>();
-        for (int i = 1; i < difficultyAtTimes.size(); i++) {
-            Date iDate = difficultyAtTimes.get(i).getTimepoint();
-            Date iMinus1Date = difficultyAtTimes.get(i - 1).getTimepoint();
-            if (TimeUnit.MILLISECONDS.toHours(iDate.getTime() - iMinus1Date.getTime()) < hours) {
-                foundMessages.add(i - 1);
-                foundMessages.add(i);
+        for (int i = msgCount - 1; i < difficultyAtTimes.size(); i++) {
+            Date currentLatest = difficultyAtTimes.get(i).getTimepoint();
+            Date currentEarlest = difficultyAtTimes.get(i - msgCount + 1).getTimepoint();
+            if (TimeUnit.MILLISECONDS.toHours(currentLatest.getTime() - currentEarlest.getTime()) < hours) {
+                for (int j = i - msgCount + 1; j <= i; j++) {
+                    foundMessages.add(j);
+                }
+                break;
             } else {
                 foundMessages.clear();
-            }
-            if (foundMessages.size() == 2) {
-                break;
             }
         }
         return foundMessages;
