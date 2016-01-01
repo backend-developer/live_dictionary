@@ -116,21 +116,6 @@ public class DictionaryTimeDependentTest {
     }
 
     @Test
-    public void itIsNotEnoughToAnswerCorrectlyLevel1TranslationOnceToStageIt() {
-        dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
-        Translation translation = dao.getAllTranslations().get(0);
-        Dictionary dictionary = new Dictionary(dao);
-        dictionary.mark(translation, Difficulty.EASY);
-        dictionary.mark(translation, Difficulty.DIFFICULT);
-        dictionary.mark(translation, Difficulty.EASY);
-        dictionary.mark(translation, Difficulty.EASY);
-
-        Translation retrieved = dictionary.getRandomTranslation();
-
-        assertThat(retrieved, is(equalTo(translation)));
-    }
-
-    @Test
     public void itIsEnoughToAnswerCorrectlyLevel1TranslationThreeTimesToStageIt() {
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslations().get(0);

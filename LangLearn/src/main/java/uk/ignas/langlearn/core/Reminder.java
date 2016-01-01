@@ -12,7 +12,6 @@ public class Reminder {
         this.clock = clock;
     }
 
-
     public boolean shouldBeReminded(TranslationMetadata metadata) {
         List<List<DifficultyAtTime>> promotionPeriodJumpers = getPromotionPeriodsJumpingGroups(metadata);
         return !isBeingPromoted(promotionPeriodJumpers);
@@ -74,6 +73,7 @@ public class Reminder {
         for (Integer index : indiceForGroupZero) {
             groups.get(0).add(messages.get(index));
         }
+
         if (!groups.get(0).isEmpty()) {
             List<DifficultyAtTime> sublist = messages.subList(indiceForGroupZero.get(indiceForGroupZero.size() - 1) + 1, messages.size());
             List<Integer> indiceForGroupOne = findIndexesForFirstNumOfMsgsSubmittedWithinNHours(sublist, countInPeriod2);

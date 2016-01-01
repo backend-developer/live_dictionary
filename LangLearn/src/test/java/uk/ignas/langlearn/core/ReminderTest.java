@@ -104,6 +104,27 @@ public class ReminderTest {
     }
 
     @Test
+    public void mistakenTranslationShouldReturnWordBackToLevel1PromotionPeriod() {
+        Clock clock = mock(Clock.class);
+        when(clock.getTime()).thenReturn(NOW);
+        Reminder reminder = new Reminder(clock);
+        TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, asList(
+                new DifficultyAtTime(NOW, Difficulty.EASY),
+                new DifficultyAtTime(NOW, Difficulty.EASY),
+                new DifficultyAtTime(NOW, Difficulty.EASY),
+                new DifficultyAtTime(NOW, Difficulty.EASY),
+                new DifficultyAtTime(NOW, Difficulty.DIFFICULT),
+                new DifficultyAtTime(NOW, Difficulty.EASY),
+                new DifficultyAtTime(NOW, Difficulty.EASY)
+
+        ));
+
+        boolean shouldRemind = reminder.shouldBeReminded(metadata);
+
+        assertThat(shouldRemind, is(true));
+    }
+
+    @Test
     public void mistakenTranslationShouldBeAskedAgainAfterLevel1PromotionPeriodHasPassedButLevel2NotYet() {
         Clock clock = mock(Clock.class);
         when(clock.getTime()).thenReturn(LEVEL_1_PERIOD_PASSED);
