@@ -1,18 +1,20 @@
 package uk.ignas.langlearn.core;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.ignas.langlearn.testutils.PromotionPeriod;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import static uk.ignas.langlearn.testutils.PromotionPeriod.*;
 
 public class ReminderTest {
@@ -396,44 +398,65 @@ public class ReminderTest {
         assertThat(shouldRemind, is(true));
     }
 
-//    @Test
-//    public void translationShouldNotBeRemindedSecondTimeDuringPromotionPeriodOfLevel5To7() {
-//        for (int level = 3; level < 8; level++) {
-//            Clock clock = mock(Clock.class);
-//            Reminder reminder = new Reminder(clock);
-//            TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, asList(
-//                    new DifficultyAtTime(LEVEL_1.begin(), Difficulty.EASY),
-//                    new DifficultyAtTime(LEVEL_1.begin(), Difficulty.EASY),
-//                    new DifficultyAtTime(LEVEL_1.end(), Difficulty.EASY),
-//                    new DifficultyAtTime(LEVEL_1.end(), Difficulty.EASY),
-//                    new DifficultyAtTime(LEVEL_2.end(), Difficulty.EASY),
-//                    new DifficultyAtTime(LEVEL_3.end(), Difficulty.EASY)
-//            ));
-//
-//            for (int i = 3; i < level; i++) {
-//                int promotionPeriodStart = 0;
-//                switch (i) {
-//                    case 3: promotionPeriodStart = 2*24; break;
-//                    case 4: promotionPeriodStart = 4*24; break;
-//                    case 5: promotionPeriodStart = 8*24; break;
-//                    case 6: promotionPeriodStart = 16*24; break;
-//                    case 7: promotionPeriodStart = 32*24; break;
-//                }
-//                metadata.getRecentDifficulty().add(
-//                        new DifficultyAtTime(createDateDifferingBy(LEVEL_1.begin(), promotionPeriodStart, Calendar.HOUR), Difficulty.EASY));
-//            }
-//            when(clock.getTime()).thenReturn(createDateDifferingBy(LEVEL_1.begin(), ));
-//
-//            boolean shouldRemind = reminder.shouldBeReminded(metadata);
-//
-//            assertThat(shouldRemind, is(false));
-//        }
-//    }
+    @Test
+    @Ignore
+    public void translationShouldNotBeRemindedSecondTimeDuringPromotionPeriodOfLevel3To8() {
+        List<PromotionPeriod> levelsRequiringSingleAnswer = asList(LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_8);
+        for (int i = 0; i < levelsRequiringSingleAnswer.size(); i++) {
+            PromotionPeriod levelToTest = levelsRequiringSingleAnswer.get(i);
+            List<PromotionPeriod> levelsUpToTest = levelsRequiringSingleAnswer.subList(0, i);
 
-    private static Date createDateDifferingBy(Date now, int amount, int calendarField) {
-        Calendar c = Calendar.getInstance();
-        c.setTime(now);
-        c.add(calendarField, amount);
-        return c.getTime();
+            Clock clock = mock(Clock.class);
+            Reminder reminder = new Reminder(clock);
+            TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, newArrayList(
+                    new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
+                    new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
+                    new DifficultyAtTime(Difficulty.EASY, LEVEL_1.end()),
+                    new DifficultyAtTime(Difficulty.EASY, LEVEL_1.end()),
+                    new DifficultyAtTime(Difficulty.EASY, LEVEL_2.end())
+            ));
+            for (PromotionPeriod levelUpToTest : levelsUpToTest) {
+                metadata.getRecentDifficulty().add(
+                        new DifficultyAtTime(Difficulty.EASY, levelUpToTest.end())
+                );
+            }
+
+            when(clock.getTime()).thenReturn(levelToTest.almostEnd());
+
+            boolean shouldRemind = reminder.shouldBeReminded(metadata);
+
+            assertThat("failed at level: " + levelToTest, shouldRemind, is(false));
+        }
     }
+
+    @Test
+    public void translationShouldBeRemindedAfterLevel4To8PromotionPeriodPasses() {
+        List<PromotionPeriod> levelsRequiringSingleAnswer = asList(LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_8);
+        for (int i = 0; i < levelsRequiringSingleAnswer.size(); i++) {
+            PromotionPeriod levelToTest = levelsRequiringSingleAnswer.get(i);
+            List<PromotionPeriod> levelsUpToTest = levelsRequiringSingleAnswer.subList(0, i);
+
+            Clock clock = mock(Clock.class);
+            Reminder reminder = new Reminder(clock);
+            when(clock.getTime()).thenReturn(levelToTest.end());
+            TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, newArrayList(
+                    new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
+                    new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
+                    new DifficultyAtTime(Difficulty.EASY, LEVEL_1.end()),
+                    new DifficultyAtTime(Difficulty.EASY, LEVEL_1.end()),
+                    new DifficultyAtTime(Difficulty.EASY, LEVEL_2.end())
+            ));
+
+            for (PromotionPeriod levelUpToTest : levelsUpToTest) {
+                metadata.getRecentDifficulty().add(
+                        new DifficultyAtTime(Difficulty.EASY, levelUpToTest.end())
+                );
+            }
+
+            boolean shouldRemind = reminder.shouldBeReminded(metadata);
+
+            assertThat("test failed on level: " + levelToTest, shouldRemind, is(true));
+        }
+    }
+
 }
