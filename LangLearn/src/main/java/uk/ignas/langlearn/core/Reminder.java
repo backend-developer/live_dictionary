@@ -32,15 +32,16 @@ public class Reminder {
             );
             int promotionLevel = 1;
 
-            shouldRemind = groups.get(0).isEmpty() || !isMessageNewerThanNHours(groups.get(0).get(0), 4);
-            boolean isLevelPromoted = !groups.get(0).isEmpty() && !isMessageNewerThanNHours(groups.get(0).get(0), 4);
+            List<DifficultyAtTime> msgsDuringLevel1PromotionPeriod = groups.get(0);
+            shouldRemind = msgsDuringLevel1PromotionPeriod.isEmpty() || !isMessagesNewerThanNHours(msgsDuringLevel1PromotionPeriod.get(0), 4);
+            boolean isLevelPromoted = !msgsDuringLevel1PromotionPeriod.isEmpty() && !isMessagesNewerThanNHours(msgsDuringLevel1PromotionPeriod.get(0), 4);
             if (isLevelPromoted) {
                 promotionLevel++;
             }
             if (promotionLevel == 2) {
                 if (groups.get(1).isEmpty()) {
                     shouldRemind = true;
-                } else if (isMessageNewerThanNHours(groups.get(1).get(0), 20)) {
+                } else if (isMessagesNewerThanNHours(groups.get(1).get(0), 20)) {
                     shouldRemind = false;
                 } else {
                     shouldRemind = true;
@@ -52,7 +53,7 @@ public class Reminder {
         return shouldRemind;
     }
 
-    private boolean isMessageNewerThanNHours(DifficultyAtTime difficultyAtTime, int hours) {
+    private boolean isMessagesNewerThanNHours(DifficultyAtTime difficultyAtTime, int hours) {
         return TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - difficultyAtTime.getTimepoint().getTime()) < hours;
     }
 
@@ -110,12 +111,8 @@ public class Reminder {
     private int countInNRecentHours(List<DifficultyAtTime> difficultyAtTimes, int hours) {
         int counter = 0;
         for (DifficultyAtTime difficultyAtTime : difficultyAtTimes) {
-            if (difficultyAtTime.getDifficulty() == Difficulty.EASY) {
-                if (isMessageNewerThanNHours(difficultyAtTime, hours)) {
-                    counter++;
-                }
-            } else {
-                counter = 0;
+            if (isMessagesNewerThanNHours(difficultyAtTime, hours)) {
+                counter++;
             }
         }
         return counter;
