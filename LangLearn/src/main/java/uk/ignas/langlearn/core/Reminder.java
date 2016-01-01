@@ -28,6 +28,7 @@ public class Reminder {
                 }
             }
         } else {
+            int promotionLevel = 1;
             List<Integer> foundMessageIndexesLevel1 = findIndexesForFirstTwoMessagesSubmittedWithinNHours(successAfterLastFailure, 4);
             if (foundMessageIndexesLevel1.isEmpty()) {
                 canRemind = true;
@@ -35,15 +36,19 @@ public class Reminder {
                 if (TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - successAfterLastFailure.get(0).getTimepoint().getTime()) < 4) {
                     canRemind = false;
                 } else {
-                    List<DifficultyAtTime> sublist = successAfterLastFailure.subList(foundMessageIndexesLevel1.get(1) + 1, successAfterLastFailure.size());
-                    List<Integer> foundMessageIndexesLevel2 = findIndexesForFirstTwoMessagesSubmittedWithinNHours(sublist, 20);
-                    if (foundMessageIndexesLevel2.isEmpty()) {
-                        canRemind = true;
-                    } else if (TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - sublist.get(foundMessageIndexesLevel2.get(0)).getTimepoint().getTime()) < 20) {
-                        canRemind = false;
-                    } else {
-                        canRemind = true;
-                    }
+                    canRemind = true;
+                    promotionLevel++;
+                }
+            }
+            if (promotionLevel == 2) {
+                List<DifficultyAtTime> sublist = successAfterLastFailure.subList(foundMessageIndexesLevel1.get(1) + 1, successAfterLastFailure.size());
+                List<Integer> foundMessageIndexesLevel2 = findIndexesForFirstTwoMessagesSubmittedWithinNHours(sublist, 20);
+                if (foundMessageIndexesLevel2.isEmpty()) {
+                    canRemind = true;
+                } else if (TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - sublist.get(foundMessageIndexesLevel2.get(0)).getTimepoint().getTime()) < 20) {
+                    canRemind = false;
+                } else {
+                    canRemind = true;
                 }
             }
         }
