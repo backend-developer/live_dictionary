@@ -1,6 +1,9 @@
 package uk.ignas.langlearn.core;
 
+import com.google.common.collect.Iterables;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +39,10 @@ public class Reminder {
             }
             isBeingPromoted = !messages.isEmpty() && isMessagesNewerThanNHours(messages.get(0), 20);
         }
+        if (promotionLevel == 3) {
+            DifficultyAtTime message = Iterables.getOnlyElement(promotionPeriodJumpers.get(2), null);
+            isBeingPromoted = message != null && isMessagesNewerThanNHours(message, 24);
+        }
         return isBeingPromoted;
     }
 
@@ -53,6 +60,19 @@ public class Reminder {
                     new MsgCountAndNumOfHours(2, 4),
                     new MsgCountAndNumOfHours(2, 20)
             );
+        }
+        List<DifficultyAtTime> lastGroup = groups.get(groups.size() - 1);
+        boolean isAdded = false;
+        if (!lastGroup.isEmpty()) {
+            DifficultyAtTime lastMessage = lastGroup.get(lastGroup.size() - 1);
+            int indexOfLastANalysedMessage = metadata.getRecentDifficulty().indexOf(lastMessage);
+            if (indexOfLastANalysedMessage + 1 < metadata.getRecentDifficulty().size()) {
+                groups.add(Collections.singletonList(metadata.getRecentDifficulty().get(indexOfLastANalysedMessage + 1)));
+                isAdded = true;
+            }
+        }
+        if (!isAdded) {
+            groups.add(new ArrayList<DifficultyAtTime>());
         }
         return groups;
     }
