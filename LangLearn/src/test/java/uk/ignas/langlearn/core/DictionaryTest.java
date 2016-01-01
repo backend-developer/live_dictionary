@@ -71,7 +71,6 @@ public class DictionaryTest {
         assertThat(dao.getAllTranslations().get(0).getMetadata().getDifficulty(), is(equalTo(Difficulty.DIFFICULT)));
     }
 
-
     @Test
     public void shouldGetNewest100TranslationsWith80PercentProbability() {
         dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));

@@ -31,15 +31,25 @@ public class Reminder {
                 }
             }
         } else {
-            List<Integer> foundMessageIndexes = findIndexesForFirstTwoMessagesSubmittedWithinNHours(successAfterLastFailure, 4);
-            if (foundMessageIndexes.isEmpty()) {
+            List<Integer> foundMessageIndexesLevel1 = findIndexesForFirstTwoMessagesSubmittedWithinNHours(successAfterLastFailure, 4);
+            if (foundMessageIndexesLevel1.isEmpty()) {
                 canRemind = true;
             }
-            if (!foundMessageIndexes.isEmpty()) {
+            if (!foundMessageIndexesLevel1.isEmpty()) {
+                Integer index = foundMessageIndexesLevel1.get(1);
+                int nextIndex = index + 1; // 2
+                int size = nextIndex + 2;  // 4
+                int sizeMinus1 = size - 1 ; // 3
                 if (TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - successAfterLastFailure.get(0).getTimepoint().getTime()) < 4) {
 
-                } else if (counterForLastCorrectSequence <= 4) {
-                    if (counterForLastCorrectSequence <= 3 || countInNRecentHours(successAfterLastFailure.subList(2, 4), 20) <= 1) {
+                }
+//                List<DifficultyAtTime> sublist = successAfterLastFailure.subList(foundMessageIndexesLevel1.get(1).intValue(), successAfterLastFailure.size());
+//                List<Integer> foundMessageIndexesLevel2 = findIndexesForFirstTwoMessagesSubmittedWithinNHours(sublist, 20);
+//                if (foundMessageIndexesLevel2.isEmpty()) {
+//                    canRemind = true;
+//                }
+                else if (counterForLastCorrectSequence <= size) {
+                    if (counterForLastCorrectSequence <= sizeMinus1 || countInNRecentHours(successAfterLastFailure.subList(nextIndex, size), 20) <= 1) {
                         canRemind = true;
                     } else {
                         canRemind = false;
@@ -69,8 +79,8 @@ public class Reminder {
             Date iDate = difficultyAtTimes.get(i).getTimepoint();
             Date iMinus1Date = difficultyAtTimes.get(i-1).getTimepoint();
             if (TimeUnit.MILLISECONDS.toHours(iDate.getTime() - iMinus1Date.getTime()) < hours) {
-                foundMessages.add(i);
                 foundMessages.add(i-1);
+                foundMessages.add(i);
             } else {
                 foundMessages.clear();
             }
