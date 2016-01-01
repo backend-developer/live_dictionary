@@ -2,10 +2,7 @@ package uk.ignas.langlearn.testutils;
 
 import uk.ignas.langlearn.core.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class TranslationDaoStub implements TranslationDao {
     private List<Translation> inMemoryTranslations = new ArrayList<>();
@@ -93,8 +90,8 @@ public class TranslationDaoStub implements TranslationDao {
     public boolean logAnswer(Translation translation, Difficulty difficulty, Date time) {
 
         for (Translation t: inMemoryTranslations) {
-            if (t.getId() == translation.getId()) {
-                return t.getMetadata().getRecentDifficulty().add(new DifficultyAtTime(time, difficulty));
+            if (Objects.equals(t.getId(), translation.getId())) {
+                return t.getMetadata().getRecentDifficulty().add(new DifficultyAtTime(difficulty, time));
             }
         }
         return false;

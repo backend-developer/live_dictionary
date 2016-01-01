@@ -180,7 +180,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
                 long timeOfAnswer = res.getLong(res.getColumnIndex(COLUMN_TIME_ANSWERED));
 
                 currentTranslation.getMetadata().getRecentDifficulty().add(new DifficultyAtTime(
-                    new Date(timeOfAnswer), difficulty
+                        difficulty, new Date(timeOfAnswer)
                 ));
 
                 res.moveToNext();
@@ -275,7 +275,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
                 boolean isCorrectlyAnswered = res.getInt(res.getColumnIndex(COLUMN_IS_CORRECT)) > 0;
                 Difficulty difficulty = isCorrectlyAnswered ? Difficulty.EASY: Difficulty.DIFFICULT;
                 if (timeOfAnswer != 0) {
-                    recentLatestDatesWhenMarketAsEasy.add(new DifficultyAtTime(new Date(timeOfAnswer), difficulty));
+                    recentLatestDatesWhenMarketAsEasy.add(new DifficultyAtTime(difficulty, new Date(timeOfAnswer)));
                 }
                 res.moveToNext();
             }
