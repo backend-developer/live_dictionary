@@ -62,7 +62,7 @@ public enum PromotionPeriod {
     }
 
     public int duraionHours() {
-        return (int)TimeUnit.HOURS.toHours(end.getTime() - begin.getTime());
+        return (int)TimeUnit.MILLISECONDS.toHours(end.getTime() - begin.getTime());
     }
 
     private static Date now(){
