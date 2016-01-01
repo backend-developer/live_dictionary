@@ -41,7 +41,15 @@ public class Reminder {
         }
         if (promotionLevel == 3) {
             DifficultyAtTime message = Iterables.getOnlyElement(promotionPeriodJumpers.get(2), null);
+            boolean isLevelPromoted = message != null && !isMessagesNewerThanNHours(message, 24);
+            if (isLevelPromoted) {
+                promotionLevel++;
+            }
             isBeingPromoted = message != null && isMessagesNewerThanNHours(message, 24);
+        }
+        if (promotionLevel == 4) {
+            DifficultyAtTime message = Iterables.getOnlyElement(promotionPeriodJumpers.get(3), null);
+            isBeingPromoted = message != null && isMessagesNewerThanNHours(message, 48);
         }
         return isBeingPromoted;
     }
@@ -62,16 +70,21 @@ public class Reminder {
             );
         }
         List<DifficultyAtTime> lastGroup = groups.get(groups.size() - 1);
-        boolean isAdded = false;
         if (!lastGroup.isEmpty()) {
             DifficultyAtTime lastMessage = lastGroup.get(lastGroup.size() - 1);
             int indexOfLastANalysedMessage = metadata.getRecentDifficulty().indexOf(lastMessage);
             if (indexOfLastANalysedMessage + 1 < metadata.getRecentDifficulty().size()) {
                 groups.add(Collections.singletonList(metadata.getRecentDifficulty().get(indexOfLastANalysedMessage + 1)));
-                isAdded = true;
+            } else {
+                groups.add(new ArrayList<DifficultyAtTime>());
             }
-        }
-        if (!isAdded) {
+            if (indexOfLastANalysedMessage + 2 < metadata.getRecentDifficulty().size()) {
+                groups.add(Collections.singletonList(metadata.getRecentDifficulty().get(indexOfLastANalysedMessage + 2)));
+            } else {
+                groups.add(new ArrayList<DifficultyAtTime>());
+            }
+        } else {
+            groups.add(new ArrayList<DifficultyAtTime>());
             groups.add(new ArrayList<DifficultyAtTime>());
         }
         return groups;
