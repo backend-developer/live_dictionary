@@ -1,6 +1,10 @@
 package uk.ignas.langlearn.core;
 
+import com.google.common.collect.Ordering;
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -17,7 +21,6 @@ public class Reminder {
         int counterForLastCorrectSequence = successAfterLastFailure.size();
         boolean canRemind = false;
         if (wasEverFailed) {
-
             if (counterForLastCorrectSequence <= 3) {
                 if (counterForLastCorrectSequence <= 2 || countInNRecentHours(successAfterLastFailure.subList(0, 3), 4) <= 2) {
                     canRemind = true;
@@ -28,20 +31,19 @@ public class Reminder {
                 }
             }
         } else {
-            int index = findIndex(successAfterLastFailure, 4);
-
-            if (index == -1) {
+            List<Integer> foundMessageIndexes = findIndexesForFirstTwoMessagesSubmittedWithinNHours(successAfterLastFailure, 4);
+            if (foundMessageIndexes.isEmpty()) {
                 canRemind = true;
             }
-            if (counterForLastCorrectSequence <= 2) {
-                if (counterForLastCorrectSequence <= 1 || countInNRecentHours(successAfterLastFailure.subList(0, 2), 4) <= 1) {
-                    canRemind = true;
-                }
-            } else if (counterForLastCorrectSequence <= 4) {
-                if (counterForLastCorrectSequence <= 3 || countInNRecentHours(successAfterLastFailure.subList(2, 4), 20) <= 1) {
-                    canRemind = true;
-                } else {
-                    canRemind = false;
+            if (!foundMessageIndexes.isEmpty()) {
+                if (TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - successAfterLastFailure.get(0).getTimepoint().getTime()) < 4) {
+
+                } else if (counterForLastCorrectSequence <= 4) {
+                    if (counterForLastCorrectSequence <= 3 || countInNRecentHours(successAfterLastFailure.subList(2, 4), 20) <= 1) {
+                        canRemind = true;
+                    } else {
+                        canRemind = false;
+                    }
                 }
             }
         }
@@ -61,20 +63,22 @@ public class Reminder {
         return successLogAfterLastFailure;
     }
 
-    private int findIndex(List<DifficultyAtTime> difficultyAtTimes, int hours) {
-        int counter = 0;
-        for (int i = 0; i < difficultyAtTimes.size(); i++) {
-            DifficultyAtTime difficultyAtTime = difficultyAtTimes.get(i);
-            if (TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - difficultyAtTime.getTimepoint().getTime()) < hours) {
-                counter++;
+    private List<Integer> findIndexesForFirstTwoMessagesSubmittedWithinNHours(List<DifficultyAtTime> difficultyAtTimes, int hours) {
+        List<Integer> foundMessages = new ArrayList<>();
+        for (int i = 1; i < difficultyAtTimes.size(); i++) {
+            Date iDate = difficultyAtTimes.get(i).getTimepoint();
+            Date iMinus1Date = difficultyAtTimes.get(i-1).getTimepoint();
+            if (TimeUnit.MILLISECONDS.toHours(iDate.getTime() - iMinus1Date.getTime()) < hours) {
+                foundMessages.add(i);
+                foundMessages.add(i-1);
             } else {
-                counter = 0;
+                foundMessages.clear();
             }
-            if (counter == 2) {
-                return i;
+            if (foundMessages.size() == 2) {
+                break;
             }
         }
-        return -1;
+        return foundMessages;
     }
 
     private int countInNRecentHours(List<DifficultyAtTime> difficultyAtTimes, int hours) {
