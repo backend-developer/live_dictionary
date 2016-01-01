@@ -1,6 +1,7 @@
 package uk.ignas.langlearn.core;
 
 import org.junit.Test;
+import uk.ignas.langlearn.testutils.PromotionPeriod;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -46,10 +47,10 @@ public class ReminderTest {
     @Test
     public void brandNewTranslationShouldBeRemindedOnceAgainInLevel1PromotionPeriod() {
         Clock clock = mock(Clock.class);
-        when(clock.getTime()).thenReturn(NOW);
+        when(clock.getTime()).thenReturn(PromotionPeriod.LEVEL_1.begin());
         Reminder reminder = new Reminder(clock);
         TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, asList(
-                new DifficultyAtTime(NOW, Difficulty.EASY)
+                new DifficultyAtTime(PromotionPeriod.LEVEL_1.begin(), Difficulty.EASY)
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -60,10 +61,10 @@ public class ReminderTest {
     @Test
     public void mistakenTranslationShouldBeReminded() {
         Clock clock = mock(Clock.class);
-        when(clock.getTime()).thenReturn(NOW);
+        when(clock.getTime()).thenReturn(PromotionPeriod.LEVEL_1.begin());
         Reminder reminder = new Reminder(clock);
         TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, asList(
-                new DifficultyAtTime(NOW, Difficulty.DIFFICULT)
+                new DifficultyAtTime(PromotionPeriod.LEVEL_1.begin(), Difficulty.DIFFICULT)
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -403,6 +404,40 @@ public class ReminderTest {
 
         assertThat(shouldRemind, is(true));
     }
+
+//    @Test
+//    public void translationShouldNotBeRemindedSecondTimeDuringPromotionPeriodOfLevel5To7() {
+//        for (int level = 3; level < 8; level++) {
+//            Clock clock = mock(Clock.class);
+//            Reminder reminder = new Reminder(clock);
+//            TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, asList(
+//                    new DifficultyAtTime(NOW, Difficulty.EASY),
+//                    new DifficultyAtTime(NOW, Difficulty.EASY),
+//                    new DifficultyAtTime(LEVEL_1_PERIOD_PASSED, Difficulty.EASY),
+//                    new DifficultyAtTime(LEVEL_1_PERIOD_PASSED, Difficulty.EASY),
+//                    new DifficultyAtTime(LEVEL_1_AND_2_PERIODS_PASSED, Difficulty.EASY),
+//                    new DifficultyAtTime(LEVEL_1_2_AND_3_PASSED, Difficulty.EASY)
+//            ));
+//
+//            for (int i = 3; i < level; i++) {
+//                int promotionPeriodStart = 0;
+//                switch (i) {
+//                    case 3: promotionPeriodStart = 2*24; break;
+//                    case 4: promotionPeriodStart = 4*24; break;
+//                    case 5: promotionPeriodStart = 8*24; break;
+//                    case 6: promotionPeriodStart = 16*24; break;
+//                    case 7: promotionPeriodStart = 32*24; break;
+//                }
+//                metadata.getRecentDifficulty().add(
+//                        new DifficultyAtTime(createDateDifferingBy(NOW, promotionPeriodStart, Calendar.HOUR), Difficulty.EASY));
+//            }
+//            when(clock.getTime()).thenReturn(createDateDifferingBy(NOW, ));
+//
+//            boolean shouldRemind = reminder.shouldBeReminded(metadata);
+//
+//            assertThat(shouldRemind, is(false));
+//        }
+//    }
 
     private static Date createDateDifferingBy(Date now, int amount, int calendarField) {
         Calendar c = Calendar.getInstance();
