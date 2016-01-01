@@ -21,9 +21,6 @@ public class ReminderTest {
         NOW = c.getTime();
     }
     public static final Date LEVEL_1_PERIOD_PASSED = createDateDifferingBy(NOW, 4, Calendar.HOUR);
-    public static final Date ONE_YEAR_PASSED = createDateDifferingBy(NOW, 1, Calendar.YEAR);
-    public static final Date TWO_YEAR_PASSED = createDateDifferingBy(NOW, 2, Calendar.YEAR);
-    public static final Date THREE_YEAR_PASSED = createDateDifferingBy(NOW, 3, Calendar.YEAR);
     public static final Date LEVEL_1_PERIOD_PASSED_TWICE = createDateDifferingBy(NOW, 8, Calendar.HOUR);
     public static final Date LEVEL_1_PERIOD_PASSED_THREE_TIMES = createDateDifferingBy(NOW, 12, Calendar.HOUR);
     public static final Date LEVEL_1_PERIOD_NOT_YET_PASSED = createDateDifferingBy(NOW, 3*60+59, Calendar.MINUTE);
@@ -328,10 +325,6 @@ public class ReminderTest {
 
         assertThat(shouldRemind, is(false));
     }
-
-
-
-
 
     private static Date createDateDifferingBy(Date now, int amount, int calendarField) {
         Calendar c = Calendar.getInstance();
