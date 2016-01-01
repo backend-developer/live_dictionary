@@ -25,20 +25,20 @@ public class Reminder {
     public boolean shouldBeReminded(TranslationMetadata metadata) {
         List<DifficultyAtTime> successAfterLastFailure = getSuccessLogAfterLastFailure(metadata);
         boolean wasEverFailed = successAfterLastFailure.size() != metadata.getRecentDifficulty().size();
-        boolean shouldRemind = false;
         List<List<DifficultyAtTime>> groups;
         if (wasEverFailed) {
-            groups = findPairsFitting4And20HoursPeriodInOrder(successAfterLastFailure,
+            groups = findMsgGroupsFittingPeriodsInOrder(successAfterLastFailure,
                     new MsgCountAndNumOfHours(3, 4),
                     new MsgCountAndNumOfHours(2, 20)
             );
         } else {
-            groups = findPairsFitting4And20HoursPeriodInOrder(successAfterLastFailure,
+            groups = findMsgGroupsFittingPeriodsInOrder(successAfterLastFailure,
                     new MsgCountAndNumOfHours(2, 4),
                     new MsgCountAndNumOfHours(2, 20)
             );
         }
 
+        boolean shouldRemind = false;
         int promotionLevel = 1;
         if (promotionLevel == 1) {
             List<DifficultyAtTime> messages = groups.get(0);
@@ -64,9 +64,9 @@ public class Reminder {
         return TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - difficultyAtTime.getTimepoint().getTime()) < hours;
     }
 
-    private List<List<DifficultyAtTime>> findPairsFitting4And20HoursPeriodInOrder(List<DifficultyAtTime> messages,
-                                                                                  MsgCountAndNumOfHours countInPeriod1,
-                                                                                  MsgCountAndNumOfHours countInPeriod2) {
+    private List<List<DifficultyAtTime>> findMsgGroupsFittingPeriodsInOrder(List<DifficultyAtTime> messages,
+                                                                            MsgCountAndNumOfHours countInPeriod1,
+                                                                            MsgCountAndNumOfHours countInPeriod2) {
         List<List<DifficultyAtTime>> groups = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
             groups.add(new ArrayList<DifficultyAtTime>());
