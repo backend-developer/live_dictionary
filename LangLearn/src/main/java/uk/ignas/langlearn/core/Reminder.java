@@ -1,9 +1,6 @@
 package uk.ignas.langlearn.core;
 
-import com.google.common.collect.Ordering;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -36,25 +33,29 @@ public class Reminder {
                 canRemind = true;
             }
             if (!foundMessageIndexesLevel1.isEmpty()) {
-                Integer index = foundMessageIndexesLevel1.get(1);
-                int nextIndex = index + 1; // 2
-                int size = nextIndex + 2;  // 4
-                int sizeMinus1 = size - 1 ; // 3
+//                Integer index = foundMessageIndexesLevel1.get(1);
+//                int nextIndex = index + 1; // 2
+//                int size = nextIndex + 2;  // 4
+//                int sizeMinus1 = size - 1 ; // 3
                 if (TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - successAfterLastFailure.get(0).getTimepoint().getTime()) < 4) {
-
-                }
-//                List<DifficultyAtTime> sublist = successAfterLastFailure.subList(foundMessageIndexesLevel1.get(1).intValue(), successAfterLastFailure.size());
-//                List<Integer> foundMessageIndexesLevel2 = findIndexesForFirstTwoMessagesSubmittedWithinNHours(sublist, 20);
-//                if (foundMessageIndexesLevel2.isEmpty()) {
-//                    canRemind = true;
-//                }
-                else if (counterForLastCorrectSequence <= size) {
-                    if (counterForLastCorrectSequence <= sizeMinus1 || countInNRecentHours(successAfterLastFailure.subList(nextIndex, size), 20) <= 1) {
+                    canRemind = false;
+                } else {
+                    canRemind = true;
+                    List<DifficultyAtTime> sublist = successAfterLastFailure.subList(foundMessageIndexesLevel1.get(1) + 1, successAfterLastFailure.size());
+                    List<Integer> foundMessageIndexesLevel2 = findIndexesForFirstTwoMessagesSubmittedWithinNHours(sublist, 20);
+                    if (foundMessageIndexesLevel2.isEmpty()) {
                         canRemind = true;
-                    } else {
+                    } else if (TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - sublist.get(foundMessageIndexesLevel2.get(0)).getTimepoint().getTime()) < 20) {
                         canRemind = false;
                     }
                 }
+//                else if (counterForLastCorrectSequence <= size) {
+//                    if (counterForLastCorrectSequence <= sizeMinus1 || countInNRecentHours(successAfterLastFailure.subList(nextIndex, size), 20) <= 1) {
+//                        canRemind = true;
+//                    } else {
+//                        canRemind = false;
+//                    }
+//                }
             }
         }
 
