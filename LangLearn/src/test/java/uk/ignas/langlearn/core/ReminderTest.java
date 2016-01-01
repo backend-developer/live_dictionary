@@ -457,5 +457,28 @@ public class ReminderTest {
         }
     }
 
+    @Test
+    @Ignore
+    public void translationShouldNotBeRemindedSecondTimeDuringPromotionPeriodOfLevelsHigherThanEight() {
+        Clock clock = mock(Clock.class);
+        Reminder reminder = new Reminder(clock);
+        when(clock.getTime()).thenReturn(createDateOffsetedByHours(End.LEVEL_8 + LEVEL_8.duraionHours()));
+        TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, asList(
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_1.end()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_1.end()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_2.end()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_3.end()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_4.end()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_5.end()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_6.end()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_7.end()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_8.end())
+        ));
 
+        boolean shouldRemind = reminder.shouldBeReminded(metadata);
+
+        assertThat(shouldRemind, is(false));
+    }
 }
