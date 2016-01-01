@@ -12,16 +12,6 @@ public class Reminder {
         this.clock = clock;
     }
 
-    private static class MsgCountAndNumOfHours {
-        private final int msgCount;
-        private final int numOfHours;
-
-        public MsgCountAndNumOfHours(int msgCount, int numOfHours) {
-            this.msgCount = msgCount;
-            this.numOfHours = numOfHours;
-        }
-    }
-
     public boolean shouldBeReminded(TranslationMetadata metadata) {
         List<DifficultyAtTime> successAfterLastFailure = getSuccessLogAfterLastFailure(metadata);
         boolean wasEverFailed = successAfterLastFailure.size() != metadata.getRecentDifficulty().size();
@@ -38,20 +28,19 @@ public class Reminder {
                 }
             }
         } else {
-            List<List<DifficultyAtTime>> groups = findPairsFittingNHoursPeriodInOrder(successAfterLastFailure,
-                    new MsgCountAndNumOfHours(2, 4),
-                    new MsgCountAndNumOfHours(2, 20));
+            List<List<DifficultyAtTime>> groups = findPairsFitting4And20HoursPeriodInOrder(successAfterLastFailure
+            );
             int promotionLevel = 1;
 
-            shouldRemind = groups.get(0).isEmpty() || !isMessageYoungerThanNHours(groups.get(0).get(0), 4);
-            boolean isLevelPromoted = !groups.get(0).isEmpty() && !isMessageYoungerThanNHours(groups.get(0).get(0), 4);
+            shouldRemind = groups.get(0).isEmpty() || !isMessageNewerThanNHours(groups.get(0).get(0), 4);
+            boolean isLevelPromoted = !groups.get(0).isEmpty() && !isMessageNewerThanNHours(groups.get(0).get(0), 4);
             if (isLevelPromoted) {
                 promotionLevel++;
             }
             if (promotionLevel == 2) {
                 if (groups.get(1).isEmpty()) {
                     shouldRemind = true;
-                } else if (isMessageYoungerThanNHours(groups.get(1).get(0), 20)) {
+                } else if (isMessageNewerThanNHours(groups.get(1).get(0), 20)) {
                     shouldRemind = false;
                 } else {
                     shouldRemind = true;
@@ -63,17 +52,17 @@ public class Reminder {
         return shouldRemind;
     }
 
-    private boolean isMessageYoungerThanNHours(DifficultyAtTime difficultyAtTime, int hours) {
+    private boolean isMessageNewerThanNHours(DifficultyAtTime difficultyAtTime, int hours) {
         return TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - difficultyAtTime.getTimepoint().getTime()) < hours;
     }
 
-    private List<List<DifficultyAtTime>> findPairsFittingNHoursPeriodInOrder(List<DifficultyAtTime> difficulty, MsgCountAndNumOfHours msgCountAndNumOfHours, MsgCountAndNumOfHours msgCountAndNumOfHours1) {
+    private List<List<DifficultyAtTime>> findPairsFitting4And20HoursPeriodInOrder(List<DifficultyAtTime> difficulty) {
         List<List<DifficultyAtTime>> groups = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
             groups.add(new ArrayList<DifficultyAtTime>());
         }
 
-        List<Integer> indiceForGroupZero = findIndexesForFirstPairSubmittedWithinNHours(difficulty, 4);
+        List<Integer> indiceForGroupZero = findIndexesForFirstPairSubmittedWithinNHours(difficulty,  4);
         for (Integer index : indiceForGroupZero) {
             groups.get(0).add(difficulty.get(index));
         }
@@ -122,7 +111,7 @@ public class Reminder {
         int counter = 0;
         for (DifficultyAtTime difficultyAtTime : difficultyAtTimes) {
             if (difficultyAtTime.getDifficulty() == Difficulty.EASY) {
-                if (isMessageYoungerThanNHours(difficultyAtTime, hours)) {
+                if (isMessageNewerThanNHours(difficultyAtTime, hours)) {
                     counter++;
                 }
             } else {
