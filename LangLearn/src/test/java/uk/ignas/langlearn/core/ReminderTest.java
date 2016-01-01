@@ -456,7 +456,6 @@ public class ReminderTest {
     }
 
     @Test
-    @Ignore
     public void translationShouldNotBeRemindedSecondTimeDuringPromotionPeriodOfLevelsHigherThanEight() {
         Clock clock = mock(Clock.class);
         Reminder reminder = new Reminder(clock);

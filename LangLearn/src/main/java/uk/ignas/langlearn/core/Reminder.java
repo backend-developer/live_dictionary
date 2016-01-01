@@ -51,8 +51,7 @@ public class Reminder {
             }
         }
         if (promotionLevel == 9) {
-            DifficultyAtTime message = Iterables.getOnlyElement(promotionPeriodJumpers.get(7), null);
-
+            DifficultyAtTime message = Iterables.getOnlyElement(promotionPeriodJumpers.get(8), null);
             isBeingPromoted = message != null && isMessagesNewerThanNHours(message, 24*(1<<5));
         }
 
