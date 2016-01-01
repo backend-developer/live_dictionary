@@ -25,7 +25,6 @@ public class Reminder {
     public boolean shouldBeReminded(TranslationMetadata metadata) {
         List<DifficultyAtTime> successAfterLastFailure = getSuccessLogAfterLastFailure(metadata);
         boolean wasEverFailed = successAfterLastFailure.size() != metadata.getRecentDifficulty().size();
-        int counterForLastCorrectSequence = successAfterLastFailure.size();
         boolean shouldRemind = false;
         if (wasEverFailed) {
             List<List<DifficultyAtTime>> groups = findPairsFitting4And20HoursPeriodInOrder(successAfterLastFailure,
