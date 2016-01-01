@@ -24,7 +24,6 @@ public enum PromotionPeriod {
             createDateDifferingBy(now(), Start.LEVEL_2 *60-1, Calendar.MINUTE), LEVEL_2.begin);
 
     public static class Start {
-
         public static int LEVEL_2 = 4;
         public static int LEVEL_3 = 24;
         public static int LEVEL_4 = 2*24;
@@ -35,7 +34,7 @@ public enum PromotionPeriod {
     }
     public static class End {
         public static int LEVEL_1 = Start.LEVEL_2;
-        public static int LEVEL_8 = 32*24;
+        public static int LEVEL_8 = 64*24;
     }
 
     public static final Date NOW = now();

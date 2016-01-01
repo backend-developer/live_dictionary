@@ -125,8 +125,6 @@ public class DictionaryTest {
         assertThat(percentage, is(equalTo(100)));
     }
 
-
-
     @Test
     public void diffucultTranslationsWhichAreAlreadyBecameEasyShouldStopBeingAskedEvery20thTime() {
         dao.insert(getNTranslationsWithNativeWordStartingWith(80, "Other"));
