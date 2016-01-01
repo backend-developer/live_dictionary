@@ -22,7 +22,6 @@ public class Reminder {
         }
     }
 
-
     public boolean shouldBeReminded(TranslationMetadata metadata) {
         List<DifficultyAtTime> successAfterLastFailure = getSuccessLogAfterLastFailure(metadata);
         boolean wasEverFailed = successAfterLastFailure.size() != metadata.getRecentDifficulty().size();

@@ -1,5 +1,6 @@
 package uk.ignas.langlearn.core;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -228,6 +229,27 @@ public class ReminderTest {
         Reminder reminder = new Reminder(clock);
         when(clock.getTime()).thenReturn(LEVEL_1_PASSED_AND_2_PERIOD_PASSED_TWICE);
         TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, asList(
+                new DifficultyAtTime(NOW, Difficulty.EASY),
+                new DifficultyAtTime(NOW, Difficulty.EASY),
+                new DifficultyAtTime(LEVEL_1_PERIOD_PASSED, Difficulty.EASY),
+                new DifficultyAtTime(LEVEL_1_AND_2_PERIODS_PASSED, Difficulty.EASY),
+                new DifficultyAtTime(LEVEL_1_PASSED_AND_2_PERIOD_PASSED_TWICE, Difficulty.EASY)
+        ));
+
+        boolean shouldRemind = reminder.shouldBeReminded(metadata);
+
+        assertThat(shouldRemind, is(true));
+    }
+
+    @Test
+    @Ignore
+    public void mistakenTranslationShouldContinueToBeAskedIfIsBeingAskedLessRarelyThanItIsPromotionPeriodDuringLevel2PromotionPeriod() {
+        Clock clock = mock(Clock.class);
+        Reminder reminder = new Reminder(clock);
+        when(clock.getTime()).thenReturn(LEVEL_1_PASSED_AND_2_PERIOD_PASSED_TWICE);
+        TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, asList(
+                new DifficultyAtTime(NOW, Difficulty.DIFFICULT),
+                new DifficultyAtTime(NOW, Difficulty.EASY),
                 new DifficultyAtTime(NOW, Difficulty.EASY),
                 new DifficultyAtTime(NOW, Difficulty.EASY),
                 new DifficultyAtTime(LEVEL_1_PERIOD_PASSED, Difficulty.EASY),
