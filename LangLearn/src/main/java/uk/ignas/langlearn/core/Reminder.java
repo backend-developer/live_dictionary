@@ -31,8 +31,7 @@ public class Reminder {
             List<Integer> foundMessageIndexesLevel1 = findIndexesForFirstTwoMessagesSubmittedWithinNHours(successAfterLastFailure, 4);
             if (foundMessageIndexesLevel1.isEmpty()) {
                 canRemind = true;
-            }
-            if (!foundMessageIndexesLevel1.isEmpty()) {
+            } else {
                 if (TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - successAfterLastFailure.get(0).getTimepoint().getTime()) < 4) {
                     canRemind = false;
                 } else {
