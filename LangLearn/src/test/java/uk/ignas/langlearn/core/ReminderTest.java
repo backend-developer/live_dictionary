@@ -90,26 +90,7 @@ public class ReminderTest {
         assertThat(shouldRemind, is(false));
     }
 
-    @Test
-    public void mistakenTranslationShouldReturnWordBackToLevel1PromotionPeriod() {
-        Clock clock = mock(Clock.class);
-        when(clock.getTime()).thenReturn(LEVEL_2.begin());
-        Reminder reminder = new Reminder(clock);
-        TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, asList(
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_2.begin()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_2.begin()),
-                new DifficultyAtTime(Difficulty.DIFFICULT, LEVEL_2.begin()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_2.begin()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_2.begin())
 
-        ));
-
-        boolean shouldRemind = reminder.shouldBeReminded(metadata);
-
-        assertThat(shouldRemind, is(true));
-    }
 
     @Test
     public void mistakenTranslationShouldBeAskedAgainAfterLevel1PromotionPeriodHasPassedButLevel2NotYet() {
@@ -545,6 +526,29 @@ public class ReminderTest {
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_8.begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_OVER_8.by(1).begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_OVER_8.by(2).begin())
+        ));
+
+        boolean shouldRemind = reminder.shouldBeReminded(metadata);
+
+        assertThat(shouldRemind, is(true));
+    }
+
+    @Test
+    public void mistakenTranslationShouldReturnWordBackToLevel1PromotionPeriod() {
+        Clock clock = mock(Clock.class);
+        when(clock.getTime()).thenReturn(LEVEL_5.begin());
+        Reminder reminder = new Reminder(clock);
+        TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, asList(
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_2.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_2.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_3.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_4.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_5.begin()),
+                new DifficultyAtTime(Difficulty.DIFFICULT, LEVEL_5.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_5.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_5.begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
