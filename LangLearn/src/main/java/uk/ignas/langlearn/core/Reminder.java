@@ -20,19 +20,8 @@ public class Reminder {
 
     private boolean isBeingPromoted(List<List<DifficultyAtTime>> promotionPeriodsJumpers) {
         PromotionStatistics s = new PromotionStatistics();
-        if (s.promotionLevel == 1) {
-            accumulateStatistics(promotionPeriodsJumpers, s);
-        }
-        if (s.promotionLevel == 2) {
-            accumulateStatistics(promotionPeriodsJumpers, s);
-        }
-        for (int promotionLevell = 3; promotionLevell < 9; promotionLevell++) {
-            if (s.promotionLevel == promotionLevell) {
-                accumulateStatistics(promotionPeriodsJumpers, s);
-            }
-        }
-        int oldPromotionLevel = 8;
-        while (s.promotionLevel >= 9 && s.promotionLevel > oldPromotionLevel) {
+        int oldPromotionLevel = 0;
+        while (s.promotionLevel >= 1 && s.promotionLevel > oldPromotionLevel) {
             oldPromotionLevel = s.promotionLevel;
             accumulateStatistics(promotionPeriodsJumpers, s);
         }
