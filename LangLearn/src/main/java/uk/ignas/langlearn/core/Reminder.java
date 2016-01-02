@@ -5,6 +5,43 @@ import com.google.common.collect.ImmutableMap;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+/**
+ *
+ *In order not to waste user's time each translation should be reminded less often, as user learns it.
+ *Hence, there are levels introduces, the higher the level, the less often the translation will be asked.
+ *
+ *Translation is needed to be answered correctly certain amount of times
+ *during fixed length period (a.k.a. promotion period) to be promoted to the next level.
+ *Once required number of correct answers is collected in less time than lasts promotion period,
+ *translation is no longer asked until promotion period is finished.
+ *
+ *Example diagram:
+ *                                        from there points translation will not be asked for the user
+ *                                        until promotion period will be finished
+ *                                        A.K.A. restricted by promotion
+ *                                        :                :
+ *                                        :                :........................
+ *                                        :                                        :
+ *                                        :      promoted                          :      promoted
+ *                                        :      to level 2                        :      to level 3
+ *                                        :      :                                 :      :
+ *                                        :      :                                 :      :
+ *                 -------------------------------------------------------------------------------------------
+ *correct answers  :    * *          *  * *              *                  *      *
+ *promotion periods:                 |___________|                          |_____________|
+ *                //------------------------------------------------------------------------------------------
+ *                //    : :           level 1.           :                   level 2.
+ *                //    : :         3 answers required   :                 2 answers required
+ *                //    : :       to collect during 4 h  :               to collect during 20 h
+ *                //    : :     to promote               :             to promote
+ *                //    : :                              :
+ *                //    promotion period did not restricted
+ *                //    translation from being asked the user
+ *                //    as there were not collected enough
+ *                //    correct answers during promotion
+ *                //    period. Hence word was not promoted
+ */
+
 public class Reminder {
     private final Clock clock;
     private final PromotionDuration promotionDuration = new PromotionDuration();
