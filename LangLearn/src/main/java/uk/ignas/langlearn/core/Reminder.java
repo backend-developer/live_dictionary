@@ -75,10 +75,11 @@ public class Reminder {
     private List<List<DifficultyAtTime>> getPromotionPeriodsJumpingGroups(TranslationMetadata metadata) {
         List<List<DifficultyAtTime>> groups = getFirstTwoPromotionJumpingGroups(metadata);
         if (groups.size() == 2) {
-            List<DifficultyAtTime> lastGroup = groups.get(groups.size() - 1);
-            DifficultyAtTime lastMessage = lastGroup.get(lastGroup.size() - 1);
+            List<DifficultyAtTime> lastGroup = getLast(groups);
+            DifficultyAtTime lastMessage = getLast(lastGroup);
             int indexOfLastANalysedMessage = metadata.getRecentDifficulty().indexOf(lastMessage);
-            for (int i = indexOfLastANalysedMessage + 1; i < metadata.getRecentDifficulty().size(); i++) {
+            int firstNotYetAnalysedMessage = indexOfLastANalysedMessage + 1;
+            for (int i = firstNotYetAnalysedMessage; i < metadata.getRecentDifficulty().size(); i++) {
                 if (i < metadata.getRecentDifficulty().size()) {
                     groups.add(Collections.singletonList(metadata.getRecentDifficulty().get(i)));
                 }
