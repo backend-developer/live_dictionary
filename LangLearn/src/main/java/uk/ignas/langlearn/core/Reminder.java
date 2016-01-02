@@ -15,15 +15,13 @@ public class Reminder {
 
     public boolean shouldBeReminded(TranslationMetadata metadata) {
         List<List<DifficultyAtTime>> promotionPeriodJumpers = getPromotionPeriodsJumpingGroups(metadata);
-        return !isBeingPromoted(promotionPeriodJumpers);
+        int promotionDurationInHours = findCurrentPromotionDurationInHours(promotionPeriodJumpers);
+        return !restrictedByPromotion(promotionPeriodJumpers, promotionDurationInHours);
     }
 
-    private boolean isBeingPromoted(List<List<DifficultyAtTime>> promotionPeriodsJumpers) {
-        int promotionDurationInHours = findCurrentPromotionDurationInHours(promotionPeriodsJumpers);
+    private boolean restrictedByPromotion(List<List<DifficultyAtTime>> promotionPeriodsJumpers, int promotionDurationInHours) {
         List<DifficultyAtTime> promotionPeriodsJumper = promotionPeriodsJumpers.get(promotionPeriodsJumpers.size() - 1);
-        boolean isBeingPromoted = !promotionPeriodsJumper.isEmpty() && isMessagesNewerThanNHours(promotionPeriodsJumper.get(0), promotionDurationInHours);
-
-        return isBeingPromoted;
+        return !promotionPeriodsJumper.isEmpty() && isMessagesNewerThanNHours(promotionPeriodsJumper.get(0), promotionDurationInHours);
     }
 
     private int findCurrentPromotionDurationInHours(List<List<DifficultyAtTime>> promotionPeriodsJumpers) {
