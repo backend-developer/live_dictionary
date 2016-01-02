@@ -62,8 +62,8 @@ public class Reminder {
     }
 
     private int findCurrentPromotionDurationInHours(List<List<DifficultyAtTime>> promotionPeriodsJumpers) {
-        int promotionDurationInHours = promotionDuration.getHoursByLevel(1);
-        for (int promotionLevel = 1; promotionLevel <= promotionPeriodsJumpers.size(); promotionLevel++) {
+        int promotionDurationInHours = promotionDuration.getHoursByLevel(0);
+        for (int promotionLevel = 0; promotionLevel < promotionPeriodsJumpers.size(); promotionLevel++) {
             promotionDurationInHours = promotionDuration.getHoursByLevel(promotionLevel);
         }
         return promotionDurationInHours;
@@ -169,21 +169,21 @@ public class Reminder {
 
     private static class PromotionDuration {
         private Map<Integer, Integer> periodsByLevel = ImmutableMap.<Integer, Integer>builder()
-                .put(1, 4)
-                .put(2, 20)
-                .put(3, 1 * 24)
-                .put(4, 2 * 24)
-                .put(5, 4 * 24)
-                .put(6, 8 * 24)
-                .put(7, 16 * 24)
-                .put(8, 32 * 24)
-                //for higher than 8 - use value for 8
+                .put(0, 4)
+                .put(1, 20)
+                .put(2, 1 * 24)
+                .put(3, 2 * 24)
+                .put(4, 4 * 24)
+                .put(5, 8 * 24)
+                .put(6, 16 * 24)
+                .put(7, 32 * 24)
+                //for higher than 7 - use value for 7
                 .build();
 
         public Integer getHoursByLevel(int level) {
-            if (level > 7) {
-                return periodsByLevel.get(8);
-            } else if (level > 0) {
+            if (level > 6) {
+                return periodsByLevel.get(7);
+            } else if (level >= 0) {
                 return periodsByLevel.get(level);
             } else {
                 throw new RuntimeException("promotion period level should never be less than 1. got " + level);
