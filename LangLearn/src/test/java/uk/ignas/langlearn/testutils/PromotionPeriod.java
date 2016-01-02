@@ -5,11 +5,9 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public enum PromotionPeriod {
-    LEVEL_8(createDateDifferingBy(now(), Start.LEVEL_8, Calendar.HOUR),
-            createDateDifferingBy(now(), End.LEVEL_8*60-1, Calendar.MINUTE),
-            createDateDifferingBy(now(), End.LEVEL_8, Calendar.HOUR)),
     LEVEL_7(createDateDifferingBy(now(), Start.LEVEL_7, Calendar.HOUR),
-            createDateDifferingBy(now(), Start.LEVEL_8 *60-1, Calendar.MINUTE), LEVEL_8.begin),
+            createDateDifferingBy(now(), End.LEVEL_7 *60-1, Calendar.MINUTE),
+            createDateDifferingBy(now(), End.LEVEL_7, Calendar.HOUR)),
     LEVEL_6(createDateDifferingBy(now(), Start.LEVEL_6, Calendar.HOUR),
             createDateDifferingBy(now(), Start.LEVEL_7 *60-1, Calendar.MINUTE), LEVEL_7.begin),
     LEVEL_5(createDateDifferingBy(now(), Start.LEVEL_5, Calendar.HOUR),
@@ -20,25 +18,27 @@ public enum PromotionPeriod {
             createDateDifferingBy(now(), Start.LEVEL_4 *60-1, Calendar.MINUTE), LEVEL_4.begin),
     LEVEL_2(createDateDifferingBy(now(), Start.LEVEL_2, Calendar.HOUR),
             createDateDifferingBy(now(), Start.LEVEL_3 *60-1, Calendar.MINUTE), LEVEL_3.begin),
-    LEVEL_1(now(),
-            createDateDifferingBy(now(), Start.LEVEL_2 *60-1, Calendar.MINUTE), LEVEL_2.begin);
+    LEVEL_1(createDateDifferingBy(now(), Start.LEVEL_1, Calendar.HOUR),
+            createDateDifferingBy(now(), Start.LEVEL_2 *60-1, Calendar.MINUTE), LEVEL_2.begin),
+    LEVEL_0(now(),
+            createDateDifferingBy(now(), Start.LEVEL_1 *60-1, Calendar.MINUTE), LEVEL_1.begin);
 
-    public static class LEVEL_OVER_8 {
+    public static class LEVEL_OVER_7 {
         private Date begin;
         private Date almostEnd;
         private Date end;
 
-        LEVEL_OVER_8(Date begin, Date almostEnd, Date end) {
+        LEVEL_OVER_7(Date begin, Date almostEnd, Date end) {
             this.begin = begin;
             this.almostEnd = almostEnd;
             this.end = end;
         }
 
-        public static LEVEL_OVER_8 by(int levels) {
-            return new LEVEL_OVER_8(
-                    createDateDifferingBy(now(), Start.LEVEL_8 + levels * LEVEL_8.duraionHours(), Calendar.HOUR),
-                    createDateDifferingBy(now(), Start.LEVEL_8 + (levels + 1)* 60* LEVEL_8.duraionHours() - 1, Calendar.MINUTE),
-                    createDateDifferingBy(now(), Start.LEVEL_8 + (levels + 1) * LEVEL_8.duraionHours(), Calendar.HOUR)
+        public static LEVEL_OVER_7 by(int levels) {
+            return new LEVEL_OVER_7(
+                    createDateDifferingBy(now(), Start.LEVEL_7 + levels * LEVEL_7.duraionHours(), Calendar.HOUR),
+                    createDateDifferingBy(now(), Start.LEVEL_7 + (levels + 1)* 60* LEVEL_7.duraionHours() - 1, Calendar.MINUTE),
+                    createDateDifferingBy(now(), Start.LEVEL_7 + (levels + 1) * LEVEL_7.duraionHours(), Calendar.HOUR)
                     );
         }
 
@@ -61,17 +61,17 @@ public enum PromotionPeriod {
     }
 
     public static class Start {
-        public static int LEVEL_2 = 4;
-        public static int LEVEL_3 = 24;
-        public static int LEVEL_4 = 2*24;
-        public static int LEVEL_5 = 4*24;
-        public static int LEVEL_6 = 8*24;
-        public static int LEVEL_7 = 16*24;
-        public static int LEVEL_8 = 32*24;
+        public static int LEVEL_1 = 4;
+        public static int LEVEL_2 = 24;
+        public static int LEVEL_3 = 2*24;
+        public static int LEVEL_4 = 4*24;
+        public static int LEVEL_5 = 8*24;
+        public static int LEVEL_6 = 16*24;
+        public static int LEVEL_7 = 32*24;
     }
     public static class End {
-        public static int LEVEL_1 = Start.LEVEL_2;
-        public static int LEVEL_8 = 64*24;
+        public static int LEVEL_0 = Start.LEVEL_1;
+        public static int LEVEL_7 = 64*24;
     }
 
     public static final Date NOW = now();
