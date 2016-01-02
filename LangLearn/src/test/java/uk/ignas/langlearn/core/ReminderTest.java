@@ -463,14 +463,14 @@ public class ReminderTest {
         TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, asList(
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_1.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_1.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_2.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_3.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_4.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_5.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_6.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_7.end()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_2.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_2.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_3.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_4.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_5.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_6.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_7.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_8.begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_8.end())
         ));
 
@@ -487,14 +487,14 @@ public class ReminderTest {
         TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, asList(
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_1.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_1.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_2.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_3.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_4.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_5.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_6.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_7.end()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_2.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_2.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_3.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_4.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_5.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_6.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_7.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_8.begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_8.end())
         ));
 
@@ -513,14 +513,14 @@ public class ReminderTest {
         TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, asList(
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_1.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_1.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_2.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_3.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_4.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_5.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_6.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_7.end()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_2.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_2.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_3.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_4.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_5.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_6.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_7.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_8.begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_8.end()),
                 new DifficultyAtTime(Difficulty.EASY, createDateOffsetedByHours(End.LEVEL_8 + LEVEL_8.duraionHours()))
         ));
@@ -538,14 +538,14 @@ public class ReminderTest {
         TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, asList(
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_1.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_1.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_2.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_3.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_4.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_5.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_6.end()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_7.end()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_2.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_2.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_3.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_4.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_5.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_6.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_7.begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_8.begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_8.end()),
                 new DifficultyAtTime(Difficulty.EASY, createDateOffsetedByHours(End.LEVEL_8 + LEVEL_8.duraionHours()))
         ));
