@@ -28,14 +28,15 @@ public class Reminder {
         private Map<Integer, Integer> periodsByLevel = ImmutableMap.<Integer, Integer>builder()
                 .put(1, 4)
                 .put(2, 20)
-                .put(3, 1*24)
-                .put(4, 2*24)
-                .put(5, 4*24)
-                .put(6, 8*24)
-                .put(7, 16*24)
-                .put(8, 32*24)
+                .put(3, 1 * 24)
+                .put(4, 2 * 24)
+                .put(5, 4 * 24)
+                .put(6, 8 * 24)
+                .put(7, 16 * 24)
+                .put(8, 32 * 24)
                 //for higher than 8 - use value for 8
                 .build();
+
         public Integer getHoursByLevel(int level) {
             if (level > 7) {
                 return periodsByLevel.get(8);
@@ -83,13 +84,10 @@ public class Reminder {
                     new MsgCountAndNumOfHours(2, 20)
             );
         }
-        List<DifficultyAtTime> lastGroup = groups.get(groups.size() - 1);
-        int indexOfLastANalysedMessage = -1;
-        if (!lastGroup.isEmpty()) {
+        if (groups.size() == 2) {
+            List<DifficultyAtTime> lastGroup = groups.get(groups.size() - 1);
             DifficultyAtTime lastMessage = lastGroup.get(lastGroup.size() - 1);
-            indexOfLastANalysedMessage = metadata.getRecentDifficulty().indexOf(lastMessage);
-        }
-        if (groups.size() == 2 && indexOfLastANalysedMessage != -1) {
+            int indexOfLastANalysedMessage = metadata.getRecentDifficulty().indexOf(lastMessage);
             for (int i = indexOfLastANalysedMessage + 1; i < metadata.getRecentDifficulty().size(); i++) {
                 if (i < metadata.getRecentDifficulty().size()) {
                     groups.add(Collections.singletonList(metadata.getRecentDifficulty().get(i)));
