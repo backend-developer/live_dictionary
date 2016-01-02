@@ -50,7 +50,7 @@ public class Reminder {
                 if (s.promotionLevel <= promotionPeriodJumpers.size()) {
                     List<DifficultyAtTime> messages = promotionPeriodJumpers.get(s.promotionLevel - 1);
                     DifficultyAtTime message = Iterables.getOnlyElement(messages, null);
-                    boolean isLevelPromoted = message != null && !isMessagesNewerThanNHours(message, hours);
+                    boolean isLevelPromoted = !messages.isEmpty() && !isMessagesNewerThanNHours(messages.get(0), hours);
                     if (isLevelPromoted) {
                         s.promotionLevel++;
                     }
