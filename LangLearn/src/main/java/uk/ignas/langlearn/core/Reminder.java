@@ -21,23 +21,19 @@ public class Reminder {
     private boolean isBeingPromoted(List<List<DifficultyAtTime>> promotionPeriodsJumpers) {
         PromotionStatistics s = new PromotionStatistics();
         if (s.promotionLevel == 1) {
-            int promotionPeriodDuration = promotionDuration.getHoursByLevel(s.promotionLevel);
             accumulateStatistics(promotionPeriodsJumpers, s);
         }
         if (s.promotionLevel == 2) {
-            int promotionPeriodDuration = promotionDuration.getHoursByLevel(s.promotionLevel);
             accumulateStatistics(promotionPeriodsJumpers, s);
         }
         for (int promotionLevell = 3; promotionLevell < 9; promotionLevell++) {
             if (s.promotionLevel == promotionLevell) {
-                int promotionPeriodDuration = promotionDuration.getHoursByLevel(s.promotionLevel);
                 accumulateStatistics(promotionPeriodsJumpers, s);
             }
         }
         int oldPromotionLevel = 8;
         while (s.promotionLevel >= 9 && s.promotionLevel > oldPromotionLevel) {
             oldPromotionLevel = s.promotionLevel;
-            int promotionPeriodDuration = promotionDuration.getHoursByLevel(s.promotionLevel);
             accumulateStatistics(promotionPeriodsJumpers, s);
         }
 
