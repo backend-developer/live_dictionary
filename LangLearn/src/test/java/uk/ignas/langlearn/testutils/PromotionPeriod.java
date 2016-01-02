@@ -23,6 +23,43 @@ public enum PromotionPeriod {
     LEVEL_1(now(),
             createDateDifferingBy(now(), Start.LEVEL_2 *60-1, Calendar.MINUTE), LEVEL_2.begin);
 
+    public static class LEVEL_OVER_8 {
+        private Date begin;
+        private Date almostEnd;
+        private Date end;
+
+        LEVEL_OVER_8(Date begin, Date almostEnd, Date end) {
+            this.begin = begin;
+            this.almostEnd = almostEnd;
+            this.end = end;
+        }
+
+        public static LEVEL_OVER_8 by(int levels) {
+            return new LEVEL_OVER_8(
+                    createDateDifferingBy(now(), Start.LEVEL_8 + levels * LEVEL_8.duraionHours(), Calendar.HOUR),
+                    createDateDifferingBy(now(), Start.LEVEL_8 + (levels + 1)* 60* LEVEL_8.duraionHours() - 1, Calendar.MINUTE),
+                    createDateDifferingBy(now(), Start.LEVEL_8 + (levels + 1) * LEVEL_8.duraionHours(), Calendar.HOUR)
+                    );
+        }
+
+        public Date begin() {
+            return begin;
+        }
+
+        public Date almostEnd() {
+            return almostEnd;
+        }
+
+        public Date end() {
+            return end;
+        }
+
+        public int duraionHours() {
+            return (int)TimeUnit.MILLISECONDS.toHours(end.getTime() - begin.getTime());
+        }
+
+    }
+
     public static class Start {
         public static int LEVEL_2 = 4;
         public static int LEVEL_3 = 24;

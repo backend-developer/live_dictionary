@@ -1,6 +1,5 @@
 package uk.ignas.langlearn.core;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.ignas.langlearn.testutils.PromotionPeriod;
 
@@ -459,7 +458,7 @@ public class ReminderTest {
     public void translationShouldNotBeRemindedSecondTimeDuringPromotionPeriodOfLevelRightAfterEight() {
         Clock clock = mock(Clock.class);
         Reminder reminder = new Reminder(clock);
-        when(clock.getTime()).thenReturn(createDateOffsetedByHours(End.LEVEL_8 + (LEVEL_8.duraionHours() - 1)));
+        when(clock.getTime()).thenReturn(LEVEL_OVER_8.by(1).almostEnd());
         TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, asList(
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
@@ -471,7 +470,7 @@ public class ReminderTest {
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_6.begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_7.begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_8.begin()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_8.end())
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_OVER_8.by(1).begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -483,7 +482,7 @@ public class ReminderTest {
     public void translationShouldBeRemindedAfterLevelPromotionPeriodOfLevelRightAfter8Passes() {
         Clock clock = mock(Clock.class);
         Reminder reminder = new Reminder(clock);
-        when(clock.getTime()).thenReturn(createDateOffsetedByHours(End.LEVEL_8 + LEVEL_8.duraionHours()));
+        when(clock.getTime()).thenReturn(LEVEL_OVER_8.by(1).end());
         TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, asList(
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
@@ -495,7 +494,7 @@ public class ReminderTest {
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_6.begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_7.begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_8.begin()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_8.end())
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_OVER_8.by(1).begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -503,13 +502,11 @@ public class ReminderTest {
         assertThat(shouldRemind, is(true));
     }
 
-
     @Test
     public void translationShouldNotBeRemindedSecondTimeDuringPromotionPeriodOfLevelsHigherThanEight() {
         Clock clock = mock(Clock.class);
         Reminder reminder = new Reminder(clock);
-        when(clock.getTime()).thenReturn(
-                createDateOffsetedByHours(End.LEVEL_8 + (LEVEL_8.duraionHours() * 2 - 1)));
+        when(clock.getTime()).thenReturn(LEVEL_OVER_8.by(2).almostEnd());
         TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, asList(
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
@@ -521,8 +518,8 @@ public class ReminderTest {
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_6.begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_7.begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_8.begin()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_8.end()),
-                new DifficultyAtTime(Difficulty.EASY, createDateOffsetedByHours(End.LEVEL_8 + LEVEL_8.duraionHours()))
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_OVER_8.by(1).begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_OVER_8.by(2).begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -534,7 +531,7 @@ public class ReminderTest {
     public void translationShouldBeRemindedAfterLevelPromotionPeriodOfLevelHigherThanEightPasses() {
         Clock clock = mock(Clock.class);
         Reminder reminder = new Reminder(clock);
-        when(clock.getTime()).thenReturn(createDateOffsetedByHours(End.LEVEL_8 + 2 * LEVEL_8.duraionHours()));
+        when(clock.getTime()).thenReturn(LEVEL_OVER_8.by(2).end());
         TranslationMetadata metadata = new TranslationMetadata(ANY_DIFFICULTY, asList(
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_1.begin()),
@@ -546,8 +543,8 @@ public class ReminderTest {
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_6.begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_7.begin()),
                 new DifficultyAtTime(Difficulty.EASY, LEVEL_8.begin()),
-                new DifficultyAtTime(Difficulty.EASY, LEVEL_8.end()),
-                new DifficultyAtTime(Difficulty.EASY, createDateOffsetedByHours(End.LEVEL_8 + LEVEL_8.duraionHours()))
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_OVER_8.by(1).begin()),
+                new DifficultyAtTime(Difficulty.EASY, LEVEL_OVER_8.by(2).begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
