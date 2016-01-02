@@ -21,22 +21,7 @@ public class Reminder {
 
     private boolean isBeingPromoted(List<List<DifficultyAtTime>> promotionPeriodsJumpers) {
         PromotionStatistics stats = new PromotionStatistics();
-        int oldPromotionLevel = stats.promotionLevel - 1;
-        while (stats.promotionLevel > oldPromotionLevel) {
-            oldPromotionLevel = stats.promotionLevel;
-            List<DifficultyAtTime> promotionPeriodsJumper = Iterables.get(promotionPeriodsJumpers, stats.promotionLevel - 1, Collections.<DifficultyAtTime>emptyList());
-            collectStatistics(stats, promotionPeriodsJumper);
-        }
-        return stats.isBeingPromoted;
-    }
-
-    private void collectStatistics(PromotionStatistics stats, List<DifficultyAtTime> messages) {
-        int promotionDurationInHours = promotionDuration.getHoursByLevel(stats.promotionLevel);
-        boolean isLevelPromoted = !messages.isEmpty() && !isMessagesNewerThanNHours(messages.get(0), promotionDurationInHours);
-        if (isLevelPromoted) {
-            stats.promotionLevel++;
-        }
-        stats.isBeingPromoted = !messages.isEmpty() && isMessagesNewerThanNHours(messages.get(0), promotionDurationInHours);
+        return stats.isBeingPromoted(promotionPeriodsJumpers);
     }
 
     private static class PromotionDuration {
@@ -62,9 +47,25 @@ public class Reminder {
         }
     }
 
-    private static class PromotionStatistics {
+    private class PromotionStatistics {
         private int promotionLevel = 1;
         private boolean isBeingPromoted = false;
+
+        private boolean isBeingPromoted(List<List<DifficultyAtTime>> promotionPeriodsJumpers) {
+            boolean actualPromotionLevelFound = false;
+            while (!actualPromotionLevelFound) {
+                List<DifficultyAtTime> promotionPeriodsJumper = Iterables.get(promotionPeriodsJumpers, promotionLevel - 1, Collections.<DifficultyAtTime>emptyList());
+                int promotionDurationInHours = promotionDuration.getHoursByLevel(promotionLevel);
+                boolean isLevelPromoted = !promotionPeriodsJumper.isEmpty() && !isMessagesNewerThanNHours(promotionPeriodsJumper.get(0), promotionDurationInHours);
+                if (isLevelPromoted) {
+                    promotionLevel++;
+                } else {
+                    actualPromotionLevelFound = true;
+                }
+                isBeingPromoted = !promotionPeriodsJumper.isEmpty() && isMessagesNewerThanNHours(promotionPeriodsJumper.get(0), promotionDurationInHours);
+            }
+            return isBeingPromoted;
+        }
     }
 
     private List<List<DifficultyAtTime>> getPromotionPeriodsJumpingGroups(TranslationMetadata metadata) {
