@@ -5,6 +5,8 @@ import com.google.common.collect.ImmutableMap;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static com.google.common.collect.Iterables.getLast;
+
 /**
  *
  *In order not to waste user's time each translation should be reminded less often, as user learns it.
@@ -51,14 +53,15 @@ public class Reminder {
     }
 
     public boolean shouldBeReminded(TranslationMetadata metadata) {
-        return !restrictedByPromotion(metadata);
+        return !restrictedByPromotionPeriod(metadata);
     }
 
-    private boolean restrictedByPromotion(TranslationMetadata metadata) {
+    private boolean restrictedByPromotionPeriod(TranslationMetadata metadata) {
         List<List<DifficultyAtTime>> promotionPeriodJumpers = getPromotionPeriodsJumpingGroups(metadata);
         int promotionDurationInHours = findCurrentPromotionDurationInHours(promotionPeriodJumpers);
-        List<DifficultyAtTime> promotionPeriodsJumper = promotionPeriodJumpers.get(promotionPeriodJumpers.size() - 1);
-        return !promotionPeriodsJumper.isEmpty() && isMessagesNewerThanNHours(promotionPeriodsJumper.get(0), promotionDurationInHours);
+        List<DifficultyAtTime> promotionPeriodsJumper = getLast(promotionPeriodJumpers);
+        boolean isRestricted = !promotionPeriodsJumper.isEmpty() && isMessagesNewerThanNHours(promotionPeriodsJumper.get(0), promotionDurationInHours);
+        return isRestricted;
     }
 
     private int findCurrentPromotionDurationInHours(List<List<DifficultyAtTime>> promotionPeriodsJumpers) {
@@ -71,12 +74,15 @@ public class Reminder {
 
     private List<List<DifficultyAtTime>> getPromotionPeriodsJumpingGroups(TranslationMetadata metadata) {
         List<DifficultyAtTime> successAfterLastFailure = getSuccessLogAfterLastFailure(metadata);
-        List<List<DifficultyAtTime>> groups;
         boolean wasJustFailed = successAfterLastFailure.size() != metadata.getRecentDifficulty().size();
-        int requiredMsgCountForLevelOne = wasJustFailed ? 3 : 2;
+        List<List<DifficultyAtTime>> groups;
+        int requiredMsgCountForLevel0 = wasJustFailed ? 3 : 2;
+        int level0PromotionPeriodDuration = 4;
+        int level1PromotionPeriodDuration = 20;
+        int requiredMsgCountForLevel1 = 2;
         groups = findMsgGroupsFittingPeriodsInOrder(successAfterLastFailure,
-                new MsgCountAndNumOfHours(requiredMsgCountForLevelOne, 4),
-                new MsgCountAndNumOfHours(2, 20)
+                new MsgCountAndNumOfHours(requiredMsgCountForLevel0, level0PromotionPeriodDuration),
+                new MsgCountAndNumOfHours(requiredMsgCountForLevel1, level1PromotionPeriodDuration)
         );
         if (groups.size() == 2) {
             List<DifficultyAtTime> lastGroup = groups.get(groups.size() - 1);
