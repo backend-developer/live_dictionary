@@ -159,7 +159,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
                     COLUMN_NATIVE_WORD + ", " +
                     COLUMN_TIME_ANSWERED + ", " +
                     COLUMN_TRANSLATION_DIFFICULTY
-                    + " from " + TRANSLATIONS_TABLE_NAME + " LEFT JOIN " + ANSWERS_LOG_TABLE_NAME + " ON " + TRANSLATIONS_TABLE_NAME + "." + COLUMN_ID + " = " + ANSWERS_LOG_TABLE_NAME + "." + COLUMN_TRANSLATION_ID + " ORDER BY " + COLUMN_TRANSLATION_ID, null);
+                    + " from " + TRANSLATIONS_TABLE_NAME + " LEFT JOIN " + ANSWERS_LOG_TABLE_NAME + " ON " + TRANSLATIONS_TABLE_NAME + "." + COLUMN_ID + " = " + ANSWERS_LOG_TABLE_NAME + "." + COLUMN_TRANSLATION_ID + " ORDER BY " + thisTranslationId, null);
             res.moveToFirst();
             Translation currentTranslation = null;
             int lastTranslation = -1;

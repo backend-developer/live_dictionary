@@ -157,7 +157,7 @@ el alba - dawn
 los apuntes - notes
 la tiza - chalk
 la tarea - homework
-la respuesta - answer
+la respuesta - an answer
 la regla - ruler
 la redacción - essay
 la punta - pen nib
@@ -404,7 +404,7 @@ la bufanda - scarf
 el abrigo - coat
 La ropa - clothing
 la ciruela - plum
-la pera - peardz
+la pera - pear
 la sandía - watermelon
 el melón - melon
 la granada - pomegranate
@@ -838,7 +838,7 @@ pagina - page
 española - spanish girl
 país - country
 desarrollador web - developer
-estandounidense - americqn
+estandounidense - american
 norteamericana - north america
 nacionalidad - nationality
 enfermeda - nurse
@@ -1051,9 +1051,9 @@ churra - luck
 aceite de oliva - olive oil
 casadar con - married to
 el abrazo - a hug
-por la noche - night
+por la noche - at night
 el marisco - sea food
-mejillon - kriaukle
+el mejillon - a mussel
 la gamba - prawn
 la montaña - mountain
 el árbol - tree
@@ -1196,7 +1196,7 @@ la miel - honey
 los dibujos animados - animation pictures
 el oso - bear
 la esponja - sponge
-conjugar - asmenuoti
+conjugar - conjugate
 presente - present (clause)
 mejorar - improve
 la lengua - language
@@ -1300,7 +1300,6 @@ estubo - he was
 estube - i was
 perder - lost
 anoche - last night
-por la noche - at night
 por la tarde - in the evening
 el juego - game
 la vista - view
@@ -1378,7 +1377,7 @@ apuntarse durante un año - enroll for a year
 tipicamente - normally
 podrías - could you?
 deber - must
-dener - owe
+deber - owe
 traer - irregular word
 volver - irregular word
 volar - irregular word
@@ -1483,7 +1482,7 @@ es una historia interesante - its an interesting story
 volver a sitio - return to place
 terminar de hacer - finish doing
 empiezar a hacer - start doing
-es muy común - tipical
+es muy común - it is very tipical
 va a la universided - he, she goes to university
 es una coincidencia - its a coinsidence
 hacer puenting - bungee jumping
@@ -1630,7 +1629,7 @@ mucho - a lot
 muchisimo - really a lot
 ?? dulce - a sweet
 dulce - sweet
-la gana - desire
+la gana - a desire
 tren que viene de dos minutos - train which comes in two mins
 semana que viene - next week
 rendirse - surrender
@@ -2555,14 +2554,14 @@ incluso - even
 tiene sentido - makes sense
 no tiene sentido - does not make sence
 el sentido - meaning
-bromear - joke
+bromear - to joke
 la broma - a joke
 consciente - conscious
 estar consciente - to be conscious
 ser consciente de - to be aware of
 la venganza - revenge
 el accidente - crash
-una accidente de coche - a car accident
+una accidente de coche - a car crash
 darse cuenta de - find out
 ellos se dan cuenta - they find out
 me di cuenta cómo era realmente - i found out what he was really like
@@ -2577,7 +2576,7 @@ mi sueño es vivir - my dream is live
 en mi sueño - i had a dream
 inesperadamente - unexpectedly
 inesperadamente - out of the blue
-la burbuja - a bubble
+la burbja - a bubble
 el amigo falso - a false friend
 en realidad - actually
 actualmente - nowadays
@@ -2585,3 +2584,4 @@ la pescadilla que se muerde la cola - vicious circle
 la pescadilla - whiting (name of fish)
 morder - to bite
 la cola - a tail
+darse cuenta - find out
