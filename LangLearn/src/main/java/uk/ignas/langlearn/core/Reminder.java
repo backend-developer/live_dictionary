@@ -1,7 +1,6 @@
 package uk.ignas.langlearn.core;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -53,15 +52,11 @@ public class Reminder {
         private boolean isBeingPromoted = false;
 
         private boolean isBeingPromoted(List<List<DifficultyAtTime>> promotionPeriodsJumpers) {
-            boolean actualPromotionLevelFound = false;
-            while (!actualPromotionLevelFound) {
-                List<DifficultyAtTime> promotionPeriodsJumper = Iterables.get(promotionPeriodsJumpers, promotionLevel - 1, Collections.<DifficultyAtTime>emptyList());
+            for (List<DifficultyAtTime> promotionPeriodsJumper : promotionPeriodsJumpers) {
                 int promotionDurationInHours = promotionDuration.getHoursByLevel(promotionLevel);
                 boolean isLevelPromoted = !promotionPeriodsJumper.isEmpty() && !isMessagesNewerThanNHours(promotionPeriodsJumper.get(0), promotionDurationInHours);
                 if (isLevelPromoted) {
                     promotionLevel++;
-                } else {
-                    actualPromotionLevelFound = true;
                 }
                 isBeingPromoted = !promotionPeriodsJumper.isEmpty() && isMessagesNewerThanNHours(promotionPeriodsJumper.get(0), promotionDurationInHours);
             }
