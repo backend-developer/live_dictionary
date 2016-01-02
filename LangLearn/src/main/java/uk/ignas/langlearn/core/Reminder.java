@@ -14,25 +14,20 @@ public class Reminder {
     }
 
     public boolean shouldBeReminded(TranslationMetadata metadata) {
-        List<List<DifficultyAtTime>> promotionPeriodJumpers = getPromotionPeriodsJumpingGroups(metadata);
-        int promotionDurationInHours = findCurrentPromotionDurationInHours(promotionPeriodJumpers);
-        return !restrictedByPromotion(promotionPeriodJumpers, promotionDurationInHours);
+        return !restrictedByPromotion(metadata);
     }
 
-    private boolean restrictedByPromotion(List<List<DifficultyAtTime>> promotionPeriodsJumpers, int promotionDurationInHours) {
-        List<DifficultyAtTime> promotionPeriodsJumper = promotionPeriodsJumpers.get(promotionPeriodsJumpers.size() - 1);
+    private boolean restrictedByPromotion(TranslationMetadata metadata) {
+        List<List<DifficultyAtTime>> promotionPeriodJumpers = getPromotionPeriodsJumpingGroups(metadata);
+        int promotionDurationInHours = findCurrentPromotionDurationInHours(promotionPeriodJumpers);
+        List<DifficultyAtTime> promotionPeriodsJumper = promotionPeriodJumpers.get(promotionPeriodJumpers.size() - 1);
         return !promotionPeriodsJumper.isEmpty() && isMessagesNewerThanNHours(promotionPeriodsJumper.get(0), promotionDurationInHours);
     }
 
     private int findCurrentPromotionDurationInHours(List<List<DifficultyAtTime>> promotionPeriodsJumpers) {
-        int promotionLevel = 1;
-        int promotionDurationInHours = promotionDuration.getHoursByLevel(promotionLevel);
-        for (List<DifficultyAtTime> promotionPeriodsJumper : promotionPeriodsJumpers) {
+        int promotionDurationInHours = promotionDuration.getHoursByLevel(1);
+        for (int promotionLevel = 1; promotionLevel <= promotionPeriodsJumpers.size(); promotionLevel++) {
             promotionDurationInHours = promotionDuration.getHoursByLevel(promotionLevel);
-            boolean isLevelPromoted = !promotionPeriodsJumper.isEmpty() && !isMessagesNewerThanNHours(promotionPeriodsJumper.get(0), promotionDurationInHours);
-            if (isLevelPromoted) {
-                promotionLevel++;
-            }
         }
         return promotionDurationInHours;
     }
