@@ -58,14 +58,17 @@ public class Reminder {
 
     private boolean restrictedByPromotionPeriod(TranslationMetadata metadata) {
         List<List<DifficultyAtTime>> promotionPeriodJumpers = getPromotionPeriodsJumpingGroups(metadata);
-        int promotionDurationInHours = findCurrentPromotionDurationInHours(promotionPeriodJumpers);
         if (!promotionPeriodJumpers.isEmpty()) {
+            int promotionDurationInHours = findCurrentPromotionDurationInHours(promotionPeriodJumpers);
             List<DifficultyAtTime> promotionPeriodsJumper = getLast(promotionPeriodJumpers);
-            boolean isRestricted = !promotionPeriodsJumper.isEmpty() && isMessagesNewerThanNHours(promotionPeriodsJumper.get(0), promotionDurationInHours);
-            return  isRestricted;
+            return groupStillRestricted(promotionDurationInHours, promotionPeriodsJumper);
         } else {
             return false;
         }
+    }
+
+    private boolean groupStillRestricted(int promotionDurationInHours, List<DifficultyAtTime> promotionPeriodsJumper) {
+        return !promotionPeriodsJumper.isEmpty() && isMessagesNewerThanNHours(promotionPeriodsJumper.get(0), promotionDurationInHours);
     }
 
     private int findCurrentPromotionDurationInHours(List<List<DifficultyAtTime>> promotionPeriodsJumpers) {
