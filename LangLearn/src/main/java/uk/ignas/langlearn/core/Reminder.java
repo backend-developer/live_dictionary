@@ -21,53 +21,60 @@ public class Reminder {
     }
 
     private boolean isBeingPromoted(List<List<DifficultyAtTime>> promotionPeriodJumpers) {
-        boolean isBeingPromoted = false;
-        int promotionLevel = 1;
-        if (promotionLevel == 1) {
-            List<DifficultyAtTime> messages = promotionPeriodJumpers.get(0);
-            boolean isLevelPromoted = !messages.isEmpty() && !isMessagesNewerThanNHours(messages.get(0), 4);
-            if (isLevelPromoted) {
-                promotionLevel++;
+        PromotionStatistics s = new PromotionStatistics();
+        if (s.promotionLevel == 1) {
+            if (s.promotionLevel <= promotionPeriodJumpers.size()) {
+                List<DifficultyAtTime> messages = promotionPeriodJumpers.get(0);
+                boolean isLevelPromoted = !messages.isEmpty() && !isMessagesNewerThanNHours(messages.get(0), 4);
+                if (isLevelPromoted) {
+                    s.promotionLevel++;
+                }
+                s.isBeingPromoted = !messages.isEmpty() && isMessagesNewerThanNHours(messages.get(0), 4);
             }
-            isBeingPromoted = !messages.isEmpty() && isMessagesNewerThanNHours(messages.get(0), 4);
         }
-        if (promotionLevel == 2) {
-            List<DifficultyAtTime> messages = promotionPeriodJumpers.get(1);
-            boolean isLevelPromoted = !messages.isEmpty() && !isMessagesNewerThanNHours(messages.get(0), 20);
-            if (isLevelPromoted) {
-                promotionLevel++;
+        if (s.promotionLevel == 2) {
+            if (s.promotionLevel <= promotionPeriodJumpers.size()) {
+                List<DifficultyAtTime> messages = promotionPeriodJumpers.get(1);
+                boolean isLevelPromoted = !messages.isEmpty() && !isMessagesNewerThanNHours(messages.get(0), 20);
+                if (isLevelPromoted) {
+                    s.promotionLevel++;
+                }
+                s.isBeingPromoted = !messages.isEmpty() && isMessagesNewerThanNHours(messages.get(0), 20);
             }
-            isBeingPromoted = !messages.isEmpty() && isMessagesNewerThanNHours(messages.get(0), 20);
         }
         for (int promotionLevell = 3; promotionLevell < 9; promotionLevell++) {
-            if (promotionLevel == promotionLevell) {
-                DifficultyAtTime message = Iterables.getOnlyElement(promotionPeriodJumpers.get(promotionLevel - 1), null);
-                int hours = 24 * (1 << (promotionLevel - 3));
-                boolean isLevelPromoted = message != null && !isMessagesNewerThanNHours(message, hours);
-                if (isLevelPromoted) {
-                    promotionLevel++;
+            if (s.promotionLevel == promotionLevell) {
+                if (s.promotionLevel <= promotionPeriodJumpers.size()) {
+                    DifficultyAtTime message = Iterables.getOnlyElement(promotionPeriodJumpers.get(s.promotionLevel - 1), null);
+                    int hours = 24 * (1 << (s.promotionLevel - 3));
+                    boolean isLevelPromoted = message != null && !isMessagesNewerThanNHours(message, hours);
+                    if (isLevelPromoted) {
+                        s.promotionLevel++;
+                    }
+                    s.isBeingPromoted = message != null && isMessagesNewerThanNHours(message, hours);
                 }
-                isBeingPromoted = message != null && isMessagesNewerThanNHours(message, hours);
             }
         }
-        boolean isPromotionLevelChanged = true;
-        while (promotionLevel >= 9 && isPromotionLevelChanged) {
-            if (promotionLevel <= promotionPeriodJumpers.size()) {
-                DifficultyAtTime message = Iterables.getOnlyElement(promotionPeriodJumpers.get(promotionLevel - 1), null);
+        int oldPromotionLevel = 8;
+        while (s.promotionLevel >= 9 && s.promotionLevel > oldPromotionLevel) {
+            oldPromotionLevel = s.promotionLevel;
+            if (s.promotionLevel <= promotionPeriodJumpers.size()) {
+                DifficultyAtTime message = Iterables.getOnlyElement(promotionPeriodJumpers.get(s.promotionLevel - 1), null);
                 int hours = 24 * (1 << 5);
                 boolean isLevelPromoted = message != null && !isMessagesNewerThanNHours(message, hours);
                 if (isLevelPromoted) {
-                    promotionLevel++;
-                } else {
-                    isPromotionLevelChanged = false;
+                    s.promotionLevel++;
                 }
-                isBeingPromoted = message != null && isMessagesNewerThanNHours(message, hours);
-            } else {
-                isPromotionLevelChanged = false;
+                s.isBeingPromoted = message != null && isMessagesNewerThanNHours(message, hours);
             }
         }
 
-        return isBeingPromoted;
+        return s.isBeingPromoted;
+    }
+
+    private static class PromotionStatistics {
+        private int promotionLevel = 1;
+        private boolean isBeingPromoted = false;
     }
 
     private List<List<DifficultyAtTime>> getPromotionPeriodsJumpingGroups(TranslationMetadata metadata) {
