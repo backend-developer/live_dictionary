@@ -89,9 +89,11 @@ public class Reminder {
             DifficultyAtTime lastMessage = lastGroup.get(lastGroup.size() - 1);
             indexOfLastANalysedMessage = metadata.getRecentDifficulty().indexOf(lastMessage);
         }
-        for (int i = indexOfLastANalysedMessage + 1; i < metadata.getRecentDifficulty().size(); i++) {
-            if (i < metadata.getRecentDifficulty().size()) {
-                groups.add(Collections.singletonList(metadata.getRecentDifficulty().get(i)));
+        if (groups.size() == 2 && indexOfLastANalysedMessage != -1) {
+            for (int i = indexOfLastANalysedMessage + 1; i < metadata.getRecentDifficulty().size(); i++) {
+                if (i < metadata.getRecentDifficulty().size()) {
+                    groups.add(Collections.singletonList(metadata.getRecentDifficulty().get(i)));
+                }
             }
         }
         return groups;
@@ -105,20 +107,27 @@ public class Reminder {
                                                                             MsgCountAndNumOfHours countInPeriod1,
                                                                             MsgCountAndNumOfHours countInPeriod2) {
         List<List<DifficultyAtTime>> groups = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
-            groups.add(new ArrayList<DifficultyAtTime>());
-        }
+
 
         List<Integer> indiceForGroupZero = findIndexesForFirstNumOfMsgsSubmittedWithinNHours(messages, countInPeriod1);
         for (Integer index : indiceForGroupZero) {
+            if (groups.size() == 0) {
+                groups.add(new ArrayList<DifficultyAtTime>());
+            }
             groups.get(0).add(messages.get(index));
         }
 
+        if (groups.size() == 0) {
+            groups.add(new ArrayList<DifficultyAtTime>());
+        }
         if (!groups.get(0).isEmpty()) {
             List<DifficultyAtTime> sublist = messages.subList(indiceForGroupZero.get(indiceForGroupZero.size() - 1) + 1, messages.size());
             List<Integer> indiceForGroupOne = findIndexesForFirstNumOfMsgsSubmittedWithinNHours(sublist, countInPeriod2);
 
             for (Integer index : indiceForGroupOne) {
+                if (groups.size() == 1) {
+                    groups.add(new ArrayList<DifficultyAtTime>());
+                }
                 groups.get(1).add(sublist.get(index));
             }
         }
