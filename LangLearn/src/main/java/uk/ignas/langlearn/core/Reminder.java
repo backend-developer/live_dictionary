@@ -32,31 +32,6 @@ public class Reminder {
         return promotionDurationInHours;
     }
 
-    private static class PromotionDuration {
-        private Map<Integer, Integer> periodsByLevel = ImmutableMap.<Integer, Integer>builder()
-                .put(1, 4)
-                .put(2, 20)
-                .put(3, 1 * 24)
-                .put(4, 2 * 24)
-                .put(5, 4 * 24)
-                .put(6, 8 * 24)
-                .put(7, 16 * 24)
-                .put(8, 32 * 24)
-                //for higher than 8 - use value for 8
-                .build();
-
-        public Integer getHoursByLevel(int level) {
-            if (level > 7) {
-                return periodsByLevel.get(8);
-            } else if (level > 0) {
-                return periodsByLevel.get(level);
-            } else {
-                throw new RuntimeException("promotion period level should never be less than 1. got " + level);
-            }
-        }
-    }
-
-
     private List<List<DifficultyAtTime>> getPromotionPeriodsJumpingGroups(TranslationMetadata metadata) {
         List<DifficultyAtTime> successAfterLastFailure = getSuccessLogAfterLastFailure(metadata);
         List<List<DifficultyAtTime>> groups;
@@ -152,6 +127,30 @@ public class Reminder {
         public MsgCountAndNumOfHours(int msgCount, int numOfHours) {
             this.msgCount = msgCount;
             this.numOfHours = numOfHours;
+        }
+    }
+
+    private static class PromotionDuration {
+        private Map<Integer, Integer> periodsByLevel = ImmutableMap.<Integer, Integer>builder()
+                .put(1, 4)
+                .put(2, 20)
+                .put(3, 1 * 24)
+                .put(4, 2 * 24)
+                .put(5, 4 * 24)
+                .put(6, 8 * 24)
+                .put(7, 16 * 24)
+                .put(8, 32 * 24)
+                //for higher than 8 - use value for 8
+                .build();
+
+        public Integer getHoursByLevel(int level) {
+            if (level > 7) {
+                return periodsByLevel.get(8);
+            } else if (level > 0) {
+                return periodsByLevel.get(level);
+            } else {
+                throw new RuntimeException("promotion period level should never be less than 1. got " + level);
+            }
         }
     }
 }
