@@ -72,18 +72,12 @@ public class Reminder {
     private List<List<DifficultyAtTime>> getPromotionPeriodsJumpingGroups(TranslationMetadata metadata) {
         List<DifficultyAtTime> successAfterLastFailure = getSuccessLogAfterLastFailure(metadata);
         List<List<DifficultyAtTime>> groups;
-        boolean wasEverFailed = successAfterLastFailure.size() != metadata.getRecentDifficulty().size();
-        if (wasEverFailed) {
-            groups = findMsgGroupsFittingPeriodsInOrder(successAfterLastFailure,
-                    new MsgCountAndNumOfHours(3, 4),
-                    new MsgCountAndNumOfHours(2, 20)
-            );
-        } else {
-            groups = findMsgGroupsFittingPeriodsInOrder(successAfterLastFailure,
-                    new MsgCountAndNumOfHours(2, 4),
-                    new MsgCountAndNumOfHours(2, 20)
-            );
-        }
+        boolean wasJustFailed = successAfterLastFailure.size() != metadata.getRecentDifficulty().size();
+        int requiredMsgCountForLevelOne = wasJustFailed ? 3 : 2;
+        groups = findMsgGroupsFittingPeriodsInOrder(successAfterLastFailure,
+                new MsgCountAndNumOfHours(requiredMsgCountForLevelOne, 4),
+                new MsgCountAndNumOfHours(2, 20)
+        );
         if (groups.size() == 2) {
             List<DifficultyAtTime> lastGroup = groups.get(groups.size() - 1);
             DifficultyAtTime lastMessage = lastGroup.get(lastGroup.size() - 1);
