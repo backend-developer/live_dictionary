@@ -23,14 +23,14 @@ import java.util.concurrent.TimeUnit;
  *                                        :                :........................
  *                                        :                                        :
  *                                        :      promoted                          :      promoted
- *                                        :      to level 2                        :      to level 3
+ *                                        :      to level 1                        :      to level 2
  *                                        :      :                                 :      :
  *                                        :      :                                 :      :
  *                 -------------------------------------------------------------------------------------------
  *correct answers  :    * *          *  * *              *                  *      *
  *promotion periods:                 |___________|                          |_____________|
  *                //------------------------------------------------------------------------------------------
- *                //    : :           level 1.           :                   level 2.
+ *                //    : :           level 0.           :                   level 1.
  *                //    : :         3 answers required   :                 2 answers required
  *                //    : :       to collect during 4 h  :               to collect during 20 h
  *                //    : :     to promote               :             to promote
