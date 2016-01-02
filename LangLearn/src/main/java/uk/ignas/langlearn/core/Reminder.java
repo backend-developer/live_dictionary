@@ -23,30 +23,32 @@ public class Reminder {
     private boolean isBeingPromoted(List<List<DifficultyAtTime>> promotionPeriodJumpers) {
         PromotionStatistics s = new PromotionStatistics();
         if (s.promotionLevel == 1) {
+            int hours = 4;
             if (s.promotionLevel <= promotionPeriodJumpers.size()) {
                 List<DifficultyAtTime> messages = promotionPeriodJumpers.get(0);
-                boolean isLevelPromoted = !messages.isEmpty() && !isMessagesNewerThanNHours(messages.get(0), 4);
+                boolean isLevelPromoted = !messages.isEmpty() && !isMessagesNewerThanNHours(messages.get(0), hours);
                 if (isLevelPromoted) {
                     s.promotionLevel++;
                 }
-                s.isBeingPromoted = !messages.isEmpty() && isMessagesNewerThanNHours(messages.get(0), 4);
+                s.isBeingPromoted = !messages.isEmpty() && isMessagesNewerThanNHours(messages.get(0), hours);
             }
         }
         if (s.promotionLevel == 2) {
             if (s.promotionLevel <= promotionPeriodJumpers.size()) {
                 List<DifficultyAtTime> messages = promotionPeriodJumpers.get(1);
-                boolean isLevelPromoted = !messages.isEmpty() && !isMessagesNewerThanNHours(messages.get(0), 20);
+                int hours = 20;
+                boolean isLevelPromoted = !messages.isEmpty() && !isMessagesNewerThanNHours(messages.get(0), hours);
                 if (isLevelPromoted) {
                     s.promotionLevel++;
                 }
-                s.isBeingPromoted = !messages.isEmpty() && isMessagesNewerThanNHours(messages.get(0), 20);
+                s.isBeingPromoted = !messages.isEmpty() && isMessagesNewerThanNHours(messages.get(0), hours);
             }
         }
         for (int promotionLevell = 3; promotionLevell < 9; promotionLevell++) {
             if (s.promotionLevel == promotionLevell) {
+                int hours = 24 * (1 << (s.promotionLevel - 3));
                 if (s.promotionLevel <= promotionPeriodJumpers.size()) {
                     DifficultyAtTime message = Iterables.getOnlyElement(promotionPeriodJumpers.get(s.promotionLevel - 1), null);
-                    int hours = 24 * (1 << (s.promotionLevel - 3));
                     boolean isLevelPromoted = message != null && !isMessagesNewerThanNHours(message, hours);
                     if (isLevelPromoted) {
                         s.promotionLevel++;
@@ -58,9 +60,9 @@ public class Reminder {
         int oldPromotionLevel = 8;
         while (s.promotionLevel >= 9 && s.promotionLevel > oldPromotionLevel) {
             oldPromotionLevel = s.promotionLevel;
+            int hours = 24 * (1 << 5);
             if (s.promotionLevel <= promotionPeriodJumpers.size()) {
                 DifficultyAtTime message = Iterables.getOnlyElement(promotionPeriodJumpers.get(s.promotionLevel - 1), null);
-                int hours = 24 * (1 << 5);
                 boolean isLevelPromoted = message != null && !isMessagesNewerThanNHours(message, hours);
                 if (isLevelPromoted) {
                     s.promotionLevel++;
