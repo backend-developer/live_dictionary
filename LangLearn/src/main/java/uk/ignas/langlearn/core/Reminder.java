@@ -50,9 +50,21 @@ public class Reminder {
                 isBeingPromoted = message != null && isMessagesNewerThanNHours(message, hours);
             }
         }
-        if (promotionLevel == 9) {
-            DifficultyAtTime message = Iterables.getOnlyElement(promotionPeriodJumpers.get(8), null);
-            isBeingPromoted = message != null && isMessagesNewerThanNHours(message, 24*(1<<5));
+        boolean isPromotionLevelChanged = true;
+        while (promotionLevel >= 9 && isPromotionLevelChanged) {
+            if (promotionLevel <= promotionPeriodJumpers.size()) {
+                DifficultyAtTime message = Iterables.getOnlyElement(promotionPeriodJumpers.get(promotionLevel - 1), null);
+                int hours = 24 * (1 << 5);
+                boolean isLevelPromoted = message != null && !isMessagesNewerThanNHours(message, hours);
+                if (isLevelPromoted) {
+                    promotionLevel++;
+                } else {
+                    isPromotionLevelChanged = false;
+                }
+                isBeingPromoted = message != null && isMessagesNewerThanNHours(message, hours);
+            } else {
+                isPromotionLevelChanged = false;
+            }
         }
 
         return isBeingPromoted;
