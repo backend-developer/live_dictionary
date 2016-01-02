@@ -73,17 +73,7 @@ public class Reminder {
     }
 
     private List<List<DifficultyAtTime>> getPromotionPeriodsJumpingGroups(TranslationMetadata metadata) {
-        List<DifficultyAtTime> successAfterLastFailure = getSuccessLogAfterLastFailure(metadata);
-        boolean wasJustFailed = successAfterLastFailure.size() != metadata.getRecentDifficulty().size();
-        List<List<DifficultyAtTime>> groups;
-        int requiredMsgCountForLevel0 = wasJustFailed ? 3 : 2;
-        int level0PromotionPeriodDuration = 4;
-        int level1PromotionPeriodDuration = 20;
-        int requiredMsgCountForLevel1 = 2;
-        groups = findMsgGroupsFittingPeriodsInOrder(successAfterLastFailure,
-                new MsgCountAndNumOfHours(requiredMsgCountForLevel0, level0PromotionPeriodDuration),
-                new MsgCountAndNumOfHours(requiredMsgCountForLevel1, level1PromotionPeriodDuration)
-        );
+        List<List<DifficultyAtTime>> groups = getFirstTwoPromotionJumpingGroups(metadata);
         if (groups.size() == 2) {
             List<DifficultyAtTime> lastGroup = groups.get(groups.size() - 1);
             DifficultyAtTime lastMessage = lastGroup.get(lastGroup.size() - 1);
@@ -94,6 +84,21 @@ public class Reminder {
                 }
             }
         }
+        return groups;
+    }
+
+    private List<List<DifficultyAtTime>> getFirstTwoPromotionJumpingGroups(TranslationMetadata metadata) {
+        List<DifficultyAtTime> successAfterLastFailure = getSuccessLogAfterLastFailure(metadata);
+        List<List<DifficultyAtTime>> groups;
+        boolean wasJustFailed = successAfterLastFailure.size() != metadata.getRecentDifficulty().size();
+        int requiredMsgCountForLevel0 = wasJustFailed ? 3 : 2;
+        int level0PromotionPeriodDuration = 4;
+        int level1PromotionPeriodDuration = 20;
+        int requiredMsgCountForLevel1 = 2;
+        groups = findMsgGroupsFittingPeriodsInOrder(successAfterLastFailure,
+                new MsgCountAndNumOfHours(requiredMsgCountForLevel0, level0PromotionPeriodDuration),
+                new MsgCountAndNumOfHours(requiredMsgCountForLevel1, level1PromotionPeriodDuration)
+        );
         return groups;
     }
 
