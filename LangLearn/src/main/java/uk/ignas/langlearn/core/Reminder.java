@@ -19,14 +19,13 @@ public class Reminder {
     }
 
     private boolean isBeingPromoted(List<List<DifficultyAtTime>> promotionPeriodsJumpers) {
-        PromotionStatistics s = new PromotionStatistics();
-        int oldPromotionLevel = 0;
-        while (s.promotionLevel >= 1 && s.promotionLevel > oldPromotionLevel) {
-            oldPromotionLevel = s.promotionLevel;
-            accumulateStatistics(promotionPeriodsJumpers, s);
+        PromotionStatistics stats = new PromotionStatistics();
+        int oldPromotionLevel = stats.promotionLevel - 1;
+        while (stats.promotionLevel > oldPromotionLevel) {
+            oldPromotionLevel = stats.promotionLevel;
+            accumulateStatistics(promotionPeriodsJumpers, stats);
         }
-
-        return s.isBeingPromoted;
+        return stats.isBeingPromoted;
     }
 
     private static class PromotionDuration {
