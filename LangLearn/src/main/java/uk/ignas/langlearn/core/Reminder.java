@@ -1,13 +1,13 @@
 package uk.ignas.langlearn.core;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import com.google.common.collect.ImmutableMap;
+
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class Reminder {
     private final Clock clock;
+    private final PromotionDuration promotionDuration = new PromotionDuration();
 
     public Reminder(Clock clock) {
         this.clock = clock;
@@ -21,31 +21,55 @@ public class Reminder {
     private boolean isBeingPromoted(List<List<DifficultyAtTime>> promotionPeriodsJumpers) {
         PromotionStatistics s = new PromotionStatistics();
         if (s.promotionLevel == 1) {
-            int promotionPeriodDuration = 4;
-            accumulateStatistics(promotionPeriodsJumpers, s, promotionPeriodDuration);
+            int promotionPeriodDuration = promotionDuration.getHoursByLevel(s.promotionLevel);
+            accumulateStatistics(promotionPeriodsJumpers, s);
         }
         if (s.promotionLevel == 2) {
-            int promotionPeriodDuration = 20;
-            accumulateStatistics(promotionPeriodsJumpers, s, promotionPeriodDuration);
+            int promotionPeriodDuration = promotionDuration.getHoursByLevel(s.promotionLevel);
+            accumulateStatistics(promotionPeriodsJumpers, s);
         }
         for (int promotionLevell = 3; promotionLevell < 9; promotionLevell++) {
             if (s.promotionLevel == promotionLevell) {
-                int promotionPeriodDuration = 24 * (1 << (s.promotionLevel - 3));
-                accumulateStatistics(promotionPeriodsJumpers, s, promotionPeriodDuration);
+                int promotionPeriodDuration = promotionDuration.getHoursByLevel(s.promotionLevel);
+                accumulateStatistics(promotionPeriodsJumpers, s);
             }
         }
         int oldPromotionLevel = 8;
         while (s.promotionLevel >= 9 && s.promotionLevel > oldPromotionLevel) {
             oldPromotionLevel = s.promotionLevel;
-            int promotionPeriodDuration = 24 * (1 << 5);
-            accumulateStatistics(promotionPeriodsJumpers, s, promotionPeriodDuration);
+            int promotionPeriodDuration = promotionDuration.getHoursByLevel(s.promotionLevel);
+            accumulateStatistics(promotionPeriodsJumpers, s);
         }
 
         return s.isBeingPromoted;
     }
 
-    private void accumulateStatistics(List<List<DifficultyAtTime>> promotionPeriodJumpers, PromotionStatistics s, int promotionDurationInHours) {
+    private static class PromotionDuration {
+        private Map<Integer, Integer> periodsByLevel = ImmutableMap.<Integer, Integer>builder()
+                .put(1, 4)
+                .put(2, 20)
+                .put(3, 1*24)
+                .put(4, 2*24)
+                .put(5, 4*24)
+                .put(6, 8*24)
+                .put(7, 16*24)
+                .put(8, 32*24)
+                //for higher than 8 - use value for 8
+                .build();
+        public Integer getHoursByLevel(int level) {
+            if (level > 7) {
+                return periodsByLevel.get(8);
+            } else if (level > 0) {
+                return periodsByLevel.get(level);
+            } else {
+                throw new RuntimeException("promotion period level should never be less than 1. got " + level);
+            }
+        }
+    }
+
+    private void accumulateStatistics(List<List<DifficultyAtTime>> promotionPeriodJumpers, PromotionStatistics s) {
         if (s.promotionLevel <= promotionPeriodJumpers.size()) {
+            int promotionDurationInHours = promotionDuration.getHoursByLevel(s.promotionLevel);
             List<DifficultyAtTime> messages = promotionPeriodJumpers.get(s.promotionLevel - 1);
             boolean isLevelPromoted = !messages.isEmpty() && !isMessagesNewerThanNHours(messages.get(0), promotionDurationInHours);
             if (isLevelPromoted) {
