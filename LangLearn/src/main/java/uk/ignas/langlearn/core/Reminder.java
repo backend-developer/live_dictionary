@@ -1,6 +1,7 @@
 package uk.ignas.langlearn.core;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -23,9 +24,19 @@ public class Reminder {
         int oldPromotionLevel = stats.promotionLevel - 1;
         while (stats.promotionLevel > oldPromotionLevel) {
             oldPromotionLevel = stats.promotionLevel;
-            accumulateStatistics(promotionPeriodsJumpers, stats);
+            List<DifficultyAtTime> promotionPeriodsJumper = Iterables.get(promotionPeriodsJumpers, stats.promotionLevel - 1, Collections.<DifficultyAtTime>emptyList());
+            collectStatistics(stats, promotionPeriodsJumper);
         }
         return stats.isBeingPromoted;
+    }
+
+    private void collectStatistics(PromotionStatistics stats, List<DifficultyAtTime> messages) {
+        int promotionDurationInHours = promotionDuration.getHoursByLevel(stats.promotionLevel);
+        boolean isLevelPromoted = !messages.isEmpty() && !isMessagesNewerThanNHours(messages.get(0), promotionDurationInHours);
+        if (isLevelPromoted) {
+            stats.promotionLevel++;
+        }
+        stats.isBeingPromoted = !messages.isEmpty() && isMessagesNewerThanNHours(messages.get(0), promotionDurationInHours);
     }
 
     private static class PromotionDuration {
@@ -48,18 +59,6 @@ public class Reminder {
             } else {
                 throw new RuntimeException("promotion period level should never be less than 1. got " + level);
             }
-        }
-    }
-
-    private void accumulateStatistics(List<List<DifficultyAtTime>> promotionPeriodJumpers, PromotionStatistics s) {
-        if (s.promotionLevel <= promotionPeriodJumpers.size()) {
-            int promotionDurationInHours = promotionDuration.getHoursByLevel(s.promotionLevel);
-            List<DifficultyAtTime> messages = promotionPeriodJumpers.get(s.promotionLevel - 1);
-            boolean isLevelPromoted = !messages.isEmpty() && !isMessagesNewerThanNHours(messages.get(0), promotionDurationInHours);
-            if (isLevelPromoted) {
-                s.promotionLevel++;
-            }
-            s.isBeingPromoted = !messages.isEmpty() && isMessagesNewerThanNHours(messages.get(0), promotionDurationInHours);
         }
     }
 
