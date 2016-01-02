@@ -10,7 +10,7 @@ import static com.google.common.collect.Iterables.getLast;
 /**
  *
  *In order not to waste user's time each translation should be reminded less often, as user learns it.
- *Hence, there are levels introduces, the higher the level, the less often the translation will be asked.
+ *Hence, there is concept of levels introduced. The higher the level, the less often the translation will be asked.
  *
  *Translation is needed to be answered correctly certain amount of times
  *during fixed length period (a.k.a. promotion period) to be promoted to the next level.
@@ -59,9 +59,13 @@ public class Reminder {
     private boolean restrictedByPromotionPeriod(TranslationMetadata metadata) {
         List<List<DifficultyAtTime>> promotionPeriodJumpers = getPromotionPeriodsJumpingGroups(metadata);
         int promotionDurationInHours = findCurrentPromotionDurationInHours(promotionPeriodJumpers);
-        List<DifficultyAtTime> promotionPeriodsJumper = getLast(promotionPeriodJumpers);
-        boolean isRestricted = !promotionPeriodsJumper.isEmpty() && isMessagesNewerThanNHours(promotionPeriodsJumper.get(0), promotionDurationInHours);
-        return isRestricted;
+        if (!promotionPeriodJumpers.isEmpty()) {
+            List<DifficultyAtTime> promotionPeriodsJumper = getLast(promotionPeriodJumpers);
+            boolean isRestricted = !promotionPeriodsJumper.isEmpty() && isMessagesNewerThanNHours(promotionPeriodsJumper.get(0), promotionDurationInHours);
+            return  isRestricted;
+        } else {
+            return false;
+        }
     }
 
     private int findCurrentPromotionDurationInHours(List<List<DifficultyAtTime>> promotionPeriodsJumpers) {
@@ -112,7 +116,6 @@ public class Reminder {
                                                                             MsgCountAndNumOfHours countInPeriod2) {
         List<List<DifficultyAtTime>> groups = new ArrayList<>();
 
-
         List<Integer> indiceForGroupZero = findIndexesForFirstNumOfMsgsSubmittedWithinNHours(messages, countInPeriod1);
         for (Integer index : indiceForGroupZero) {
             if (groups.size() == 0) {
@@ -121,10 +124,7 @@ public class Reminder {
             groups.get(0).add(messages.get(index));
         }
 
-        if (groups.size() == 0) {
-            groups.add(new ArrayList<DifficultyAtTime>());
-        }
-        if (!groups.get(0).isEmpty()) {
+        if (groups.size() != 0 && !groups.get(0).isEmpty()) {
             List<DifficultyAtTime> sublist = messages.subList(indiceForGroupZero.get(indiceForGroupZero.size() - 1) + 1, messages.size());
             List<Integer> indiceForGroupOne = findIndexesForFirstNumOfMsgsSubmittedWithinNHours(sublist, countInPeriod2);
 
