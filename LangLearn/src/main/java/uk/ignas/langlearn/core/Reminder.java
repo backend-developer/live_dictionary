@@ -94,9 +94,6 @@ public class Reminder {
                 groups.add(Collections.singletonList(metadata.getRecentDifficulty().get(i)));
             }
         }
-        for (int i = groups.size(); i < 9; i++) {
-            groups.add(new ArrayList<DifficultyAtTime>());
-        }
         return groups;
     }
 
