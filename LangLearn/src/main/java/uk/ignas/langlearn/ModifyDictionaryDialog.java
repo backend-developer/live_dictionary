@@ -12,7 +12,7 @@ import uk.ignas.langlearn.core.ForeignWord;
 import uk.ignas.langlearn.core.NativeWord;
 import uk.ignas.langlearn.core.Translation;
 
-class OnModifyDictionaryClickListener implements View.OnClickListener {
+class ModifyDictionaryDialog {
 
     public interface ModifyDictionaryListener {
         void createTranslation(Translation translation);
@@ -21,38 +21,32 @@ class OnModifyDictionaryClickListener implements View.OnClickListener {
 
     private String errorMessage;
     private Activity context;
-    private Supplier<Translation> currentTranslation;
+    private Translation currentTranslation;
     private DictionaryActivity dictionaryActivity;
 
     public enum DictionaryActivity {INSERTING_TRANSLATION, UPDATING_TRANSLATION}
 
-    public static OnModifyDictionaryClickListener onInsertingTranslation(Activity context) {
-        return new OnModifyDictionaryClickListener(context, DictionaryActivity.INSERTING_TRANSLATION);
+    public static ModifyDictionaryDialog onInsertingTranslation(Activity context) {
+        return new ModifyDictionaryDialog(context, DictionaryActivity.INSERTING_TRANSLATION);
     }
 
-    public static OnModifyDictionaryClickListener onUpdatingTranslation(Activity context, Supplier<Translation> currentTranslation) {
-        return new OnModifyDictionaryClickListener(context, currentTranslation, DictionaryActivity.UPDATING_TRANSLATION);
+    public static ModifyDictionaryDialog onUpdatingTranslation(Activity context, Translation currentTranslation) {
+        return new ModifyDictionaryDialog(context, currentTranslation, DictionaryActivity.UPDATING_TRANSLATION);
     }
 
-    private OnModifyDictionaryClickListener(Activity context, DictionaryActivity dictionaryActivity) {
-        this(context, new Supplier<Translation>() {
-            @Override
-            public Translation get() {
-                return new Translation(
+    private ModifyDictionaryDialog(Activity context, DictionaryActivity dictionaryActivity) {
+        this(context, new Translation(
                         new ForeignWord(""),
-                        new NativeWord(""));
-            }
-        }, dictionaryActivity);
+                        new NativeWord("")), dictionaryActivity);
     }
 
-    private OnModifyDictionaryClickListener(Activity context, Supplier<Translation> currentTranslation, DictionaryActivity dictionaryActivity) {
+    private ModifyDictionaryDialog(Activity context, Translation currentTranslation, DictionaryActivity dictionaryActivity) {
         this.context = context;
         this.currentTranslation = currentTranslation;
         this.dictionaryActivity = dictionaryActivity;
     }
 
-    @Override
-    public void onClick(View arg0) {
+    public void show() {
 
         AlertDialog.Builder b = new AlertDialog.Builder(context);
         LayoutInflater i = context.getLayoutInflater();
@@ -66,8 +60,8 @@ class OnModifyDictionaryClickListener implements View.OnClickListener {
 
         final EditText foreignWordEditText = (EditText) inflatedDialogView.findViewById(R.id.foreign_language_word_edittext);
         final EditText nativeWordEditText = (EditText) inflatedDialogView.findViewById(R.id.native_language_word_edittext);
-        foreignWordEditText.setText(currentTranslation.get().getForeignWord().get());
-        nativeWordEditText.setText(currentTranslation.get().getNativeWord().get());
+        foreignWordEditText.setText(currentTranslation.getForeignWord().get());
+        nativeWordEditText.setText(currentTranslation.getNativeWord().get());
         int okButtonResorce = dictionaryActivity == DictionaryActivity.INSERTING_TRANSLATION ? R.string.add_translation : R.string.update_translation;
         final AlertDialog dialog = b
                 .setView(inflatedDialogView)
@@ -85,7 +79,7 @@ class OnModifyDictionaryClickListener implements View.OnClickListener {
                                 break;
                             case UPDATING_TRANSLATION:
                                 ((ModifyDictionaryListener)context).updateTranslation(new Translation(
-                                        currentTranslation.get().getId(),
+                                        currentTranslation.getId(),
                                         new ForeignWord(foreignWord),
                                         new NativeWord(nativeWord)));
                                 break;

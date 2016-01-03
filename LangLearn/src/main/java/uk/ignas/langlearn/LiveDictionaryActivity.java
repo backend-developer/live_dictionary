@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.google.common.base.Supplier;
 import uk.ignas.langlearn.core.*;
 
-public class LiveDictionaryActivity extends Activity implements OnModifyDictionaryClickListener.ModifyDictionaryListener, Supplier<Translation> {
+public class LiveDictionaryActivity extends Activity implements ModifyDictionaryDialog.ModifyDictionaryListener, Supplier<Translation> {
     private static final String TAG = LiveDictionaryActivity.class.getName();
     private static final Translation EMPTY_TRANSLATION = new Translation(new ForeignWord(""), new NativeWord(""));
     private static final int PICK_IMPORT_FILE_RESULT_CODE = 1;
@@ -139,12 +139,14 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_translation_button:
-                View.OnClickListener onAddTranslationListener = OnModifyDictionaryClickListener.onInsertingTranslation(this);
-                onAddTranslationListener.onClick(null);
+                ModifyDictionaryDialog
+                        .onInsertingTranslation(this)
+                        .show();
                 return true;
             case R.id.update_translation_button:
-                View.OnClickListener onUpdateTranslationListener = OnModifyDictionaryClickListener.onUpdatingTranslation(this, this);
-                onUpdateTranslationListener.onClick(null);
+                ModifyDictionaryDialog
+                        .onUpdatingTranslation(this, currentTranslation)
+                        .show();
                 return true;
             case R.id.delete_translation_button:
                 new AlertDialog.Builder(LiveDictionaryActivity.this)
