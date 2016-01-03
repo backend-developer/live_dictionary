@@ -28,7 +28,6 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
     private Button showTranslationButton;
     private Button markTranslationAsEasyButton;
     private Button markTranslationAsDifficultButton;
-    private Button exportDataButton;
     private TextView correctAnswerView;
     private TextView questionLabel;
 
@@ -48,11 +47,6 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
         showTranslationButton = (Button) findViewById(R.id.show_translation_button);
         markTranslationAsEasyButton = (Button) findViewById(R.id.submit_translation_as_easy_button);
         markTranslationAsDifficultButton = (Button) findViewById(R.id.submit_translation_as_difficult_button);
-
-
-        exportDataButton = (Button) findViewById(R.id.export_data_button);
-
-
     }
 
     @Override
@@ -90,18 +84,6 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
             public void onClick(View view) {
                 publishNextTranslation();
                 dictionary.mark(currentTranslation, Difficulty.DIFFICULT);
-            }
-        });
-
-
-
-
-        exportDataButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("file/*");
-                startActivityForResult(intent, PICK_EXPORTFILE_RESULT_CODE);
             }
         });
     }
@@ -183,7 +165,6 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Take appropriate action for each action item click
         switch (item.getItemId()) {
             case R.id.add_translation_button:
                 View.OnClickListener onAddTranslationListener = OnModifyDictionaryClickListener.onInsertingTranslation(this);
@@ -212,9 +193,14 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
                         .show();
                 return true;
             case R.id.import_data_button:
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("file/*");
-                startActivityForResult(intent, PICK_IMPORTFILE_RESULT_CODE);
+                Intent intentToImport = new Intent(Intent.ACTION_GET_CONTENT);
+                intentToImport.setType("file/*");
+                startActivityForResult(intentToImport, PICK_IMPORTFILE_RESULT_CODE);
+                return true;
+            case R.id.export_data_button:
+                Intent intentToExport = new Intent(Intent.ACTION_GET_CONTENT);
+                intentToExport.setType("file/*");
+                startActivityForResult(intentToExport, PICK_EXPORTFILE_RESULT_CODE);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

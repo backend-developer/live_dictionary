@@ -12,4 +12,7 @@
     <item android:id="@+id/import_data_button"
           android:title="@string/import_data"
           android:showAsAction="never" />
+    <item android:id="@+id/export_data_button"
+          android:title="@string/export_data"
+          android:showAsAction="never" />
 </menu>
