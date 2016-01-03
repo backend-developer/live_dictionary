@@ -427,22 +427,29 @@ el mango - mango
 la nectarina - nectarine
 el melocotón - peach
 el albaricoque - apricot
-juntar / separar - to join / to separat
-meter / sacar - to put in / to take out
-alejarse de / acercarse a - to move away / to come closer
+separar - to devide
+juntar - to bring together
+sacar - to take out
+meter - to put in
+acercarse a - to come closer
+alejarse de - to move away
 Tarde - late
-apresurarse / tardar en - to hurry / to be late
-empezar / terminar - to start / to end
-admitir / negar - to admit / to deny
-divertirse / aburrirse - to have fun / to get bored
+tardar en - to be late
+apresurarse - to hurry
+negar - to deny
+admitir - to admin
+aburrirse - to get bored
+divertirse - to have fun
 Caer - fall
 Dejar - let
-dejar caer / recoger - to drop / to pick up
-subir / bajar - to go up / to come down
-sumar / restar - to add / to subtract
+recoger - to pick up
+dejar caer - to drop
+bajar - to come down
+subir - to go up
+restar - to subtract
+sumar - to add
 El verbo - verb
 El antónimo - antonym
-Antónimos, Verbos - Antonyms, Verbs
 la escarcha - frost
 la nieve - snow
 el hielo - ice
@@ -2594,7 +2601,7 @@ la introducción - an introduction
 presentarse - to introduce oneself
 el aficionado - an amateur
 la aficionada - an amateur
-el proposito de año nuevo - new year resolution
+el proposito de año nuevo - a new year resolution
 gozar - to enjoy
 lastimar - to hurt
 no quiero lastimarte - i don't want to hurt you
