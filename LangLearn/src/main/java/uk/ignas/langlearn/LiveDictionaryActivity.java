@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.google.common.base.Supplier;
 import uk.ignas.langlearn.core.*;
 
-public class LiveDictionaryActivity extends Activity implements ModifyDictionaryDialog.ModifyDictionaryListener, Supplier<Translation> {
+public class LiveDictionaryActivity extends Activity implements ModifyDictionaryDialog.ModifyDictionaryListener {
     private static final String TAG = LiveDictionaryActivity.class.getName();
     private static final Translation EMPTY_TRANSLATION = new Translation(new ForeignWord(""), new NativeWord(""));
     private static final int PICK_IMPORT_FILE_RESULT_CODE = 1;
@@ -187,10 +187,5 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
                 importExportActivity.handleExportResult(resultCode, data);
                 break;
         }
-    }
-
-    @Override
-    public Translation get() {
-        return currentTranslation;
     }
 }
