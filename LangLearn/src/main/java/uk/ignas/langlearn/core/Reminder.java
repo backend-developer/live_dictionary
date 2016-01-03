@@ -115,27 +115,30 @@ public class Reminder {
     }
 
     private List<List<DifficultyAtTime>> findMsgGroupsFittingPeriodsInOrder(List<DifficultyAtTime> messages,
-                                                                            MsgCountAndNumOfHours countInPeriod1,
-                                                                            MsgCountAndNumOfHours countInPeriod2) {
+                                                                            MsgCountAndNumOfHours countInPeriod0,
+                                                                            MsgCountAndNumOfHours countInPeriod1) {
         List<List<DifficultyAtTime>> groups = new ArrayList<>();
 
-        List<Integer> indiceForGroupZero = findIndexesForFirstNumOfMsgsSubmittedWithinNHours(messages, countInPeriod1);
-        for (Integer index : indiceForGroupZero) {
-            if (groups.size() == 0) {
-                groups.add(new ArrayList<DifficultyAtTime>());
+        List<Integer> indiceForGroupZero = findIndexesForFirstNumOfMsgsSubmittedWithinNHours(messages, countInPeriod0);
+        if (!indiceForGroupZero.isEmpty()) {
+            ArrayList<DifficultyAtTime> group = new ArrayList<>();
+            for (Integer index : indiceForGroupZero) {
+                group.add(messages.get(index));
             }
-            groups.get(0).add(messages.get(index));
+            groups.add(group);
         }
 
-        if (groups.size() != 0 && !groups.get(0).isEmpty()) {
-            List<DifficultyAtTime> sublist = messages.subList(indiceForGroupZero.get(indiceForGroupZero.size() - 1) + 1, messages.size());
-            List<Integer> indiceForGroupOne = findIndexesForFirstNumOfMsgsSubmittedWithinNHours(sublist, countInPeriod2);
+        if (!groups.isEmpty()) {
+            int indexJustAfterGroupZero = getLast(indiceForGroupZero) + 1;
+            List<DifficultyAtTime> sublistToSearchGroupOneIn = messages.subList(indexJustAfterGroupZero, messages.size());
+            List<Integer> indiceForGroupOne = findIndexesForFirstNumOfMsgsSubmittedWithinNHours(sublistToSearchGroupOneIn, countInPeriod1);
 
-            for (Integer index : indiceForGroupOne) {
-                if (groups.size() == 1) {
-                    groups.add(new ArrayList<DifficultyAtTime>());
+            if (!indiceForGroupOne.isEmpty()) {
+                ArrayList<DifficultyAtTime> group = new ArrayList<>();
+                for (Integer index : indiceForGroupOne) {
+                    group.add(sublistToSearchGroupOneIn.get(index));
                 }
-                groups.get(1).add(sublist.get(index));
+                groups.add(group);
             }
         }
         return groups;
