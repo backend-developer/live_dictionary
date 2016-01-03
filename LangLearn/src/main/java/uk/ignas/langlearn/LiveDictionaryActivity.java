@@ -39,17 +39,16 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_questionnaire);
 
+        injectDependenciesAndSetupThem();
+    }
+
+    private void injectDependenciesAndSetupThem() {
         correctAnswerView = (TextView) findViewById(R.id.correct_answer);
         questionLabel = (TextView) findViewById(R.id.question_label);
 
         showTranslationButton = (Button) findViewById(R.id.show_translation_button);
         markTranslationAsEasyButton = (Button) findViewById(R.id.submit_translation_as_easy_button);
         markTranslationAsDifficultButton = (Button) findViewById(R.id.submit_translation_as_difficult_button);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
 
         guiError = new GuiError(this);
         try {
