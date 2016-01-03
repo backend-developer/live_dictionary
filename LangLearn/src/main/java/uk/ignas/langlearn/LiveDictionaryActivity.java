@@ -28,7 +28,6 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
     private Button showTranslationButton;
     private Button markTranslationAsEasyButton;
     private Button markTranslationAsDifficultButton;
-    private Button importDataButton;
     private Button exportDataButton;
     private TextView correctAnswerView;
     private TextView questionLabel;
@@ -50,7 +49,7 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
         markTranslationAsEasyButton = (Button) findViewById(R.id.submit_translation_as_easy_button);
         markTranslationAsDifficultButton = (Button) findViewById(R.id.submit_translation_as_difficult_button);
 
-        importDataButton = (Button) findViewById(R.id.import_data_button);
+
         exportDataButton = (Button) findViewById(R.id.export_data_button);
 
 
@@ -95,15 +94,7 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
         });
 
 
-        importDataButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("file/*");
-                startActivityForResult(intent, PICK_IMPORTFILE_RESULT_CODE);
 
-            }
-        });
 
         exportDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
