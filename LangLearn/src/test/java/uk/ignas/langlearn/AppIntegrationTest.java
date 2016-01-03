@@ -45,13 +45,14 @@ public class AppIntegrationTest {
     }
 
     @Test
-    public void exportFileShouldNotContainBlankLines() throws IOException, URISyntaxException {
-
+    public void exportFileShouldContainSameNumberOfLines() throws IOException, URISyntaxException {
         DataImporterExporter dataImporterExporter = createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, new TranslationDaoStub());
+
         dataImporterExporter.export(EXPORT_FILE_NAME);
 
-        validateNumberOfEntriesInFile(EXPORT_FILE_NAME, 2603);
-        validateNumberOfEntriesInFile(IMPORT_FILE_NAME, 2603);
+        int numberOfLines = 2610;
+        validateNumberOfEntriesInFile(EXPORT_FILE_NAME, numberOfLines);
+        validateNumberOfEntriesInFile(IMPORT_FILE_NAME, numberOfLines);
         validateImportedAndExportedFilesMatch(IMPORT_FILE_NAME, EXPORT_FILE_NAME);
     }
 
