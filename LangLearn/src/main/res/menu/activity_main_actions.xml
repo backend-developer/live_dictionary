@@ -6,4 +6,7 @@
     <item android:id="@+id/update_translation_button"
           android:title="@string/update_translation"
           android:showAsAction="never" />
+    <item android:id="@+id/delete_translation_button"
+          android:title="@string/delete_translation"
+          android:showAsAction="never" />
 </menu>

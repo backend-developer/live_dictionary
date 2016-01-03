@@ -243,6 +243,24 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
                 View.OnClickListener onUpdateTranslationListener = OnModifyDictionaryClickListener.onUpdatingTranslation(this, this);
                 onUpdateTranslationListener.onClick(null);
                 return true;
+            case R.id.delete_translation_button:
+                new AlertDialog.Builder(LiveDictionaryActivity.this)
+                        .setMessage("Delete this translation?")
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dictionary.delete(currentTranslation);
+                                publishNextTranslation();
+                            }
+                        })
+                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
