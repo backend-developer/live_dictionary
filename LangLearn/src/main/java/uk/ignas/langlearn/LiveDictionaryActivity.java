@@ -18,8 +18,8 @@ import uk.ignas.langlearn.core.*;
 public class LiveDictionaryActivity extends Activity implements OnModifyDictionaryClickListener.ModifyDictionaryListener, Supplier<Translation> {
     private static final String TAG = LiveDictionaryActivity.class.getName();
     private static final Translation EMPTY_TRANSLATION = new Translation(new ForeignWord(""), new NativeWord(""));
-    private static final int PICK_IMPORTFILE_RESULT_CODE = 1;
-    private static final int PICK_EXPORTFILE_RESULT_CODE = 2;
+    private static final int PICK_IMPORT_FILE_RESULT_CODE = 1;
+    private static final int PICK_EXPORT_FILE_RESULT_CODE = 2;
 
     private Button showTranslationButton;
     private Button markTranslationAsEasyButton;
@@ -32,7 +32,7 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
     private TranslationDaoSqlite dao;
     private GuiError guiError;
 
-    private ImportExportIntentionHandler importExportIntentionHandler;
+    private ImportExportActivity importExportActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +55,7 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
         try {
             dao = new TranslationDaoSqlite(LiveDictionaryActivity.this);
             dictionary = new Dictionary(dao);
-            importExportIntentionHandler = new ImportExportIntentionHandler(new DataImporterExporter(dao), dictionary, guiError);
+            importExportActivity = new ImportExportActivity(new DataImporterExporter(dao), dictionary, guiError);
 
             publishNextTranslation();
             showTranslationButton.setOnClickListener(new View.OnClickListener() {
@@ -84,8 +84,6 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
             Log.e(TAG, "critical error ", e);
             guiError.showErrorDialogAndExitActivity(e.getMessage());
         }
-
-
     }
 
     private void showTranslation() {
@@ -114,8 +112,6 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
         askUserToTranslate();
     }
 
-
-
     private void askUserToTranslate() {
         questionLabel.setText(currentTranslation.getNativeWord().get());
         correctAnswerView.setText("");
@@ -125,7 +121,6 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.activity_main_actions, menu);
-
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -171,105 +166,25 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
                         .show();
                 return true;
             case R.id.import_data_button:
-                importExportIntentionHandler.startActivityForImport(this);
+                importExportActivity.startActivity(this, PICK_IMPORT_FILE_RESULT_CODE);
                 return true;
             case R.id.export_data_button:
-                importExportIntentionHandler.startActivityForExport(this);
+                importExportActivity.startActivity(this, PICK_EXPORT_FILE_RESULT_CODE);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    public static class GuiError {
-        private Activity activity;
-
-        public GuiError(Activity activity) {
-            this.activity = activity;
-        }
-
-        private void showErrorDialogAndExitActivity(String message) {
-            showErrorDialog(message, true);
-        }
-
-        private void showErrorDialogAndContinue(String message) {
-            showErrorDialog(message, false);
-        }
-
-        private void showErrorDialog(String message, final boolean shouldExitActivity) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-            builder.setTitle("Live Dictionary")
-                    .setMessage("Error occured:" + message)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            if (shouldExitActivity) {
-                                activity.finish();
-                            }
-                        }
-                    });
-            AlertDialog dialog = builder.create();
-            dialog.show();
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch(requestCode){
-            case PICK_IMPORTFILE_RESULT_CODE:
-                importExportIntentionHandler.handleImportResult(this, resultCode, data);
+            case PICK_IMPORT_FILE_RESULT_CODE:
+                importExportActivity.handleImportResult(resultCode, data);
                 break;
-            case PICK_EXPORTFILE_RESULT_CODE:
-                importExportIntentionHandler.handleExportResult(this, resultCode, data);
+            case PICK_EXPORT_FILE_RESULT_CODE:
+                importExportActivity.handleExportResult(resultCode, data);
                 break;
-        }
-    }
-
-    public static class ImportExportIntentionHandler {
-        private DataImporterExporter dataImporterExporter;
-        private Dictionary dictionary;
-        private GuiError guiError;
-
-        public ImportExportIntentionHandler(DataImporterExporter dataImporterExporter, Dictionary dictionary, GuiError guiError) {
-            this.dataImporterExporter = dataImporterExporter;
-            this.dictionary = dictionary;
-            this.guiError = guiError;
-        }
-
-        public void startActivityForImport(Activity activity) {
-            Intent intentToImport = new Intent(Intent.ACTION_GET_CONTENT);
-            intentToImport.setType("file/*");
-            activity.startActivityForResult(intentToImport, PICK_IMPORTFILE_RESULT_CODE);
-        }
-
-        private void startActivityForExport(Activity activity) {
-            Intent intentToExport = new Intent(Intent.ACTION_GET_CONTENT);
-            intentToExport.setType("file/*");
-            activity.startActivityForResult(intentToExport, PICK_EXPORTFILE_RESULT_CODE);
-        }
-
-        private void handleImportResult(LiveDictionaryActivity activity, int resultCode, Intent data) {
-            if(resultCode==RESULT_OK){
-                String filePath = data.getData().getPath();
-                try {
-                    dataImporterExporter.importFromFile(filePath);
-                } catch (RuntimeException e) {
-                    guiError.showErrorDialogAndContinue(e.getMessage());
-                }
-                dictionary.reloadData();
-            }
-        }
-
-        private void handleExportResult(LiveDictionaryActivity activity, int resultCode, Intent data) {
-            if(resultCode==RESULT_OK){
-                String filePath = data.getData().getPath();
-                try {
-                    dataImporterExporter.export(filePath);
-                } catch (RuntimeException e) {
-                    guiError.showErrorDialogAndContinue(e.getMessage());
-                }
-                dictionary.reloadData();
-            }
         }
     }
 
