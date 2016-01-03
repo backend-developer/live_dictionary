@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -40,6 +42,21 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_questionnaire);
+
+        correctAnswerView = (TextView) findViewById(R.id.correct_answer);
+        questionLabel = (TextView) findViewById(R.id.question_label);
+
+        showTranslationButton = (Button) findViewById(R.id.show_translation_button);
+        markTranslationAsEasyButton = (Button) findViewById(R.id.submit_translation_as_easy_button);
+        markTranslationAsDifficultButton = (Button) findViewById(R.id.submit_translation_as_difficult_button);
+        addTranslationButton = (Button) findViewById(R.id.add_translation_button);
+        updateTranslationButton = (Button) findViewById(R.id.update_translation_button);
+        deleteTranslationButton = (Button) findViewById(R.id.delete_translation_button);
+        importDataButton = (Button) findViewById(R.id.import_data_button);
+        exportDataButton = (Button) findViewById(R.id.export_data_button);
+
+        importDataFileEditText = (EditText) findViewById(R.id.import_data_path_textedit);
+        exportDataFileEditText = (EditText) findViewById(R.id.export_data_path_textedit);
     }
 
     @Override
@@ -56,21 +73,6 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
             Log.e(TAG, "critical error ", e);
             showErrorDialogAndExitActivity(e.getMessage());
         }
-
-        correctAnswerView = (TextView) findViewById(R.id.correct_answer);
-        questionLabel = (TextView) findViewById(R.id.question_label);
-
-        showTranslationButton = (Button) findViewById(R.id.show_translation_button);
-        markTranslationAsEasyButton = (Button) findViewById(R.id.submit_translation_as_easy_button);
-        markTranslationAsDifficultButton = (Button) findViewById(R.id.submit_translation_as_difficult_button);
-        addTranslationButton = (Button) findViewById(R.id.add_translation_button);
-        updateTranslationButton = (Button) findViewById(R.id.update_translation_button);
-        deleteTranslationButton = (Button) findViewById(R.id.delete_translation_button);
-        importDataButton = (Button) findViewById(R.id.import_data_button);
-        exportDataButton = (Button) findViewById(R.id.export_data_button);
-
-        importDataFileEditText = (EditText) findViewById(R.id.import_data_path_textedit);
-        exportDataFileEditText = (EditText) findViewById(R.id.export_data_path_textedit);
 
         final File defaultImportFile = new File(externalStoragePublicDirectory, "SpanishEnglishTranslations.txt");
         File defaultExportFile = new File(externalStoragePublicDirectory, "ExportedByUserRequest.txt");
@@ -206,6 +208,14 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
     private void askUserToTranslate() {
         questionLabel.setText(currentTranslation.getNativeWord().get());
         correctAnswerView.setText("");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.activity_main_actions, menu);
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
