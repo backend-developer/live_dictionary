@@ -141,7 +141,7 @@ public class Reminder {
     }
 
     private ArrayList<DifficultyAtTime> findMessagesWithinPeriod(List<DifficultyAtTime> messages, MsgCountAndNumOfHours requiredCountDuringPeriod) {
-        List<Integer> indexes = findIndexesForMsgsSubmittedWithinPeriod(messages, requiredCountDuringPeriod);
+        List<Integer> indexes = findIndexesForSubsequentRecordsWithinPeriod(messages, requiredCountDuringPeriod);
         ArrayList<DifficultyAtTime> messagesWithinPeriod = new ArrayList<>();
         if (!indexes.isEmpty()) {
             for (Integer index : indexes) {
@@ -163,31 +163,40 @@ public class Reminder {
         return successLogAfterLastFailure;
     }
 
-    private List<Integer> findIndexesForMsgsSubmittedWithinPeriod(List<DifficultyAtTime> difficultyAtTimes, MsgCountAndNumOfHours msgCountAndNumOfHours) {
-        int msgCount = msgCountAndNumOfHours.msgCount;
+    private List<Integer> findIndexesForSubsequentRecordsWithinPeriod(List<DifficultyAtTime> logOrderedByTime, MsgCountAndNumOfHours msgCountAndNumOfHours) {
+        int recordsCount = msgCountAndNumOfHours.count;
         int hours = msgCountAndNumOfHours.numOfHours;
         List<Integer> foundMessages = new ArrayList<>();
-        for (int i = msgCount - 1; i < difficultyAtTimes.size(); i++) {
-            Date currentLatest = difficultyAtTimes.get(i).getTimepoint();
-            Date currentEarlest = difficultyAtTimes.get(i - msgCount + 1).getTimepoint();
-            if (TimeUnit.MILLISECONDS.toHours(currentLatest.getTime() - currentEarlest.getTime()) < hours) {
-                for (int j = i - msgCount + 1; j <= i; j++) {
-                    foundMessages.add(j);
-                }
+        for (int i = recordsCount - 1; i < logOrderedByTime.size(); i++) {
+            long timeDifference = getTimeDifferenceBetweenRecords(logOrderedByTime, i - recordsCount + 1, i);
+            if (timeDifference < hours) {
+                foundMessages.addAll(getClosedRange(i - recordsCount + 1, i));
                 break;
-            } else {
-                foundMessages.clear();
             }
         }
         return foundMessages;
     }
 
+    private ArrayList<Integer> getClosedRange(int start, int end) {
+        ArrayList<Integer> records = new ArrayList<>();
+        for (int j = start; j <= end; j++) {
+            records.add(j);
+        }
+        return records;
+    }
+
+    private long getTimeDifferenceBetweenRecords(List<DifficultyAtTime> logOrderedByTime, int beginIndex, int endIndex) {
+        Date currentLatest = logOrderedByTime.get(endIndex).getTimepoint();
+        Date currentEarlest = logOrderedByTime.get(beginIndex).getTimepoint();
+        return TimeUnit.MILLISECONDS.toHours(currentLatest.getTime() - currentEarlest.getTime());
+    }
+
     class MsgCountAndNumOfHours {
-        private final int msgCount;
+        private final int count;
         private final int numOfHours;
 
-        public MsgCountAndNumOfHours(int msgCount, int numOfHours) {
-            this.msgCount = msgCount;
+        public MsgCountAndNumOfHours(int count, int numOfHours) {
+            this.count = count;
             this.numOfHours = numOfHours;
         }
     }
