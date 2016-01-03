@@ -239,6 +239,10 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
                 View.OnClickListener onAddTranslationListener = OnModifyDictionaryClickListener.onInsertingTranslation(this);
                 onAddTranslationListener.onClick(null);
                 return true;
+            case R.id.update_translation_button:
+                View.OnClickListener onUpdateTranslationListener = OnModifyDictionaryClickListener.onUpdatingTranslation(this, this);
+                onUpdateTranslationListener.onClick(null);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
