@@ -45,24 +45,6 @@
 					android:text="@string/difficult_translation"
 					android:textColor="@android:color/holo_red_dark"
 			/>
-			<Button
-					android:id="@+id/add_translation_button"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="@string/add_translation"
-			/>
-			<Button
-					android:id="@+id/update_translation_button"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="@string/update_translation"
-			/>
-			<Button
-					android:id="@+id/delete_translation_button"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="@string/delete_translation"
-			/>
 			<TextView
 					android:id="@+id/path_to_import_textview"
 					android:layout_width="wrap_content"
