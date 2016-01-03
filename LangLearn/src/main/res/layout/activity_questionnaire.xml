@@ -45,19 +45,6 @@
 					android:text="@string/difficult_translation"
 					android:textColor="@android:color/holo_red_dark"
 			/>
-			<TextView
-					android:id="@+id/path_to_import_textview"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textSize="30sp"
-					android:text="@string/import_path"
-			/>
-			<EditText
-					android:id="@+id/import_data_path_textedit"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textSize="30sp"
-			/>
 			<Button
 					android:id="@+id/import_data_button"
 					android:layout_width="wrap_content"
