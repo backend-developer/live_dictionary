@@ -25,9 +25,6 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
     private Button showTranslationButton;
     private Button markTranslationAsEasyButton;
     private Button markTranslationAsDifficultButton;
-    private Button addTranslationButton;
-    private Button updateTranslationButton;
-    private Button deleteTranslationButton;
     private Button importDataButton;
     private Button exportDataButton;
     private EditText importDataFileEditText;
@@ -50,9 +47,7 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
         showTranslationButton = (Button) findViewById(R.id.show_translation_button);
         markTranslationAsEasyButton = (Button) findViewById(R.id.submit_translation_as_easy_button);
         markTranslationAsDifficultButton = (Button) findViewById(R.id.submit_translation_as_difficult_button);
-        addTranslationButton = (Button) findViewById(R.id.add_translation_button);
-        updateTranslationButton = (Button) findViewById(R.id.update_translation_button);
-        deleteTranslationButton = (Button) findViewById(R.id.delete_translation_button);
+
         importDataButton = (Button) findViewById(R.id.import_data_button);
         exportDataButton = (Button) findViewById(R.id.export_data_button);
 
@@ -105,32 +100,6 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
             }
         });
 
-        deleteTranslationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new AlertDialog.Builder(LiveDictionaryActivity.this)
-                        .setMessage("Delete this translation?")
-                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dictionary.delete(currentTranslation);
-                                publishNextTranslation();
-                            }
-                        })
-                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .show();
-            }
-        });
-
-        View.OnClickListener onAddTranslationListener = OnModifyDictionaryClickListener.onInsertingTranslation(this);
-        addTranslationButton.setOnClickListener(onAddTranslationListener);
-        View.OnClickListener onUpdateTranslationListener = OnModifyDictionaryClickListener.onUpdatingTranslation(this, this);
-        updateTranslationButton.setOnClickListener(onUpdateTranslationListener);
 
         importDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
