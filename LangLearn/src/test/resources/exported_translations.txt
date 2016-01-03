@@ -300,7 +300,7 @@ El almuerzo - lunch
 El desayuno - breakfast
 Cocinar - to cook
 La comida - food
-El dolor - pain
+El dolor - a pain
 doler - to hurt
 aburrir - to bore
 disgustar - to upset, to displease
@@ -575,7 +575,7 @@ una/la influencia - influence
 una/la importancia - importance
 una/la diferencia - difference
 cenar - to have dinner
-una/la posición - position
+la posición - position
 una/la opinión - opinion
 una/la condición - condition
 el tipo - type
@@ -586,7 +586,7 @@ por favor - please
 hoy - today
 una/la explication - explanation
 dar - give
-formar - form
+formar - to form
 la conformar - conform
 la confirmar - confirm
 la situatión - situation
@@ -827,7 +827,7 @@ quisiera - i would like to
 le llamaré para saber - ill call you to know
 puede venir a ver lo - can come to see
 la película - movie
-cutlery - cubiertos
+cubiertos - cutlery
 cuchara - spoon
 difícil - difficult
 fácil - easy
@@ -1005,7 +1005,7 @@ cambiar - change
 arañar - draskyti
 maullar - do miau
 animal - animal
-ingeniero - engineer
+el ingeniero - en engineer
 mi/tu/su - my/your/his/her/your polite
 aficiones - hobbies
 invitacioó - invitation
@@ -1168,7 +1168,7 @@ el collar - necklace
 diciembre - December
 noviembre - November
 octubre - October
-septiembre - Septiembre
+septiembre - september
 agosto - August
 julio - July
 junio - June
@@ -1298,7 +1298,7 @@ tuve - i had
 quiso - they wanted
 estubo - he was
 estube - i was
-perder - lost
+perder - lose
 anoche - last night
 por la tarde - in the evening
 el juego - game
@@ -2268,7 +2268,7 @@ pi!dió - she,he,Vd ordered
 pediste - you ordered
 pedí - i ordered
 repi!tieron - they, Vds repeated
-repetisteis - you repeat
+repetisteis - you repeated
 repi!tió - she,he,Vd repeated
 repetiste - you repeated
 repetí - i repeated
@@ -2544,7 +2544,7 @@ falso/a - insincere
 alguna gente es falsa - some people are not sincere
 la verdad duele - truth hurts
 el hostal - hostel
-futbolín - table football
+el futbolín - table football
 pasar página - make a fresh start
 el bolso - handbag
 India/indio/a - india/indian
@@ -2585,3 +2585,19 @@ la pescadilla - whiting (name of fish)
 morder - to bite
 la cola - a tail
 darse cuenta - find out
+la investigación - an investigation
+fiscal - fiscal
+el fisco - the Treasury Dapartment
+evadir - to evade
+el impuesto - a tax
+la introducción - an introduction
+presentarse - to introduce oneself
+el aficionado - an amateur
+la aficionada - an amateur
+el proposito de año nuevo - new year resolution
+gozar - to enjoy
+lastimar - to hurt
+no quiero lastimarte - i don't want to hurt you
+la ocasión - an occasion
+tronchar - to cut off
+brevemente - briefly
