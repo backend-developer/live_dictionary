@@ -5,19 +5,15 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import com.google.common.base.Supplier;
 import uk.ignas.langlearn.core.*;
-
-import java.io.File;
 
 public class LiveDictionaryActivity extends Activity implements OnModifyDictionaryClickListener.ModifyDictionaryListener, Supplier<Translation> {
     private static final String TAG = LiveDictionaryActivity.class.getName();
@@ -34,7 +30,9 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
     private volatile Translation currentTranslation = EMPTY_TRANSLATION;
     private Dictionary dictionary;
     private TranslationDaoSqlite dao;
-    private DataImporterExporter dataImporterExporter;
+    private GuiError guiError;
+
+    private ImportExportIntentionHandler importExportIntentionHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,39 +51,41 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
     protected void onResume() {
         super.onResume();
 
-        dao = new TranslationDaoSqlite(LiveDictionaryActivity.this);
-        dataImporterExporter = new DataImporterExporter(dao);
-
+        guiError = new GuiError(this);
         try {
+            dao = new TranslationDaoSqlite(LiveDictionaryActivity.this);
             dictionary = new Dictionary(dao);
+            importExportIntentionHandler = new ImportExportIntentionHandler(new DataImporterExporter(dao), dictionary, guiError);
+
+            publishNextTranslation();
+            showTranslationButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showTranslation();
+                }
+            });
+
+            markTranslationAsEasyButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    publishNextTranslation();
+                    dictionary.mark(currentTranslation, Difficulty.EASY);
+                }
+            });
+
+            markTranslationAsDifficultButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    publishNextTranslation();
+                    dictionary.mark(currentTranslation, Difficulty.DIFFICULT);
+                }
+            });
         }catch (Exception e){
             Log.e(TAG, "critical error ", e);
-            showErrorDialogAndExitActivity(e.getMessage());
+            guiError.showErrorDialogAndExitActivity(e.getMessage());
         }
 
-        publishNextTranslation();
-        showTranslationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showTranslation();
-            }
-        });
 
-        markTranslationAsEasyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                publishNextTranslation();
-                dictionary.mark(currentTranslation, Difficulty.EASY);
-            }
-        });
-
-        markTranslationAsDifficultButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                publishNextTranslation();
-                dictionary.mark(currentTranslation, Difficulty.DIFFICULT);
-            }
-        });
     }
 
     private void showTranslation() {
@@ -105,38 +105,16 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
         try {
             currentTranslation = dictionary.getRandomTranslation();
         } catch (LiveDictionaryException e) {
-            showErrorDialogAndContinue(e.getMessage());
+            guiError.showErrorDialogAndContinue(e.getMessage());
             currentTranslation = EMPTY_TRANSLATION;
         } catch (RuntimeException e) {
-            showErrorDialogAndExitActivity(e.getMessage());
+            guiError.showErrorDialogAndExitActivity(e.getMessage());
         }
         enableTranslationAndNotSubmittionButtons(true);
         askUserToTranslate();
     }
 
-    private void showErrorDialogAndExitActivity(String message) {
-        showErrorDialog(message, true);
-    }
 
-    private void showErrorDialogAndContinue(String message) {
-        showErrorDialog(message, false);
-    }
-
-    private void showErrorDialog(String message, final boolean shouldExitActivity) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Live Dictionary")
-                .setMessage("Error occured:" + message)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        if (shouldExitActivity) {
-                            finish();
-                        }
-                    }
-                });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
 
     private void askUserToTranslate() {
         questionLabel.setText(currentTranslation.getNativeWord().get());
@@ -193,17 +171,45 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
                         .show();
                 return true;
             case R.id.import_data_button:
-                Intent intentToImport = new Intent(Intent.ACTION_GET_CONTENT);
-                intentToImport.setType("file/*");
-                startActivityForResult(intentToImport, PICK_IMPORTFILE_RESULT_CODE);
+                importExportIntentionHandler.startActivityForImport(this);
                 return true;
             case R.id.export_data_button:
-                Intent intentToExport = new Intent(Intent.ACTION_GET_CONTENT);
-                intentToExport.setType("file/*");
-                startActivityForResult(intentToExport, PICK_EXPORTFILE_RESULT_CODE);
+                importExportIntentionHandler.startActivityForExport(this);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public static class GuiError {
+        private Activity activity;
+
+        public GuiError(Activity activity) {
+            this.activity = activity;
+        }
+
+        private void showErrorDialogAndExitActivity(String message) {
+            showErrorDialog(message, true);
+        }
+
+        private void showErrorDialogAndContinue(String message) {
+            showErrorDialog(message, false);
+        }
+
+        private void showErrorDialog(String message, final boolean shouldExitActivity) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle("Live Dictionary")
+                    .setMessage("Error occured:" + message)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            if (shouldExitActivity) {
+                                activity.finish();
+                            }
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
     }
 
@@ -211,26 +217,59 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch(requestCode){
             case PICK_IMPORTFILE_RESULT_CODE:
-                if(resultCode==RESULT_OK){
-                    String filePath = data.getData().getPath();
-                    try {
-                        dataImporterExporter.importFromFile(filePath);
-                    } catch (RuntimeException e) {
-                        showErrorDialogAndContinue(e.getMessage());
-                    }
-                    dictionary.reloadData();
-                }
+                importExportIntentionHandler.handleImportResult(this, resultCode, data);
                 break;
             case PICK_EXPORTFILE_RESULT_CODE:
-                if(resultCode==RESULT_OK){
-                    String filePath = data.getData().getPath();
-                    try {
-                        dataImporterExporter.export(filePath);
-                    } catch (RuntimeException e) {
-                        showErrorDialogAndContinue(e.getMessage());
-                    }
-                    dictionary.reloadData();
+                importExportIntentionHandler.handleExportResult(this, resultCode, data);
+                break;
+        }
+    }
+
+    public static class ImportExportIntentionHandler {
+        private DataImporterExporter dataImporterExporter;
+        private Dictionary dictionary;
+        private GuiError guiError;
+
+        public ImportExportIntentionHandler(DataImporterExporter dataImporterExporter, Dictionary dictionary, GuiError guiError) {
+            this.dataImporterExporter = dataImporterExporter;
+            this.dictionary = dictionary;
+            this.guiError = guiError;
+        }
+
+        public void startActivityForImport(Activity activity) {
+            Intent intentToImport = new Intent(Intent.ACTION_GET_CONTENT);
+            intentToImport.setType("file/*");
+            activity.startActivityForResult(intentToImport, PICK_IMPORTFILE_RESULT_CODE);
+        }
+
+        private void startActivityForExport(Activity activity) {
+            Intent intentToExport = new Intent(Intent.ACTION_GET_CONTENT);
+            intentToExport.setType("file/*");
+            activity.startActivityForResult(intentToExport, PICK_EXPORTFILE_RESULT_CODE);
+        }
+
+        private void handleImportResult(LiveDictionaryActivity activity, int resultCode, Intent data) {
+            if(resultCode==RESULT_OK){
+                String filePath = data.getData().getPath();
+                try {
+                    dataImporterExporter.importFromFile(filePath);
+                } catch (RuntimeException e) {
+                    guiError.showErrorDialogAndContinue(e.getMessage());
                 }
+                dictionary.reloadData();
+            }
+        }
+
+        private void handleExportResult(LiveDictionaryActivity activity, int resultCode, Intent data) {
+            if(resultCode==RESULT_OK){
+                String filePath = data.getData().getPath();
+                try {
+                    dataImporterExporter.export(filePath);
+                } catch (RuntimeException e) {
+                    guiError.showErrorDialogAndContinue(e.getMessage());
+                }
+                dictionary.reloadData();
+            }
         }
     }
 
