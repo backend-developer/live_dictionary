@@ -20,16 +20,16 @@ import uk.ignas.langlearn.core.*;
 import java.io.File;
 
 public class LiveDictionaryActivity extends Activity implements OnModifyDictionaryClickListener.ModifyDictionaryListener, Supplier<Translation> {
-    public static final String TAG = LiveDictionaryActivity.class.getName();
+    private static final String TAG = LiveDictionaryActivity.class.getName();
     private static final Translation EMPTY_TRANSLATION = new Translation(new ForeignWord(""), new NativeWord(""));
-    private static final int PICKFILE_RESULT_CODE = 1;
+    private static final int PICK_IMPORTFILE_RESULT_CODE = 1;
+    private static final int PICK_EXPORTFILE_RESULT_CODE = 2;
 
     private Button showTranslationButton;
     private Button markTranslationAsEasyButton;
     private Button markTranslationAsDifficultButton;
     private Button importDataButton;
     private Button exportDataButton;
-    private EditText exportDataFileEditText;
     private TextView correctAnswerView;
     private TextView questionLabel;
 
@@ -53,14 +53,13 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
         importDataButton = (Button) findViewById(R.id.import_data_button);
         exportDataButton = (Button) findViewById(R.id.export_data_button);
 
-        exportDataFileEditText = (EditText) findViewById(R.id.export_data_path_textedit);
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        File externalStoragePublicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
         dao = new TranslationDaoSqlite(LiveDictionaryActivity.this);
         dataImporterExporter = new DataImporterExporter(dao);
 
@@ -70,11 +69,6 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
             Log.e(TAG, "critical error ", e);
             showErrorDialogAndExitActivity(e.getMessage());
         }
-
-        File defaultExportFile = new File(externalStoragePublicDirectory, "ExportedByUserRequest.txt");
-
-
-        exportDataFileEditText.setText(defaultExportFile.getAbsolutePath());
 
         publishNextTranslation();
         showTranslationButton.setOnClickListener(new View.OnClickListener() {
@@ -106,7 +100,7 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("file/*");
-                startActivityForResult(intent,PICKFILE_RESULT_CODE);
+                startActivityForResult(intent, PICK_IMPORTFILE_RESULT_CODE);
 
             }
         });
@@ -114,11 +108,9 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
         exportDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    dataImporterExporter.export(exportDataFileEditText.getText().toString());
-                } catch (RuntimeException e) {
-                    showErrorDialogAndContinue(e.getMessage());
-                }
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("file/*");
+                startActivityForResult(intent, PICK_EXPORTFILE_RESULT_CODE);
             }
         });
     }
@@ -235,9 +227,8 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // TODO Auto-generated method stub
         switch(requestCode){
-            case PICKFILE_RESULT_CODE:
+            case PICK_IMPORTFILE_RESULT_CODE:
                 if(resultCode==RESULT_OK){
                     String filePath = data.getData().getPath();
                     try {
@@ -248,7 +239,16 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
                     dictionary.reloadData();
                 }
                 break;
-
+            case PICK_EXPORTFILE_RESULT_CODE:
+                if(resultCode==RESULT_OK){
+                    String filePath = data.getData().getPath();
+                    try {
+                        dataImporterExporter.export(filePath);
+                    } catch (RuntimeException e) {
+                        showErrorDialogAndContinue(e.getMessage());
+                    }
+                    dictionary.reloadData();
+                }
         }
     }
 

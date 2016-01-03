@@ -51,19 +51,6 @@
 					android:layout_height="wrap_content"
 					android:text="@string/import_data"
 			/>
-			<TextView
-					android:id="@+id/path_to_export_textview"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textSize="30sp"
-					android:text="@string/export_path"
-			/>
-			<EditText
-			android:id="@+id/export_data_path_textedit"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:textSize="30sp"
-			/>
 			<Button
 			android:id="@+id/export_data_button"
 			android:layout_width="wrap_content"
