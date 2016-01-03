@@ -119,29 +119,36 @@ public class Reminder {
                                                                             MsgCountAndNumOfHours countInPeriod1) {
         List<List<DifficultyAtTime>> groups = new ArrayList<>();
 
-        List<Integer> indiceForGroupZero = findIndexesForFirstNumOfMsgsSubmittedWithinNHours(messages, countInPeriod0);
-        if (!indiceForGroupZero.isEmpty()) {
-            ArrayList<DifficultyAtTime> group = new ArrayList<>();
-            for (Integer index : indiceForGroupZero) {
-                group.add(messages.get(index));
-            }
+        ArrayList<DifficultyAtTime> group = findMessagesWithinPeriod(messages, countInPeriod0);
+        if (!group.isEmpty()) {
             groups.add(group);
         }
 
         if (!groups.isEmpty()) {
-            int indexJustAfterGroupZero = getLast(indiceForGroupZero) + 1;
-            List<DifficultyAtTime> sublistToSearchGroupOneIn = messages.subList(indexJustAfterGroupZero, messages.size());
-            List<Integer> indiceForGroupOne = findIndexesForFirstNumOfMsgsSubmittedWithinNHours(sublistToSearchGroupOneIn, countInPeriod1);
-
-            if (!indiceForGroupOne.isEmpty()) {
-                ArrayList<DifficultyAtTime> group = new ArrayList<>();
-                for (Integer index : indiceForGroupOne) {
-                    group.add(sublistToSearchGroupOneIn.get(index));
-                }
-                groups.add(group);
+            DifficultyAtTime endOfGroupZero = getLast(groups.get(0));
+            List<DifficultyAtTime> unsearchedTail = findUnsearchedTail(messages, endOfGroupZero);
+            ArrayList<DifficultyAtTime> group1 = findMessagesWithinPeriod(unsearchedTail, countInPeriod1);
+            if (!group1.isEmpty()) {
+                groups.add(group1);
             }
         }
         return groups;
+    }
+
+    private List<DifficultyAtTime> findUnsearchedTail(List<DifficultyAtTime> messages, DifficultyAtTime endOfGroupZero) {
+        int indexJustAfterGroupZero = messages.indexOf(endOfGroupZero) + 1;
+        return messages.subList(indexJustAfterGroupZero, messages.size());
+    }
+
+    private ArrayList<DifficultyAtTime> findMessagesWithinPeriod(List<DifficultyAtTime> messages, MsgCountAndNumOfHours requiredCountDuringPeriod) {
+        List<Integer> indexes = findIndexesForMsgsSubmittedWithinPeriod(messages, requiredCountDuringPeriod);
+        ArrayList<DifficultyAtTime> messagesWithinPeriod = new ArrayList<>();
+        if (!indexes.isEmpty()) {
+            for (Integer index : indexes) {
+                messagesWithinPeriod.add(messages.get(index));
+            }
+        }
+        return messagesWithinPeriod;
     }
 
     private List<DifficultyAtTime> getSuccessLogAfterLastFailure(TranslationMetadata metadata) {
@@ -156,7 +163,7 @@ public class Reminder {
         return successLogAfterLastFailure;
     }
 
-    private List<Integer> findIndexesForFirstNumOfMsgsSubmittedWithinNHours(List<DifficultyAtTime> difficultyAtTimes, MsgCountAndNumOfHours msgCountAndNumOfHours) {
+    private List<Integer> findIndexesForMsgsSubmittedWithinPeriod(List<DifficultyAtTime> difficultyAtTimes, MsgCountAndNumOfHours msgCountAndNumOfHours) {
         int msgCount = msgCountAndNumOfHours.msgCount;
         int hours = msgCountAndNumOfHours.numOfHours;
         List<Integer> foundMessages = new ArrayList<>();
