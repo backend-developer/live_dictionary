@@ -220,6 +220,11 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
                         })
                         .show();
                 return true;
+            case R.id.import_data_button:
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("file/*");
+                startActivityForResult(intent, PICK_IMPORTFILE_RESULT_CODE);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
