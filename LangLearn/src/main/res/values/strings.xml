@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">LangLearn</string>
     <string name="hello_world">Hello world!</string>
 	<string name="show_answer">Show Answer</string>
 	<string name="easy_translation">Easy!</string>
     <string name="difficult_translation">Help me learn it!</string>
     <string name="export_data">Export Data</string>
-    <string name="export_path">Export Path:</string>
     <string name="add_translation">Add translation</string>
     <string name="cancel">Cancel</string>
     <string name="foreign_word">Foreign</string>
@@ -17,6 +15,5 @@
     <string name="no">No</string>
     <string name="update_translation">Update Translation</string>
     <string name="import_data">Import Data</string>
-    <string name="import_path">Import Path</string>
 </resources>
 
