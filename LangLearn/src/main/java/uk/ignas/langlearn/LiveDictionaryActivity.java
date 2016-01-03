@@ -3,6 +3,7 @@ package uk.ignas.langlearn;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -19,15 +20,15 @@ import uk.ignas.langlearn.core.*;
 import java.io.File;
 
 public class LiveDictionaryActivity extends Activity implements OnModifyDictionaryClickListener.ModifyDictionaryListener, Supplier<Translation> {
-    private static final Translation EMPTY_TRANSLATION = new Translation(new ForeignWord(""), new NativeWord(""));
     public static final String TAG = LiveDictionaryActivity.class.getName();
+    private static final Translation EMPTY_TRANSLATION = new Translation(new ForeignWord(""), new NativeWord(""));
+    private static final int PICKFILE_RESULT_CODE = 1;
 
     private Button showTranslationButton;
     private Button markTranslationAsEasyButton;
     private Button markTranslationAsDifficultButton;
     private Button importDataButton;
     private Button exportDataButton;
-    private EditText importDataFileEditText;
     private EditText exportDataFileEditText;
     private TextView correctAnswerView;
     private TextView questionLabel;
@@ -35,6 +36,7 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
     private volatile Translation currentTranslation = EMPTY_TRANSLATION;
     private Dictionary dictionary;
     private TranslationDaoSqlite dao;
+    private DataImporterExporter dataImporterExporter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +53,6 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
         importDataButton = (Button) findViewById(R.id.import_data_button);
         exportDataButton = (Button) findViewById(R.id.export_data_button);
 
-        importDataFileEditText = (EditText) findViewById(R.id.import_data_path_textedit);
         exportDataFileEditText = (EditText) findViewById(R.id.export_data_path_textedit);
     }
 
@@ -61,7 +62,7 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
 
         File externalStoragePublicDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
         dao = new TranslationDaoSqlite(LiveDictionaryActivity.this);
-        final DataImporterExporter dataImporterExporter = new DataImporterExporter(dao);
+        dataImporterExporter = new DataImporterExporter(dao);
 
         try {
             dictionary = new Dictionary(dao);
@@ -70,10 +71,9 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
             showErrorDialogAndExitActivity(e.getMessage());
         }
 
-        final File defaultImportFile = new File(externalStoragePublicDirectory, "SpanishEnglishTranslations.txt");
         File defaultExportFile = new File(externalStoragePublicDirectory, "ExportedByUserRequest.txt");
 
-        importDataFileEditText.setText(defaultImportFile.getAbsolutePath());
+
         exportDataFileEditText.setText(defaultExportFile.getAbsolutePath());
 
         publishNextTranslation();
@@ -104,12 +104,10 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
         importDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    dataImporterExporter.importFromFile(importDataFileEditText.getText().toString());
-                } catch (RuntimeException e) {
-                    showErrorDialogAndContinue(e.getMessage());
-                }
-                dictionary.reloadData();
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("file/*");
+                startActivityForResult(intent,PICKFILE_RESULT_CODE);
+
             }
         });
 
@@ -232,6 +230,25 @@ public class LiveDictionaryActivity extends Activity implements OnModifyDictiona
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // TODO Auto-generated method stub
+        switch(requestCode){
+            case PICKFILE_RESULT_CODE:
+                if(resultCode==RESULT_OK){
+                    String filePath = data.getData().getPath();
+                    try {
+                        dataImporterExporter.importFromFile(filePath);
+                    } catch (RuntimeException e) {
+                        showErrorDialogAndContinue(e.getMessage());
+                    }
+                    dictionary.reloadData();
+                }
+                break;
+
         }
     }
 
