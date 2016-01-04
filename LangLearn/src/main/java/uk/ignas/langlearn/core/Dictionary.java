@@ -34,12 +34,19 @@ public class Dictionary {
         Collections.reverse(questions);
         this.difficultTranslations.clear();
         for (Translation t : new ArrayList<>(questions)) {
-            if (t.getMetadata().getDifficulty() == Difficulty.DIFFICULT) {
+            if (getDifficulty(t.getMetadata()) == Difficulty.DIFFICULT) {
                 questions.remove(t);
                 difficultTranslations.add(t);
             }
         }
+    }
 
+    public Difficulty getDifficulty(TranslationMetadata metadata) {
+        if (metadata.getRecentDifficulty().size() == 0) {
+            return Difficulty.EASY;
+        } else {
+            return metadata.getRecentDifficulty().get(metadata.getRecentDifficulty().size() - 1).getDifficulty();
+        }
     }
 
     public Translation getRandomTranslation() {

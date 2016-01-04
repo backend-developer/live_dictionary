@@ -104,7 +104,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         try {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues contentValues = new ContentValues();
-            contentValues.put(COLUMN_TRANSLATION_DIFFICULTY, metadata.getDifficulty().name());
+            contentValues.put(COLUMN_TRANSLATION_DIFFICULTY, Difficulty.EASY.name());
             contentValues.put(COLUMN_NATIVE_WORD, nativeWord.get());
             contentValues.put(COLUMN_FOREIGN_WORD, foreignWord.get());
             return db.update(TRANSLATIONS_TABLE_NAME, contentValues,
@@ -192,6 +192,8 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         }
         return translations;
     }
+
+
 
     @Override
     public Translation getById(int id) {

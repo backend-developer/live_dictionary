@@ -14,18 +14,12 @@ public class TranslationMetadata {
 
     public static TranslationMetadata copy(TranslationMetadata from) {
         return new TranslationMetadata(
-                from.getDifficulty(),
+                Difficulty.EASY,
                 new ArrayList<>(from.getRecentDifficulty())
         );
     }
 
-    public Difficulty getDifficulty() {
-        if (recentDifficulty.size() == 0) {
-            return Difficulty.EASY;
-        } else {
-            return recentDifficulty.get(recentDifficulty.size() - 1).getDifficulty();
-        }
-    }
+
 
     public List<DifficultyAtTime> getRecentDifficulty() {
         return recentDifficulty;

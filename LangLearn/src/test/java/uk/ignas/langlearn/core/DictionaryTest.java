@@ -7,6 +7,7 @@ import uk.ignas.langlearn.testutils.TranslationDaoStub;
 
 import java.util.*;
 
+import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.*;
@@ -79,7 +80,8 @@ public class DictionaryTest {
 
         dictionary.mark(translation, Difficulty.DIFFICULT);
 
-        assertThat(dao.getAllTranslations().get(0).getMetadata().getDifficulty(), is(equalTo(Difficulty.DIFFICULT)));
+        List<DifficultyAtTime> recentDifficulty = dao.getAllTranslations().get(0).getMetadata().getRecentDifficulty();
+        assertThat(getLast(recentDifficulty).getDifficulty(), is(equalTo(Difficulty.DIFFICULT)));
     }
 
     @Test
