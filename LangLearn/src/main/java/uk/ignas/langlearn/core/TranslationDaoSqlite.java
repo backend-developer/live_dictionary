@@ -27,7 +27,6 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
 
     public TranslationDaoSqlite(Context context) {
         super(context, DATABASE_NAME, null, 1);
-
     }
 
     @Override
@@ -41,7 +40,15 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
                         "CONSTRAINT uniqueWT UNIQUE (" + COLUMN_NATIVE_WORD + ", " + COLUMN_FOREIGN_WORD + ")" +
                         ")"
         );
-        onCreateAnswers(db);
+        db.execSQL(
+                "create table " + ANSWERS_LOG_TABLE_NAME + " " +
+                        "(" +
+                        COLUMN_ID + " integer primary key, " +
+                        COLUMN_TRANSLATION_ID + " integer," +
+                        COLUMN_TIME_ANSWERED + " integer, " +
+                        COLUMN_IS_CORRECT + " integer" +
+                        ")"
+        );
         insertSeedData(db);
     }
 
@@ -68,7 +75,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TRANSLATIONS_TABLE_NAME);
-        onUpgradeAnswers(db, oldVersion, newVersion);
+        db.execSQL("DROP TABLE IF EXISTS " + ANSWERS_LOG_TABLE_NAME);
         onCreate(db);
     }
 
@@ -142,15 +149,6 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         return translationIdsToDelete;
     }
 
-    private void deleteAnswersByTranslationIds(List<Integer> translationIdsToDelete) {
-        String inClause = Joiner.on(", ").join(translationIdsToDelete);
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(ANSWERS_LOG_TABLE_NAME,
-                COLUMN_TRANSLATION_ID + " IN (?) ",
-                new String[]{inClause});
-    }
-
     private Integer deleteById(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete(TRANSLATIONS_TABLE_NAME,
@@ -165,7 +163,6 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
                 new String[]{translation.getNativeWord().get(), translation.getForeignWord().get()});
 
     }
-
 
     @Override
     public List<Translation> getAllTranslations() {
@@ -198,6 +195,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         return translations;
     }
 
+
     public ListMultimap<Integer, AnswerAtTime> getAnswersLogByTranslationId() {
         ListMultimap<Integer, AnswerAtTime> answersLogByTranslationId = ArrayListMultimap.create();
 
@@ -229,26 +227,9 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     public static final String ANSWERS_LOG_TABLE_NAME = "answer_log";
 
     public static final String COLUMN_TRANSLATION_ID = "translation_id";
+
     public static final String COLUMN_TIME_ANSWERED = "time_answered";
     public static final String COLUMN_IS_CORRECT = "is_correct";
-
-    public void onCreateAnswers(SQLiteDatabase db) {
-        db.execSQL(
-                "create table " + ANSWERS_LOG_TABLE_NAME + " " +
-                        "(" +
-                        COLUMN_ID + " integer primary key, " +
-                        COLUMN_TRANSLATION_ID + " integer," +
-                        COLUMN_TIME_ANSWERED + " integer, " +
-                        COLUMN_IS_CORRECT + " integer" +
-                        ")"
-        );
-    }
-
-    public void onUpgradeAnswers(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + ANSWERS_LOG_TABLE_NAME);
-        onCreate(db);
-    }
-
     @Override
     public boolean logAnswer(Translation translation, Answer answer, Date time) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -258,5 +239,14 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         contentValues.put(COLUMN_IS_CORRECT, answer.isCorrect());
         long id = db.insert(ANSWERS_LOG_TABLE_NAME, null, contentValues);
         return id != ERROR_OCURRED;
+    }
+
+    private void deleteAnswersByTranslationIds(List<Integer> translationIdsToDelete) {
+        String inClause = Joiner.on(", ").join(translationIdsToDelete);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(ANSWERS_LOG_TABLE_NAME,
+                COLUMN_TRANSLATION_ID + " IN (?) ",
+                new String[]{inClause});
     }
 }
