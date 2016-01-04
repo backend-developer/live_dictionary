@@ -147,18 +147,18 @@ public class Dictionary {
             return false;
         }
 
-        boolean updatedAsDifficultCount = updateIfIsAnIdOfAnyOfTranslations(translation, difficultTranslations, Difficulty.DIFFICULT);
-        boolean updatedAsEasyCount = updateIfIsAnIdOfAnyOfTranslations(translation, questions, Difficulty.EASY);
+        boolean updatedAsDifficultCount = updateIfIsAnIdOfAnyOfTranslations(translation, difficultTranslations);
+        boolean updatedAsEasyCount = updateIfIsAnIdOfAnyOfTranslations(translation, questions);
         reloadTranslations();
         return updatedAsDifficultCount || updatedAsEasyCount;
     }
 
-    private boolean updateIfIsAnIdOfAnyOfTranslations(Translation translation, Collection<Translation> questions, Difficulty difficulty) {
+    private boolean updateIfIsAnIdOfAnyOfTranslations(Translation translation, Collection<Translation> questions) {
         for (Translation t : questions) {
             if (Objects.equals(t.getId(), translation.getId())) {
                 Translation byId = dao.getById(t.getId());
 
-                dao.update(translation.getId(), translation.getForeignWord(), translation.getNativeWord(), new TranslationMetadata(difficulty, byId.getMetadata().getRecentDifficulty()));
+                dao.update(translation.getId(), translation.getForeignWord(), translation.getNativeWord());
                 return true;
             }
         }

@@ -100,7 +100,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     }
 
     @Override
-    public int update(int id, ForeignWord foreignWord, NativeWord nativeWord, TranslationMetadata metadata) {
+    public int update(int id, ForeignWord foreignWord, NativeWord nativeWord) {
         try {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues contentValues = new ContentValues();
