@@ -21,7 +21,6 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_NATIVE_WORD = "nativeWord";
     public static final String COLUMN_FOREIGN_WORD = "foreignWord";
-    public static final String COLUMN_TRANSLATION_DIFFICULTY = "difficulty";
 
     public static final int ERROR_OCURRED = -1;
 
@@ -38,7 +37,6 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
                         COLUMN_ID + " integer primary key, " +
                         COLUMN_NATIVE_WORD + " text," +
                         COLUMN_FOREIGN_WORD + " text, " +
-                        COLUMN_TRANSLATION_DIFFICULTY + " text, " +
                         "CONSTRAINT uniqueWT UNIQUE (" + COLUMN_NATIVE_WORD + ", " + COLUMN_FOREIGN_WORD + ")" +
                         ")"
         );
@@ -99,7 +97,6 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_NATIVE_WORD, translation.getNativeWord().get());
         contentValues.put(COLUMN_FOREIGN_WORD, translation.getForeignWord().get());
-        contentValues.put(COLUMN_TRANSLATION_DIFFICULTY, Difficulty.EASY.name());
         long id = db.insert(TRANSLATIONS_TABLE_NAME, null, contentValues);
         return id != ERROR_OCURRED;
     }
@@ -109,7 +106,6 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         try {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues contentValues = new ContentValues();
-            contentValues.put(COLUMN_TRANSLATION_DIFFICULTY, Difficulty.EASY.name());
             contentValues.put(COLUMN_NATIVE_WORD, nativeWord.get());
             contentValues.put(COLUMN_FOREIGN_WORD, foreignWord.get());
             return db.update(TRANSLATIONS_TABLE_NAME, contentValues,
@@ -191,7 +187,6 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     private ListMultimap<Integer, DifficultyAtTime> getAnswersLogByTranslationId() {
         ListMultimap<Integer, DifficultyAtTime> answersLogByTranslationId = ArrayListMultimap.create();
 
-
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = null;
         try {
@@ -231,7 +226,6 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         );
     }
 
-
     public void onUpgradeAnswers(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + ANSWERS_LOG_TABLE_NAME);
         onCreate(db);
@@ -252,5 +246,4 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
             return true;
         }
     }
-
 }
