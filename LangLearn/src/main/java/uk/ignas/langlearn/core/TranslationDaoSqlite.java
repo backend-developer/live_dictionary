@@ -18,10 +18,14 @@ import java.util.List;
 public class TranslationDaoSqlite extends SQLiteOpenHelper implements TranslationDao {
 
     public static final String DATABASE_NAME = "LiveDictionary.db";
-    public static final String TRANSLATIONS_TABLE_NAME = "translations";
-    public static final String COLUMN_ID = "id";
-    public static final String COLUMN_NATIVE_WORD = "nativeWord";
-    public static final String COLUMN_FOREIGN_WORD = "foreignWord";
+
+
+    public static class Translations {
+        public static final String TABLE_NAME = "translations";
+        public static final String ID = "id";
+        public static final String NATIVE_WORD = "nativeWord";
+        public static final String FOREIGN_WORD = "foreignWord";
+    }
 
     public static final int ERROR_OCURRED = -1;
 
@@ -32,16 +36,16 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(
-                "create table " + TRANSLATIONS_TABLE_NAME + " " +
+                "create table " + Translations.TABLE_NAME + " " +
                         "(" +
-                        COLUMN_ID + " integer primary key, " +
-                        COLUMN_NATIVE_WORD + " text," +
-                        COLUMN_FOREIGN_WORD + " text, " +
-                        "CONSTRAINT uniqueWT UNIQUE (" + COLUMN_NATIVE_WORD + ", " + COLUMN_FOREIGN_WORD + ")" +
+                        Translations.ID + " integer primary key, " +
+                        Translations.NATIVE_WORD + " text," +
+                        Translations.FOREIGN_WORD + " text, " +
+                        "CONSTRAINT uniqueWT UNIQUE (" + Translations.NATIVE_WORD + ", " + Translations.FOREIGN_WORD + ")" +
                         ")"
         );
         db.execSQL(
-                "create table " + AnswersLog.NAME + " " +
+                "create table " + AnswersLog.TABLE_NAME + " " +
                         "(" +
                         AnswersLog.ID + " integer primary key, " +
                         AnswersLog.TRANSLATION_ID + " integer," +
@@ -74,8 +78,8 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TRANSLATIONS_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + AnswersLog.NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + Translations.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + AnswersLog.TABLE_NAME);
         onCreate(db);
     }
 
@@ -103,9 +107,9 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
 
     private boolean insertSingleUsingDb(Translation translation, SQLiteDatabase db) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COLUMN_NATIVE_WORD, translation.getNativeWord().get());
-        contentValues.put(COLUMN_FOREIGN_WORD, translation.getForeignWord().get());
-        long id = db.insert(TRANSLATIONS_TABLE_NAME, null, contentValues);
+        contentValues.put(Translations.NATIVE_WORD, translation.getNativeWord().get());
+        contentValues.put(Translations.FOREIGN_WORD, translation.getForeignWord().get());
+        long id = db.insert(Translations.TABLE_NAME, null, contentValues);
         return id != ERROR_OCURRED;
     }
 
@@ -114,10 +118,10 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         try {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues contentValues = new ContentValues();
-            contentValues.put(COLUMN_NATIVE_WORD, nativeWord.get());
-            contentValues.put(COLUMN_FOREIGN_WORD, foreignWord.get());
-            return db.update(TRANSLATIONS_TABLE_NAME, contentValues,
-                    COLUMN_ID + " = ? ",
+            contentValues.put(Translations.NATIVE_WORD, nativeWord.get());
+            contentValues.put(Translations.FOREIGN_WORD, foreignWord.get());
+            return db.update(Translations.TABLE_NAME, contentValues,
+                    Translations.ID + " = ? ",
                     new String[]{String.valueOf(id)});
 
         } catch (SQLiteConstraintException e) {
@@ -151,15 +155,15 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
 
     private Integer deleteById(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(TRANSLATIONS_TABLE_NAME,
-                COLUMN_ID + " = ? ",
+        return db.delete(Translations.TABLE_NAME,
+                Translations.ID + " = ? ",
                 new String[]{String.valueOf(id)});
     }
 
     private Integer deleteSingle(Translation translation) {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(TRANSLATIONS_TABLE_NAME,
-                COLUMN_NATIVE_WORD + " = ? AND " + COLUMN_FOREIGN_WORD + " = ? ",
+        return db.delete(Translations.TABLE_NAME,
+                Translations.NATIVE_WORD + " = ? AND " + Translations.FOREIGN_WORD + " = ? ",
                 new String[]{translation.getNativeWord().get(), translation.getForeignWord().get()});
 
     }
@@ -172,17 +176,17 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         Cursor res = null;
         try {
             res = db.rawQuery("select " +
-                    COLUMN_ID + ", " +
-                    COLUMN_FOREIGN_WORD + ", " +
-                    COLUMN_NATIVE_WORD +
-                    " from " + TRANSLATIONS_TABLE_NAME, null);
+                    Translations.ID + ", " +
+                    Translations.FOREIGN_WORD + ", " +
+                    Translations.NATIVE_WORD +
+                    " from " + Translations.TABLE_NAME, null);
             res.moveToFirst();
 
             while (!res.isAfterLast()) {
                 translations.add(new Translation(
-                        res.getInt(res.getColumnIndex(COLUMN_ID)),
-                        new ForeignWord(res.getString(res.getColumnIndex(COLUMN_FOREIGN_WORD))),
-                        new NativeWord(res.getString(res.getColumnIndex(COLUMN_NATIVE_WORD))),
+                        res.getInt(res.getColumnIndex(Translations.ID)),
+                        new ForeignWord(res.getString(res.getColumnIndex(Translations.FOREIGN_WORD))),
+                        new NativeWord(res.getString(res.getColumnIndex(Translations.NATIVE_WORD))),
                         new TranslationMetadata(
                                 new ArrayList<AnswerAtTime>())));
                 res.moveToNext();
@@ -196,7 +200,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     }
 
     public static class AnswersLog {
-        public static final String NAME = "answer_log";
+        public static final String TABLE_NAME = "answer_log";
         public static final String ID = "id";
         public static final String TRANSLATION_ID = "translation_id";
         public static final String TIME_ANSWERED = "time_answered";
@@ -210,7 +214,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         contentValues.put(AnswersLog.TRANSLATION_ID, translation.getId());
         contentValues.put(AnswersLog.TIME_ANSWERED, time.getTime());
         contentValues.put(AnswersLog.IS_CORRECT, answer.isCorrect());
-        long id = db.insert(AnswersLog.NAME, null, contentValues);
+        long id = db.insert(AnswersLog.TABLE_NAME, null, contentValues);
         return id != ERROR_OCURRED;
     }
 
@@ -218,7 +222,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         String inClause = Joiner.on(", ").join(translationIdsToDelete);
 
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(AnswersLog.NAME,
+        db.delete(AnswersLog.TABLE_NAME,
                 AnswersLog.TRANSLATION_ID + " IN (?) ",
                 new String[]{inClause});
     }
@@ -233,7 +237,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
                     AnswersLog.IS_CORRECT + ", " +
                     AnswersLog.TRANSLATION_ID + ", " +
                     AnswersLog.TIME_ANSWERED +
-                    " from " + AnswersLog.NAME, null);
+                    " from " + AnswersLog.TABLE_NAME, null);
             res.moveToFirst();
 
             while (!res.isAfterLast()) {
