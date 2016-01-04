@@ -1,5 +1,7 @@
 package uk.ignas.langlearn.core;
 
+import com.google.common.collect.ListMultimap;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -13,7 +15,9 @@ public interface TranslationDao {
 
     void delete(Collection<Translation> translations);
 
-    List<Translation> getAllTranslationsWithMetadata();
+    List<Translation> getAllTranslations();
+
+    ListMultimap<Integer, AnswerAtTime> getAnswersLogByTranslationId();
 
     boolean logAnswer(Translation translation, Answer answer, Date time);
 }

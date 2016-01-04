@@ -146,19 +146,10 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
                 new String[]{translation.getNativeWord().get(), translation.getForeignWord().get()});
     }
 
+
+
     @Override
-    public List<Translation> getAllTranslationsWithMetadata() {
-        List<Translation> allTranslations = getAllTranslations();
-        ListMultimap<Integer, AnswerAtTime> answersLogByTranslationId = getAnswersLogByTranslationId();
-        for (Translation translation : allTranslations) {
-            List<AnswerAtTime> answersLog = answersLogByTranslationId.get(translation.getId());
-            translation.getMetadata().getRecentAnswers().addAll(answersLog);
-        }
-        return allTranslations;
-    }
-
-
-    private List<Translation> getAllTranslations() {
+    public List<Translation> getAllTranslations() {
         List<Translation> translations = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -188,7 +179,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         return translations;
     }
 
-    private ListMultimap<Integer, AnswerAtTime> getAnswersLogByTranslationId() {
+    public ListMultimap<Integer, AnswerAtTime> getAnswersLogByTranslationId() {
         ListMultimap<Integer, AnswerAtTime> answersLogByTranslationId = ArrayListMultimap.create();
 
         SQLiteDatabase db = this.getReadableDatabase();

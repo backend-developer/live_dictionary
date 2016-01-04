@@ -1,5 +1,7 @@
 package uk.ignas.langlearn.core;
 
+import com.google.common.collect.ListMultimap;
+
 import java.util.*;
 
 import static java.util.Collections.singleton;
@@ -30,7 +32,7 @@ public class Dictionary {
     }
 
     private void reloadTranslations() {
-        questions = dao.getAllTranslationsWithMetadata();
+        questions = getAllTranslationsWithMetadata();
         Collections.reverse(questions);
         this.difficultTranslations.clear();
         for (Translation t : new ArrayList<>(questions)) {
@@ -40,6 +42,16 @@ public class Dictionary {
                 difficultTranslations.add(t);
             }
         }
+    }
+
+    private List<Translation> getAllTranslationsWithMetadata() {
+        List<Translation> allTranslations = dao.getAllTranslations();
+        ListMultimap<Integer, AnswerAtTime> answersLogByTranslationId = dao.getAnswersLogByTranslationId();
+        for (Translation translation : allTranslations) {
+            List<AnswerAtTime> answersLog = answersLogByTranslationId.get(translation.getId());
+            translation.getMetadata().getRecentAnswers().addAll(answersLog);
+        }
+        return allTranslations;
     }
 
     private boolean isLastAnswerCorrect(TranslationMetadata metadata) {

@@ -1,5 +1,7 @@
 package uk.ignas.langlearn.testutils;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 import uk.ignas.langlearn.core.*;
 
 import java.util.*;
@@ -59,7 +61,7 @@ public class TranslationDaoStub implements TranslationDao {
     }
 
     @Override
-    public List<Translation> getAllTranslationsWithMetadata() {
+    public List<Translation> getAllTranslations() {
         List<Translation> copy = new ArrayList<>();
         for (Translation t : inMemoryTranslations) {
             copy.add(new Translation(
@@ -70,6 +72,15 @@ public class TranslationDaoStub implements TranslationDao {
         }
 
         return copy;
+    }
+
+    @Override
+    public ListMultimap<Integer, AnswerAtTime> getAnswersLogByTranslationId() {
+        ListMultimap<Integer, AnswerAtTime> result = ArrayListMultimap.create();
+        for (Translation translation : inMemoryTranslations) {
+            result.putAll(translation.getId(), translation.getMetadata().getRecentAnswers());
+        }
+        return result;
     }
 
     @Override

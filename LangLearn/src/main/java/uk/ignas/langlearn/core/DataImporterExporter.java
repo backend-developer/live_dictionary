@@ -36,7 +36,7 @@ public class DataImporterExporter {
             }
         }
 
-        List<Translation> translationsFromDb = dao.getAllTranslationsWithMetadata();
+        List<Translation> translationsFromDb = dao.getAllTranslations();
         dao.delete(translationsFromDb);
 
         dao.insert(new ArrayList<>(translationsToInsert));
@@ -50,7 +50,7 @@ public class DataImporterExporter {
         }
 
         try {
-            writeTranslations(planeTextExportedPath, dao.getAllTranslationsWithMetadata());
+            writeTranslations(planeTextExportedPath, dao.getAllTranslations());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
