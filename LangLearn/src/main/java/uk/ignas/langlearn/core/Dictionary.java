@@ -35,8 +35,7 @@ public class Dictionary {
         this.difficultTranslations.clear();
         for (Translation t : new ArrayList<>(questions)) {
             TranslationMetadata metadata = t.getMetadata();
-            boolean isLastAnswerIncorrect = isLastAnswerCorrect(metadata);
-            if (!isLastAnswerIncorrect) {
+            if (!isLastAnswerCorrect(metadata)) {
                 questions.remove(t);
                 difficultTranslations.add(t);
             }
@@ -44,20 +43,11 @@ public class Dictionary {
     }
 
     private boolean isLastAnswerCorrect(TranslationMetadata metadata) {
-        Answer result;
         if (metadata.getRecentAnswers().size() == 0) {
-            result = Answer.CORRECT;
+            return true;
         } else {
-            result = metadata.getRecentAnswers().get(metadata.getRecentAnswers().size() - 1).getAnswer();
-        }
-        return result != Answer.INCORRECT;
-    }
-
-    public Answer getDifficulty(TranslationMetadata metadata) {
-        if (metadata.getRecentAnswers().size() == 0) {
-            return Answer.CORRECT;
-        } else {
-            return metadata.getRecentAnswers().get(metadata.getRecentAnswers().size() - 1).getAnswer();
+            Answer answer = metadata.getRecentAnswers().get(metadata.getRecentAnswers().size() - 1).getAnswer();
+            return answer == Answer.CORRECT;
         }
     }
 
