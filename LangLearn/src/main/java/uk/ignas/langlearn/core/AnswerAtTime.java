@@ -2,11 +2,11 @@ package uk.ignas.langlearn.core;
 
 import java.util.Date;
 
-public class DifficultyAtTime {
+public class AnswerAtTime {
     private Date timepoint;
     private Answer answer;
 
-    public DifficultyAtTime(Answer answer, Date timepoint) {
+    public AnswerAtTime(Answer answer, Date timepoint) {
         this.timepoint = timepoint;
         this.answer = answer;
     }

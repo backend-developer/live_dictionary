@@ -149,10 +149,10 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     @Override
     public List<Translation> getAllTranslationsWithMetadata() {
         List<Translation> allTranslations = getAllTranslations();
-        ListMultimap<Integer, DifficultyAtTime> answersLogByTranslationId = getAnswersLogByTranslationId();
+        ListMultimap<Integer, AnswerAtTime> answersLogByTranslationId = getAnswersLogByTranslationId();
         for (Translation translation : allTranslations) {
-            List<DifficultyAtTime> answersLog = answersLogByTranslationId.get(translation.getId());
-            translation.getMetadata().getRecentDifficulty().addAll(answersLog);
+            List<AnswerAtTime> answersLog = answersLogByTranslationId.get(translation.getId());
+            translation.getMetadata().getRecentAnswers().addAll(answersLog);
         }
         return allTranslations;
     }
@@ -177,7 +177,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
                         new ForeignWord(res.getString(res.getColumnIndex(COLUMN_FOREIGN_WORD))),
                         new NativeWord(res.getString(res.getColumnIndex(COLUMN_NATIVE_WORD))),
                         new TranslationMetadata(
-                                new ArrayList<DifficultyAtTime>())));
+                                new ArrayList<AnswerAtTime>())));
                 res.moveToNext();
             }
         } finally {
@@ -188,8 +188,8 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         return translations;
     }
 
-    private ListMultimap<Integer, DifficultyAtTime> getAnswersLogByTranslationId() {
-        ListMultimap<Integer, DifficultyAtTime> answersLogByTranslationId = ArrayListMultimap.create();
+    private ListMultimap<Integer, AnswerAtTime> getAnswersLogByTranslationId() {
+        ListMultimap<Integer, AnswerAtTime> answersLogByTranslationId = ArrayListMultimap.create();
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = null;
@@ -205,7 +205,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
                 int newTranslationId = res.getInt(res.getColumnIndex(COLUMN_TRANSLATION_ID));
                 Answer answer = res.getInt(res.getColumnIndex(COLUMN_IS_CORRECT)) > 0 ? Answer.CORRECT : Answer.INCORRECT;
                 long timeOfAnswer = res.getLong(res.getColumnIndex(COLUMN_TIME_ANSWERED));
-                answersLogByTranslationId.put(newTranslationId, new DifficultyAtTime(answer, new Date(timeOfAnswer)));
+                answersLogByTranslationId.put(newTranslationId, new AnswerAtTime(answer, new Date(timeOfAnswer)));
                 res.moveToNext();
             }
         } finally {

@@ -57,21 +57,21 @@ public class Reminder {
     }
 
     private boolean restrictedByPromotionPeriod(TranslationMetadata metadata) {
-        List<List<DifficultyAtTime>> promotionPeriodJumpers = getPromotionPeriodsJumpingGroups(metadata);
+        List<List<AnswerAtTime>> promotionPeriodJumpers = getPromotionPeriodsJumpingGroups(metadata);
         if (!promotionPeriodJumpers.isEmpty()) {
             int promotionDurationInHours = findCurrentPromotionDurationInHours(promotionPeriodJumpers);
-            List<DifficultyAtTime> promotionPeriodsJumper = getLast(promotionPeriodJumpers);
+            List<AnswerAtTime> promotionPeriodsJumper = getLast(promotionPeriodJumpers);
             return groupStillRestricted(promotionDurationInHours, promotionPeriodsJumper);
         } else {
             return false;
         }
     }
 
-    private boolean groupStillRestricted(int promotionDurationInHours, List<DifficultyAtTime> promotionPeriodsJumper) {
+    private boolean groupStillRestricted(int promotionDurationInHours, List<AnswerAtTime> promotionPeriodsJumper) {
         return !promotionPeriodsJumper.isEmpty() && isMessagesNewerThanNHours(promotionPeriodsJumper.get(0), promotionDurationInHours);
     }
 
-    private int findCurrentPromotionDurationInHours(List<List<DifficultyAtTime>> promotionPeriodsJumpers) {
+    private int findCurrentPromotionDurationInHours(List<List<AnswerAtTime>> promotionPeriodsJumpers) {
         int promotionDurationInHours = promotionDuration.getHoursByLevel(0);
         for (int promotionLevel = 0; promotionLevel < promotionPeriodsJumpers.size(); promotionLevel++) {
             promotionDurationInHours = promotionDuration.getHoursByLevel(promotionLevel);
@@ -79,26 +79,26 @@ public class Reminder {
         return promotionDurationInHours;
     }
 
-    private List<List<DifficultyAtTime>> getPromotionPeriodsJumpingGroups(TranslationMetadata metadata) {
-        List<List<DifficultyAtTime>> groups = getFirstTwoPromotionJumpingGroups(metadata);
+    private List<List<AnswerAtTime>> getPromotionPeriodsJumpingGroups(TranslationMetadata metadata) {
+        List<List<AnswerAtTime>> groups = getFirstTwoPromotionJumpingGroups(metadata);
         if (groups.size() == 2) {
-            List<DifficultyAtTime> lastGroup = getLast(groups);
-            DifficultyAtTime lastMessage = getLast(lastGroup);
-            int indexOfLastANalysedMessage = metadata.getRecentDifficulty().indexOf(lastMessage);
+            List<AnswerAtTime> lastGroup = getLast(groups);
+            AnswerAtTime lastMessage = getLast(lastGroup);
+            int indexOfLastANalysedMessage = metadata.getRecentAnswers().indexOf(lastMessage);
             int firstNotYetAnalysedMessage = indexOfLastANalysedMessage + 1;
-            for (int i = firstNotYetAnalysedMessage; i < metadata.getRecentDifficulty().size(); i++) {
-                if (i < metadata.getRecentDifficulty().size()) {
-                    groups.add(Collections.singletonList(metadata.getRecentDifficulty().get(i)));
+            for (int i = firstNotYetAnalysedMessage; i < metadata.getRecentAnswers().size(); i++) {
+                if (i < metadata.getRecentAnswers().size()) {
+                    groups.add(Collections.singletonList(metadata.getRecentAnswers().get(i)));
                 }
             }
         }
         return groups;
     }
 
-    private List<List<DifficultyAtTime>> getFirstTwoPromotionJumpingGroups(TranslationMetadata metadata) {
-        List<DifficultyAtTime> successAfterLastFailure = getSuccessLogAfterLastFailure(metadata);
-        List<List<DifficultyAtTime>> groups;
-        boolean wasJustFailed = successAfterLastFailure.size() != metadata.getRecentDifficulty().size();
+    private List<List<AnswerAtTime>> getFirstTwoPromotionJumpingGroups(TranslationMetadata metadata) {
+        List<AnswerAtTime> successAfterLastFailure = getSuccessLogAfterLastFailure(metadata);
+        List<List<AnswerAtTime>> groups;
+        boolean wasJustFailed = successAfterLastFailure.size() != metadata.getRecentAnswers().size();
         int requiredMsgCountForLevel0 = wasJustFailed ? 3 : 2;
         int level0PromotionPeriodDuration = 4;
         int level1PromotionPeriodDuration = 20;
@@ -110,24 +110,24 @@ public class Reminder {
         return groups;
     }
 
-    private boolean isMessagesNewerThanNHours(DifficultyAtTime difficultyAtTime, int hours) {
-        return TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - difficultyAtTime.getTimepoint().getTime()) < hours;
+    private boolean isMessagesNewerThanNHours(AnswerAtTime answerAtTime, int hours) {
+        return TimeUnit.MILLISECONDS.toHours(clock.getTime().getTime() - answerAtTime.getTimepoint().getTime()) < hours;
     }
 
-    private List<List<DifficultyAtTime>> findMsgGroupsFittingPeriodsInOrder(List<DifficultyAtTime> messages,
-                                                                            MsgCountAndNumOfHours countInPeriod0,
-                                                                            MsgCountAndNumOfHours countInPeriod1) {
-        List<List<DifficultyAtTime>> groups = new ArrayList<>();
+    private List<List<AnswerAtTime>> findMsgGroupsFittingPeriodsInOrder(List<AnswerAtTime> messages,
+                                                                        MsgCountAndNumOfHours countInPeriod0,
+                                                                        MsgCountAndNumOfHours countInPeriod1) {
+        List<List<AnswerAtTime>> groups = new ArrayList<>();
 
-        ArrayList<DifficultyAtTime> group = findMessagesWithinPeriod(messages, countInPeriod0);
+        ArrayList<AnswerAtTime> group = findMessagesWithinPeriod(messages, countInPeriod0);
         if (!group.isEmpty()) {
             groups.add(group);
         }
 
         if (!groups.isEmpty()) {
-            DifficultyAtTime endOfGroupZero = getLast(groups.get(0));
-            List<DifficultyAtTime> unsearchedTail = findUnsearchedTail(messages, endOfGroupZero);
-            ArrayList<DifficultyAtTime> group1 = findMessagesWithinPeriod(unsearchedTail, countInPeriod1);
+            AnswerAtTime endOfGroupZero = getLast(groups.get(0));
+            List<AnswerAtTime> unsearchedTail = findUnsearchedTail(messages, endOfGroupZero);
+            ArrayList<AnswerAtTime> group1 = findMessagesWithinPeriod(unsearchedTail, countInPeriod1);
             if (!group1.isEmpty()) {
                 groups.add(group1);
             }
@@ -135,14 +135,14 @@ public class Reminder {
         return groups;
     }
 
-    private List<DifficultyAtTime> findUnsearchedTail(List<DifficultyAtTime> messages, DifficultyAtTime endOfGroupZero) {
+    private List<AnswerAtTime> findUnsearchedTail(List<AnswerAtTime> messages, AnswerAtTime endOfGroupZero) {
         int indexJustAfterGroupZero = messages.indexOf(endOfGroupZero) + 1;
         return messages.subList(indexJustAfterGroupZero, messages.size());
     }
 
-    private ArrayList<DifficultyAtTime> findMessagesWithinPeriod(List<DifficultyAtTime> messages, MsgCountAndNumOfHours requiredCountDuringPeriod) {
+    private ArrayList<AnswerAtTime> findMessagesWithinPeriod(List<AnswerAtTime> messages, MsgCountAndNumOfHours requiredCountDuringPeriod) {
         List<Integer> indexes = findIndexesForSubsequentRecordsWithinPeriod(messages, requiredCountDuringPeriod);
-        ArrayList<DifficultyAtTime> messagesWithinPeriod = new ArrayList<>();
+        ArrayList<AnswerAtTime> messagesWithinPeriod = new ArrayList<>();
         if (!indexes.isEmpty()) {
             for (Integer index : indexes) {
                 messagesWithinPeriod.add(messages.get(index));
@@ -151,19 +151,19 @@ public class Reminder {
         return messagesWithinPeriod;
     }
 
-    private List<DifficultyAtTime> getSuccessLogAfterLastFailure(TranslationMetadata metadata) {
-        List<DifficultyAtTime> successLogAfterLastFailure = new ArrayList<>();
-        for (DifficultyAtTime difficultyAtTime : metadata.getRecentDifficulty()) {
-            if (difficultyAtTime.getAnswer() == Answer.INCORRECT) {
+    private List<AnswerAtTime> getSuccessLogAfterLastFailure(TranslationMetadata metadata) {
+        List<AnswerAtTime> successLogAfterLastFailure = new ArrayList<>();
+        for (AnswerAtTime answerAtTime : metadata.getRecentAnswers()) {
+            if (answerAtTime.getAnswer() == Answer.INCORRECT) {
                 successLogAfterLastFailure.clear();
             } else {
-                successLogAfterLastFailure.add(difficultyAtTime);
+                successLogAfterLastFailure.add(answerAtTime);
             }
         }
         return successLogAfterLastFailure;
     }
 
-    private List<Integer> findIndexesForSubsequentRecordsWithinPeriod(List<DifficultyAtTime> logOrderedByTime, MsgCountAndNumOfHours msgCountAndNumOfHours) {
+    private List<Integer> findIndexesForSubsequentRecordsWithinPeriod(List<AnswerAtTime> logOrderedByTime, MsgCountAndNumOfHours msgCountAndNumOfHours) {
         int recordsCount = msgCountAndNumOfHours.count;
         int hours = msgCountAndNumOfHours.numOfHours;
         List<Integer> foundMessages = new ArrayList<>();
@@ -185,7 +185,7 @@ public class Reminder {
         return records;
     }
 
-    private long getTimeDifferenceBetweenRecords(List<DifficultyAtTime> logOrderedByTime, int beginIndex, int endIndex) {
+    private long getTimeDifferenceBetweenRecords(List<AnswerAtTime> logOrderedByTime, int beginIndex, int endIndex) {
         Date currentLatest = logOrderedByTime.get(endIndex).getTimepoint();
         Date currentEarlest = logOrderedByTime.get(beginIndex).getTimepoint();
         return TimeUnit.MILLISECONDS.toHours(currentLatest.getTime() - currentEarlest.getTime());

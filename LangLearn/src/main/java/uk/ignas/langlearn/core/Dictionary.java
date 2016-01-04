@@ -42,10 +42,10 @@ public class Dictionary {
     }
 
     public Answer getDifficulty(TranslationMetadata metadata) {
-        if (metadata.getRecentDifficulty().size() == 0) {
+        if (metadata.getRecentAnswers().size() == 0) {
             return Answer.CORRECT;
         } else {
-            return metadata.getRecentDifficulty().get(metadata.getRecentDifficulty().size() - 1).getAnswer();
+            return metadata.getRecentAnswers().get(metadata.getRecentAnswers().size() - 1).getAnswer();
         }
     }
 

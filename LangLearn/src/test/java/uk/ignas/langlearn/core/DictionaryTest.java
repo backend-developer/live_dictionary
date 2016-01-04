@@ -80,7 +80,7 @@ public class DictionaryTest {
 
         dictionary.mark(translation, Answer.INCORRECT);
 
-        List<DifficultyAtTime> recentDifficulty = dao.getAllTranslationsWithMetadata().get(0).getMetadata().getRecentDifficulty();
+        List<AnswerAtTime> recentDifficulty = dao.getAllTranslationsWithMetadata().get(0).getMetadata().getRecentAnswers();
         assertThat(getLast(recentDifficulty).getAnswer(), is(equalTo(Answer.INCORRECT)));
     }
 

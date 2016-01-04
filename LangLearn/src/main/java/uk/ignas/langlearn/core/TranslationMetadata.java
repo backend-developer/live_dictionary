@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TranslationMetadata {
-    private List<DifficultyAtTime> recentDifficulty = new ArrayList<>();
+    private List<AnswerAtTime> recentAnswers = new ArrayList<>();
 
-    public TranslationMetadata(List<DifficultyAtTime> recentDifficulty) {
-        this.recentDifficulty = recentDifficulty;
+    public TranslationMetadata(List<AnswerAtTime> recentAnswers) {
+        this.recentAnswers = recentAnswers;
     }
 
     public static TranslationMetadata copy(TranslationMetadata from) {
         return new TranslationMetadata(
-                new ArrayList<>(from.getRecentDifficulty())
+                new ArrayList<>(from.getRecentAnswers())
         );
     }
 
-    public List<DifficultyAtTime> getRecentDifficulty() {
-        return recentDifficulty;
+    public List<AnswerAtTime> getRecentAnswers() {
+        return recentAnswers;
     }
 }

@@ -22,7 +22,7 @@ public class ReminderTest {
     public void brandNewTranslationShouldBeReminded() {
         Clock clock = mock(Clock.class);
         Reminder reminder = new Reminder(clock);
-        TranslationMetadata metadata = new TranslationMetadata(new ArrayList<DifficultyAtTime>());
+        TranslationMetadata metadata = new TranslationMetadata(new ArrayList<AnswerAtTime>());
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
 
@@ -35,7 +35,7 @@ public class ReminderTest {
         when(clock.getTime()).thenReturn(LEVEL_0.begin());
         Reminder reminder = new Reminder(clock);
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin())
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -49,7 +49,7 @@ public class ReminderTest {
         when(clock.getTime()).thenReturn(LEVEL_0.begin());
         Reminder reminder = new Reminder(clock);
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.INCORRECT, LEVEL_0.begin())
+                new AnswerAtTime(Answer.INCORRECT, LEVEL_0.begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -63,9 +63,9 @@ public class ReminderTest {
         when(clock.getTime()).thenReturn(LEVEL_0.begin());
         Reminder reminder = new Reminder(clock);
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.INCORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin())
+                new AnswerAtTime(Answer.INCORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -79,10 +79,10 @@ public class ReminderTest {
         when(clock.getTime()).thenReturn(LEVEL_0.begin());
         Reminder reminder = new Reminder(clock);
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.INCORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin())
+                new AnswerAtTime(Answer.INCORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -98,10 +98,10 @@ public class ReminderTest {
         when(clock.getTime()).thenReturn(LEVEL_1.begin());
         Reminder reminder = new Reminder(clock);
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.INCORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin())
+                new AnswerAtTime(Answer.INCORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -115,11 +115,11 @@ public class ReminderTest {
         when(clock.getTime()).thenReturn(LEVEL_1.end());
         Reminder reminder = new Reminder(clock);
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.INCORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin())
+                new AnswerAtTime(Answer.INCORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -133,12 +133,12 @@ public class ReminderTest {
         when(clock.getTime()).thenReturn(LEVEL_1.almostEnd());
         Reminder reminder = new Reminder(clock);
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.INCORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin())
+                new AnswerAtTime(Answer.INCORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -152,8 +152,8 @@ public class ReminderTest {
         Reminder reminder = new Reminder(clock);
         when(clock.getTime()).thenReturn(LEVEL_0.almostEnd());
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin())
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -167,8 +167,8 @@ public class ReminderTest {
         Reminder reminder = new Reminder(clock);
         when(clock.getTime()).thenReturn(LEVEL_0.end());
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.end())
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.end())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -184,10 +184,10 @@ public class ReminderTest {
         Date promotionPeriodLevel0PasswedThreeTimes = createDateOffsetedByHours(End.LEVEL_0 * 3);
         when(clock.getTime()).thenReturn(promotionPeriodLevel0PasswedThreeTimes);
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.end()),
-                new DifficultyAtTime(Answer.CORRECT, PromotionPeriodLevel0PassedTwice),
-                new DifficultyAtTime(Answer.CORRECT, promotionPeriodLevel0PasswedThreeTimes)
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.end()),
+                new AnswerAtTime(Answer.CORRECT, PromotionPeriodLevel0PassedTwice),
+                new AnswerAtTime(Answer.CORRECT, promotionPeriodLevel0PasswedThreeTimes)
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -203,11 +203,11 @@ public class ReminderTest {
         Date level0PassedAnd1PeriodPassedTwice = createDateOffsetedByHours(LEVEL_0.duraionHours() + LEVEL_1.duraionHours() * 2);
         when(clock.getTime()).thenReturn(level0PassedAnd1PeriodPassedTwice);
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.end()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.end()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.end()),
-                new DifficultyAtTime(Answer.CORRECT, level0PassedAnd1PeriodPassedTwice)
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.end()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.end()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.end()),
+                new AnswerAtTime(Answer.CORRECT, level0PassedAnd1PeriodPassedTwice)
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -222,11 +222,11 @@ public class ReminderTest {
         Date level0PassedAnd1PeriodPassedTwice = createDateOffsetedByHours(LEVEL_0.duraionHours() + LEVEL_1.duraionHours() * 2);
         when(clock.getTime()).thenReturn(level0PassedAnd1PeriodPassedTwice);
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.end()),
-                new DifficultyAtTime(Answer.CORRECT, level0PassedAnd1PeriodPassedTwice)
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.end()),
+                new AnswerAtTime(Answer.CORRECT, level0PassedAnd1PeriodPassedTwice)
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -241,13 +241,13 @@ public class ReminderTest {
         Date level0PassedAnd1PeriodPassedTwice = createDateOffsetedByHours(LEVEL_0.duraionHours() + LEVEL_1.duraionHours() * 2);
         when(clock.getTime()).thenReturn(level0PassedAnd1PeriodPassedTwice);
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.INCORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.end()),
-                new DifficultyAtTime(Answer.CORRECT, level0PassedAnd1PeriodPassedTwice)
+                new AnswerAtTime(Answer.INCORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.end()),
+                new AnswerAtTime(Answer.CORRECT, level0PassedAnd1PeriodPassedTwice)
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -261,8 +261,8 @@ public class ReminderTest {
         Reminder reminder = new Reminder(clock);
         when(clock.getTime()).thenReturn(LEVEL_0.end());
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin())
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -276,9 +276,9 @@ public class ReminderTest {
         Reminder reminder = new Reminder(clock);
         when(clock.getTime()).thenReturn(LEVEL_1.almostEnd());
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin())
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -292,10 +292,10 @@ public class ReminderTest {
         Reminder reminder = new Reminder(clock);
         when(clock.getTime()).thenReturn(LEVEL_1.almostEnd());
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin())
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -309,11 +309,11 @@ public class ReminderTest {
         Reminder reminder = new Reminder(clock);
         when(clock.getTime()).thenReturn(LEVEL_2.almostEnd());
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_2.begin())
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_2.begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -327,11 +327,11 @@ public class ReminderTest {
         Reminder reminder = new Reminder(clock);
         when(clock.getTime()).thenReturn(LEVEL_2.end());
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_2.begin())
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_2.begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -345,12 +345,12 @@ public class ReminderTest {
         Reminder reminder = new Reminder(clock);
         when(clock.getTime()).thenReturn(LEVEL_3.almostEnd());
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_2.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_3.begin())
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_2.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_3.begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -364,12 +364,12 @@ public class ReminderTest {
         Reminder reminder = new Reminder(clock);
         when(clock.getTime()).thenReturn(LEVEL_3.end());
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_2.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_3.begin())
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_2.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_3.begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -387,14 +387,14 @@ public class ReminderTest {
             Clock clock = mock(Clock.class);
             Reminder reminder = new Reminder(clock);
             TranslationMetadata metadata = new TranslationMetadata(newArrayList(
-                    new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                    new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                    new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                    new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin())
+                    new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                    new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                    new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                    new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin())
             ));
             for (PromotionPeriod levelUpToTest : levelsUpToTest) {
-                metadata.getRecentDifficulty().add(
-                        new DifficultyAtTime(Answer.CORRECT, levelUpToTest.begin())
+                metadata.getRecentAnswers().add(
+                        new AnswerAtTime(Answer.CORRECT, levelUpToTest.begin())
                 );
             }
 
@@ -417,15 +417,15 @@ public class ReminderTest {
             Reminder reminder = new Reminder(clock);
             when(clock.getTime()).thenReturn(levelToTest.end());
             TranslationMetadata metadata = new TranslationMetadata(newArrayList(
-                    new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                    new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                    new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                    new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin())
+                    new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                    new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                    new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                    new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin())
             ));
 
             for (PromotionPeriod levelUpToTest : levelsUpToTest) {
-                metadata.getRecentDifficulty().add(
-                        new DifficultyAtTime(Answer.CORRECT, levelUpToTest.begin())
+                metadata.getRecentAnswers().add(
+                        new AnswerAtTime(Answer.CORRECT, levelUpToTest.begin())
                 );
             }
 
@@ -441,17 +441,17 @@ public class ReminderTest {
         Reminder reminder = new Reminder(clock);
         when(clock.getTime()).thenReturn(LEVEL_OVER_7.by(1).almostEnd());
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_2.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_3.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_4.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_5.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_6.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_7.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_OVER_7.by(1).begin())
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_2.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_3.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_4.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_5.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_6.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_7.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_OVER_7.by(1).begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -465,17 +465,17 @@ public class ReminderTest {
         Reminder reminder = new Reminder(clock);
         when(clock.getTime()).thenReturn(LEVEL_OVER_7.by(1).end());
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_2.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_3.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_4.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_5.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_6.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_7.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_OVER_7.by(1).begin())
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_2.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_3.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_4.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_5.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_6.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_7.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_OVER_7.by(1).begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -489,18 +489,18 @@ public class ReminderTest {
         Reminder reminder = new Reminder(clock);
         when(clock.getTime()).thenReturn(LEVEL_OVER_7.by(2).almostEnd());
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_2.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_3.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_4.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_5.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_6.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_7.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_OVER_7.by(1).begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_OVER_7.by(2).begin())
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_2.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_3.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_4.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_5.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_6.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_7.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_OVER_7.by(1).begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_OVER_7.by(2).begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -514,18 +514,18 @@ public class ReminderTest {
         Reminder reminder = new Reminder(clock);
         when(clock.getTime()).thenReturn(LEVEL_OVER_7.by(2).end());
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_2.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_3.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_4.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_5.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_6.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_7.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_OVER_7.by(1).begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_OVER_7.by(2).begin())
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_2.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_3.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_4.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_5.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_6.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_7.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_OVER_7.by(1).begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_OVER_7.by(2).begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
@@ -539,16 +539,16 @@ public class ReminderTest {
         when(clock.getTime()).thenReturn(LEVEL_4.begin());
         Reminder reminder = new Reminder(clock);
         TranslationMetadata metadata = new TranslationMetadata(asList(
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_0.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_1.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_2.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_3.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_4.begin()),
-                new DifficultyAtTime(Answer.INCORRECT, LEVEL_4.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_4.begin()),
-                new DifficultyAtTime(Answer.CORRECT, LEVEL_4.begin())
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_0.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_1.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_2.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_3.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_4.begin()),
+                new AnswerAtTime(Answer.INCORRECT, LEVEL_4.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_4.begin()),
+                new AnswerAtTime(Answer.CORRECT, LEVEL_4.begin())
         ));
 
         boolean shouldRemind = reminder.shouldBeReminded(metadata);
