@@ -80,8 +80,8 @@ public class DictionaryTest {
 
         dictionary.mark(translation, Answer.INCORRECT);
 
-        List<AnswerAtTime> recentDifficulty = dao.getAllTranslationsWithMetadata().get(0).getMetadata().getRecentAnswers();
-        assertThat(getLast(recentDifficulty).getAnswer(), is(equalTo(Answer.INCORRECT)));
+        List<AnswerAtTime> recentAnswers = dao.getAllTranslationsWithMetadata().get(0).getMetadata().getRecentAnswers();
+        assertThat(getLast(recentAnswers).getAnswer(), is(equalTo(Answer.INCORRECT)));
     }
 
     @Test
@@ -269,7 +269,7 @@ public class DictionaryTest {
     }
 
     @Test
-    public void shouldNotMarkDifficultyForRecordsWithoutId() {
+    public void shouldNotAllowToAnswerTranslationsWithoutId() {
         Dictionary dictionary = new Dictionary(dao);
 
         boolean isUpdated = dictionary.mark(createForeignToNativeTranslation("duplicate", "dup_translation"), Answer.INCORRECT);
@@ -278,7 +278,7 @@ public class DictionaryTest {
     }
 
     @Test
-    public void shouldNotMarkDifficultyForRecordsNotInDb() {
+    public void shouldNotAllowToAnswerTranslationsApsentInDb() {
         Dictionary dictionary = new Dictionary(dao);
         int nonexistentId = 8949861;
 
@@ -288,7 +288,7 @@ public class DictionaryTest {
     }
 
     @Test
-    public void shouldMarkDifficulty() {
+    public void shouldAllowAnswerIncorrectly() {
         Dictionary dictionary = new Dictionary(dao);
         dao.insert(singletonList(createForeignToNativeTranslation("word", "la palabra")));
         Translation translation = dao.getAllTranslationsWithMetadata().iterator().next();

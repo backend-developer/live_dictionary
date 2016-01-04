@@ -72,10 +72,6 @@ public class Dictionary {
         return translationToReturn;
     }
 
-
-
-
-
     private Translation chooseTranslationPreferingDifficultOrNewer() {
         Translation translationToReturn;
         if (difficultTranslations.size() > 0 && difficultTranslations.size() > random.nextInt(DIFFICULT_TRANSLATIONS_LIMIT)) {
