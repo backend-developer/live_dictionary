@@ -66,16 +66,16 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
             markTranslationAsEasyButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    publishNextTranslation();
                     dictionary.mark(currentTranslation, Answer.CORRECT);
+                    publishNextTranslation();
                 }
             });
 
             markTranslationAsDifficultButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    publishNextTranslation();
                     dictionary.mark(currentTranslation, Answer.INCORRECT);
+                    publishNextTranslation();
                 }
             });
         }catch (Exception e){

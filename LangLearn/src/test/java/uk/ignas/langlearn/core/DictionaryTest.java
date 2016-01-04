@@ -13,6 +13,7 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -266,6 +267,18 @@ public class DictionaryTest {
         } catch (LiveDictionaryException e) {
             assertThat(e.getMessage(), containsString("no questions found")) ;
         }
+    }
+
+    @Test
+    public void answersShouldBeDeletedAlongWithTranslation() {
+        dao.insertSingle(createForeignToNativeTranslation("word", "la palabra"));
+        Translation translation = dao.getAllTranslations().get(0);
+        Dictionary dictionary = new Dictionary(dao);
+        dictionary.mark(translation, Answer.CORRECT);
+
+        dictionary.delete(translation);
+
+        assertThat(dao.getAnswersLogByTranslationId().get(translation.getId()), empty());
     }
 
     @Test

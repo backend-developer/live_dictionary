@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
@@ -123,6 +124,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         SQLiteDatabase db = this.getWritableDatabase();
         try {
             db.beginTransaction();
+            deleteAnswersByTranslationIds(collectIds(translations));
             for (Translation translation : translations) {
                 this.deleteSingle(translation);
             }
@@ -130,6 +132,23 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         } finally {
             db.endTransaction();
         }
+    }
+
+    private List<Integer> collectIds(Collection<Translation> translations) {
+        List<Integer> translationIdsToDelete = new ArrayList<>();
+        for (Translation translation : translations) {
+            translationIdsToDelete.add(translation.getId());
+        }
+        return translationIdsToDelete;
+    }
+
+    private void deleteAnswersByTranslationIds(List<Integer> translationIdsToDelete) {
+        String inClause = Joiner.on(", ").join(translationIdsToDelete);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(ANSWERS_LOG_TABLE_NAME,
+                COLUMN_TRANSLATION_ID + " IN (?) ",
+                new String[]{inClause});
     }
 
     private Integer deleteById(int id) {
@@ -144,8 +163,8 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         return db.delete(TRANSLATIONS_TABLE_NAME,
                 COLUMN_NATIVE_WORD + " = ? AND " + COLUMN_FOREIGN_WORD + " = ? ",
                 new String[]{translation.getNativeWord().get(), translation.getForeignWord().get()});
-    }
 
+    }
 
 
     @Override
@@ -233,16 +252,11 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     @Override
     public boolean logAnswer(Translation translation, Answer answer, Date time) {
         SQLiteDatabase db = this.getWritableDatabase();
-        if (answer == Answer.CORRECT) {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(COLUMN_TRANSLATION_ID, translation.getId());
-            contentValues.put(COLUMN_TIME_ANSWERED, time.getTime());
-            contentValues.put(COLUMN_IS_CORRECT, true);
-            long id = db.insert(ANSWERS_LOG_TABLE_NAME, null, contentValues);
-            return id != ERROR_OCURRED;
-        } else {
-            db.execSQL("DELETE FROM " + ANSWERS_LOG_TABLE_NAME + " WHERE translation_id = " + translation.getId());
-            return true;
-        }
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_TRANSLATION_ID, translation.getId());
+        contentValues.put(COLUMN_TIME_ANSWERED, time.getTime());
+        contentValues.put(COLUMN_IS_CORRECT, answer.isCorrect());
+        long id = db.insert(ANSWERS_LOG_TABLE_NAME, null, contentValues);
+        return id != ERROR_OCURRED;
     }
 }

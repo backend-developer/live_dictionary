@@ -56,6 +56,7 @@ public class TranslationDaoStub implements TranslationDao {
     @Override
     public void delete(Collection<Translation> translations) {
         for (Translation t: translations) {
+            answersByTranslationId.removeAll(t.getId());
             inMemoryTranslations.remove(t);
         }
     }
