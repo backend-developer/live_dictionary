@@ -69,9 +69,6 @@ public class Dictionary {
         }
         Translation translationToReturn = null;
         while (translationToReturn == null) {
-            if (questions.size() == 0) {
-                throw new LiveDictionaryException("There are no more difficult words");
-            }
             Translation candidateTranslation = chooseTranslationPreferingDifficultOrNewer();
 
             if (reminder.shouldBeReminded(candidateTranslation.getMetadata())) {
@@ -85,8 +82,13 @@ public class Dictionary {
     }
 
     private Translation chooseTranslationPreferingDifficultOrNewer() {
+        if (questions.size() == 0 && difficultTranslations.size() == 0) {
+            throw new LiveDictionaryException("There are no more difficult words");
+        }
         Translation translationToReturn;
-        if (difficultTranslations.size() > 0 && difficultTranslations.size() > random.nextInt(DIFFICULT_TRANSLATIONS_LIMIT)) {
+        if (questions.size() == 0 ||
+                difficultTranslations.size() > 0 &&
+                difficultTranslations.size() > random.nextInt(DIFFICULT_TRANSLATIONS_LIMIT)) {
             translationToReturn = getRandomDifficultTranslation();
         } else {
             translationToReturn = chooseTranslationPreferringNewer();

@@ -56,11 +56,26 @@ public class DictionaryTest {
     @Test
     public void shouldNotCrashWhenThereAreFewTranslations() {
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
-
         Dictionary dictionary = new Dictionary(dao);
+
         Translation translation = dictionary.getRandomTranslation();
+
         assertThat(translation.getForeignWord().get(), is(equalTo("palabra")));
     }
+
+    @Test
+    public void shouldNotCrashWhenAllTheWordsAreUncorrectlyAnswered() {
+        dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
+        Translation translation = dao.getAllTranslations().get(0);
+        Dictionary dictionary = new Dictionary(dao);
+        dictionary.mark(translation, Answer.INCORRECT);
+
+        List<Translation> translations = LiveDictionaryDsl.retrieveTranslationsNTimes(dictionary, 10);
+
+        int percentage = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern(translations, "word");
+        assertThat(percentage, is(100));
+    }
+
 
     @Test
     public void shouldSynchronizeWithDbOnDemand() {
@@ -225,7 +240,6 @@ public class DictionaryTest {
         dictionary.mark(easyTranslation, Answer.CORRECT);
 
         List<Translation> notYetStaged = LiveDictionaryDsl.retrieveTranslationsNTimes(dictionary, 10);
-
         int percentage = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern(notYetStaged, otherTranslation.getNativeWord().get());
         assertThat(percentage, is(equalTo(100)));
     }
