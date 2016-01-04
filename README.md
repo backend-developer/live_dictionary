@@ -1,3 +1,2 @@
 # live_dictionary
-Program is aiding in the process of learning new language, by asking words person wants to learn.
-
+Program aids in the process of learning new language by asking the words user wants to learn.
