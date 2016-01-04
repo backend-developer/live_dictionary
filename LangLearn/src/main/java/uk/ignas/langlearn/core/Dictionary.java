@@ -156,7 +156,6 @@ public class Dictionary {
     private boolean updateIfIsAnIdOfAnyOfTranslations(Translation translation, Collection<Translation> questions) {
         for (Translation t : questions) {
             if (Objects.equals(t.getId(), translation.getId())) {
-                Translation byId = dao.getById(t.getId());
 
                 dao.update(translation.getId(), translation.getForeignWord(), translation.getNativeWord());
                 return true;

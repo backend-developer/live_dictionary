@@ -194,34 +194,6 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     }
 
 
-
-    @Override
-    public Translation getById(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = null;
-        Translation translation = null;
-        try {
-            res = db.query(TRANSLATIONS_TABLE_NAME,
-                null, " id = ? ", new String[]{String.valueOf(id)}, null, null, null);
-            res.moveToFirst();
-
-            int translationId = res.getInt(res.getColumnIndex(COLUMN_ID));
-            List<DifficultyAtTime> recentLatestDatesWhenMarketAsEasy = getAnswersForTranslation(translationId);
-            translation = new Translation(
-                    translationId,
-                    new ForeignWord(res.getString(res.getColumnIndex(COLUMN_FOREIGN_WORD))),
-                    new NativeWord(res.getString(res.getColumnIndex(COLUMN_NATIVE_WORD))),
-                    new TranslationMetadata(Difficulty.valueOf(res.getString(res.getColumnIndex(COLUMN_TRANSLATION_DIFFICULTY))),
-                            recentLatestDatesWhenMarketAsEasy));
-        } finally {
-            if (res != null) {
-                close();
-            }
-        }
-
-        return translation;
-    }
-
     public static final String ANSWERS_LOG_TABLE_NAME = "answer_log";
 
     public static final String COLUMN_TRANSLATION_ID = "translation_id";

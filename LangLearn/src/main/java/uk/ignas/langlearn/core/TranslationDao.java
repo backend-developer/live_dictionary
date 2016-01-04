@@ -15,7 +15,5 @@ public interface TranslationDao {
 
     List<Translation> getAllTranslations();
 
-    Translation getById(int id);
-
     boolean logAnswer(Translation translation, Difficulty difficulty, Date time);
 }

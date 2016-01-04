@@ -73,20 +73,6 @@ public class TranslationDaoStub implements TranslationDao {
     }
 
     @Override
-    public Translation getById(int id) {
-        for (Translation t: inMemoryTranslations) {
-            if (t.getId() == id) {
-                return new Translation(
-                        t.getId(),
-                        t.getForeignWord(),
-                        t.getNativeWord(),
-                        TranslationMetadata.copy(t.getMetadata()));
-            }
-        }
-        throw new RuntimeException("record not found");
-    }
-
-    @Override
     public boolean logAnswer(Translation translation, Difficulty difficulty, Date time) {
 
         for (Translation t: inMemoryTranslations) {
