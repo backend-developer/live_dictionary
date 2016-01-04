@@ -34,18 +34,18 @@ public class Dictionary {
         Collections.reverse(questions);
         this.difficultTranslations.clear();
         for (Translation t : new ArrayList<>(questions)) {
-            if (getDifficulty(t.getMetadata()) == Difficulty.DIFFICULT) {
+            if (getDifficulty(t.getMetadata()) == Answer.INCORRECT) {
                 questions.remove(t);
                 difficultTranslations.add(t);
             }
         }
     }
 
-    public Difficulty getDifficulty(TranslationMetadata metadata) {
+    public Answer getDifficulty(TranslationMetadata metadata) {
         if (metadata.getRecentDifficulty().size() == 0) {
-            return Difficulty.EASY;
+            return Answer.CORRECT;
         } else {
-            return metadata.getRecentDifficulty().get(metadata.getRecentDifficulty().size() - 1).getDifficulty();
+            return metadata.getRecentDifficulty().get(metadata.getRecentDifficulty().size() - 1).getAnswer();
         }
     }
 
@@ -118,13 +118,13 @@ public class Dictionary {
         return translations.get(0);
     }
 
-    public boolean mark(Translation translation, Difficulty difficulty) {
+    public boolean mark(Translation translation, Answer answer) {
         if (translation.getId() == null) {
             return false;
         }
         boolean result;
         try {
-            result = dao.logAnswer(translation, difficulty, clock.getTime());
+            result = dao.logAnswer(translation, answer, clock.getTime());
         } catch (RuntimeException e) {
             return false;
         }

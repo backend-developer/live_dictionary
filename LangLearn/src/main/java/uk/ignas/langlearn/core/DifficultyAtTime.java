@@ -4,18 +4,18 @@ import java.util.Date;
 
 public class DifficultyAtTime {
     private Date timepoint;
-    private Difficulty difficulty;
+    private Answer answer;
 
-    public DifficultyAtTime(Difficulty difficulty, Date timepoint) {
+    public DifficultyAtTime(Answer answer, Date timepoint) {
         this.timepoint = timepoint;
-        this.difficulty = difficulty;
+        this.answer = answer;
     }
 
     public Date getTimepoint() {
         return timepoint;
     }
 
-    public Difficulty getDifficulty() {
-        return difficulty;
+    public Answer getAnswer() {
+        return answer;
     }
 }

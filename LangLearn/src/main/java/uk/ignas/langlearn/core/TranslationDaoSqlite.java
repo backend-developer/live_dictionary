@@ -203,9 +203,9 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
 
             while (!res.isAfterLast()) {
                 int newTranslationId = res.getInt(res.getColumnIndex(COLUMN_TRANSLATION_ID));
-                Difficulty difficulty = res.getInt(res.getColumnIndex(COLUMN_IS_CORRECT)) > 0 ? Difficulty.EASY : Difficulty.DIFFICULT;
+                Answer answer = res.getInt(res.getColumnIndex(COLUMN_IS_CORRECT)) > 0 ? Answer.CORRECT : Answer.INCORRECT;
                 long timeOfAnswer = res.getLong(res.getColumnIndex(COLUMN_TIME_ANSWERED));
-                answersLogByTranslationId.put(newTranslationId, new DifficultyAtTime(difficulty, new Date(timeOfAnswer)));
+                answersLogByTranslationId.put(newTranslationId, new DifficultyAtTime(answer, new Date(timeOfAnswer)));
                 res.moveToNext();
             }
         } finally {
@@ -240,9 +240,9 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     }
 
     @Override
-    public boolean logAnswer(Translation translation, Difficulty difficulty, Date time) {
+    public boolean logAnswer(Translation translation, Answer answer, Date time) {
         SQLiteDatabase db = this.getWritableDatabase();
-        if (difficulty == Difficulty.EASY) {
+        if (answer == Answer.CORRECT) {
             ContentValues contentValues = new ContentValues();
             contentValues.put(COLUMN_TRANSLATION_ID, translation.getId());
             contentValues.put(COLUMN_TIME_ANSWERED, time.getTime());

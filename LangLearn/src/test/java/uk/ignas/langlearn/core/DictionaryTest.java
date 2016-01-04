@@ -78,10 +78,10 @@ public class DictionaryTest {
         Translation translation = getOnlyElement(dao.getAllTranslationsWithMetadata());
         Dictionary dictionary = new Dictionary(dao);
 
-        dictionary.mark(translation, Difficulty.DIFFICULT);
+        dictionary.mark(translation, Answer.INCORRECT);
 
         List<DifficultyAtTime> recentDifficulty = dao.getAllTranslationsWithMetadata().get(0).getMetadata().getRecentDifficulty();
-        assertThat(getLast(recentDifficulty).getDifficulty(), is(equalTo(Difficulty.DIFFICULT)));
+        assertThat(getLast(recentDifficulty).getAnswer(), is(equalTo(Answer.INCORRECT)));
     }
 
     @Test
@@ -118,7 +118,7 @@ public class DictionaryTest {
 
         for (Translation t: new HashSet<>(dao.getAllTranslationsWithMetadata())) {
             if (t.getNativeWord().get().contains("DifficultWord")) {
-                dictionary.mark(t, Difficulty.DIFFICULT);
+                dictionary.mark(t, Answer.INCORRECT);
             }
         }
         final List<Translation> retrievedTranslations = retrieveTranslationsNTimes(dictionary, 100);
@@ -137,11 +137,11 @@ public class DictionaryTest {
 
         for (Translation t: new HashSet<>(dao.getAllTranslationsWithMetadata())) {
             if (t.getNativeWord().get().contains("DifficultWord")) {
-                dictionary.mark(t, Difficulty.DIFFICULT);
+                dictionary.mark(t, Answer.INCORRECT);
             }
             if (t.getNativeWord().get().contains("WasDifficultButNowEasyWord")) {
-                dictionary.mark(t, Difficulty.DIFFICULT);
-                dictionary.mark(t, Difficulty.EASY);
+                dictionary.mark(t, Answer.INCORRECT);
+                dictionary.mark(t, Answer.CORRECT);
             }
         }
         final List<Translation> retrievedTranslations = retrieveTranslationsNTimes(dictionary, 1000);
@@ -158,7 +158,7 @@ public class DictionaryTest {
 
         for (Translation t: new HashSet<>(dao.getAllTranslationsWithMetadata())) {
             if (t.getNativeWord().get().contains("DifficultWord")) {
-                dictionary.mark(t, Difficulty.DIFFICULT);
+                dictionary.mark(t, Answer.INCORRECT);
             }
         }
         final List<Translation> retrievedTranslations = retrieveTranslationsNTimes(dictionary, 1000);
@@ -173,7 +173,7 @@ public class DictionaryTest {
         dao.insert(getNTranslationsWithNativeWordStartingWith(10, "DifficultWord"));
         for (Translation t: new HashSet<>(dao.getAllTranslationsWithMetadata())) {
             if (t.getNativeWord().get().contains("DifficultWord")) {
-                dao.logAnswer(t, Difficulty.DIFFICULT, new Date());
+                dao.logAnswer(t, Answer.INCORRECT, new Date());
             }
         }
         Dictionary dictionary = new Dictionary(dao);
@@ -188,11 +188,11 @@ public class DictionaryTest {
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslationsWithMetadata().get(0);
         Dictionary dictionary = new Dictionary(dao);
-        dictionary.mark(translation, Difficulty.EASY);
-        dictionary.mark(translation, Difficulty.DIFFICULT);
-        dictionary.mark(translation, Difficulty.EASY);
-        dictionary.mark(translation, Difficulty.EASY);
-        dictionary.mark(translation, Difficulty.EASY);
+        dictionary.mark(translation, Answer.CORRECT);
+        dictionary.mark(translation, Answer.INCORRECT);
+        dictionary.mark(translation, Answer.CORRECT);
+        dictionary.mark(translation, Answer.CORRECT);
+        dictionary.mark(translation, Answer.CORRECT);
 
         gettingNextTranslationShouldThroughLDEwithMessage(dictionary, "There are no more difficult words");
     }
@@ -204,8 +204,8 @@ public class DictionaryTest {
         Clock clock = mock(Clock.class);
         Dictionary dictionary = new Dictionary(dao, clock);
         when(clock.getTime()).thenReturn(NOW);
-        dictionary.mark(translation, Difficulty.EASY);
-        dictionary.mark(translation, Difficulty.EASY);
+        dictionary.mark(translation, Answer.CORRECT);
+        dictionary.mark(translation, Answer.CORRECT);
         when(clock.getTime()).thenReturn(LEVEL_1_STAGING_PERIOD_NOT_YET_PASSED);
 
         gettingNextTranslationShouldThroughLDEwithMessage(dictionary, "There are no more difficult words");
@@ -220,8 +220,8 @@ public class DictionaryTest {
         Translation otherTranslation = dao.getAllTranslationsWithMetadata().get(1);
         Dictionary dictionary = new Dictionary(dao);
 
-        dictionary.mark(easyTranslation, Difficulty.EASY);
-        dictionary.mark(easyTranslation, Difficulty.EASY);
+        dictionary.mark(easyTranslation, Answer.CORRECT);
+        dictionary.mark(easyTranslation, Answer.CORRECT);
 
         List<Translation> notYetStaged = LiveDictionaryDsl.retrieveTranslationsNTimes(dictionary, 10);
 
@@ -272,7 +272,7 @@ public class DictionaryTest {
     public void shouldNotMarkDifficultyForRecordsWithoutId() {
         Dictionary dictionary = new Dictionary(dao);
 
-        boolean isUpdated = dictionary.mark(createForeignToNativeTranslation("duplicate", "dup_translation"), Difficulty.DIFFICULT);
+        boolean isUpdated = dictionary.mark(createForeignToNativeTranslation("duplicate", "dup_translation"), Answer.INCORRECT);
 
         assertThat(isUpdated, is(false));
     }
@@ -282,7 +282,7 @@ public class DictionaryTest {
         Dictionary dictionary = new Dictionary(dao);
         int nonexistentId = 8949861;
 
-        boolean isUpdated = dictionary.mark(new Translation(nonexistentId, new ForeignWord("la duplicado"), new NativeWord("duplication")), Difficulty.DIFFICULT);
+        boolean isUpdated = dictionary.mark(new Translation(nonexistentId, new ForeignWord("la duplicado"), new NativeWord("duplication")), Answer.INCORRECT);
 
         assertThat(isUpdated, is(false));
     }
@@ -293,7 +293,7 @@ public class DictionaryTest {
         dao.insert(singletonList(createForeignToNativeTranslation("word", "la palabra")));
         Translation translation = dao.getAllTranslationsWithMetadata().iterator().next();
 
-        boolean isUpdated = dictionary.mark(translation, Difficulty.DIFFICULT);
+        boolean isUpdated = dictionary.mark(translation, Answer.INCORRECT);
 
         assertThat(isUpdated, is(true));
     }

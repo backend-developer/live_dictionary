@@ -15,5 +15,5 @@ public interface TranslationDao {
 
     List<Translation> getAllTranslationsWithMetadata();
 
-    boolean logAnswer(Translation translation, Difficulty difficulty, Date time);
+    boolean logAnswer(Translation translation, Answer answer, Date time);
 }

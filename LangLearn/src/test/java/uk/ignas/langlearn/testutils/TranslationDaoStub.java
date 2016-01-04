@@ -73,11 +73,11 @@ public class TranslationDaoStub implements TranslationDao {
     }
 
     @Override
-    public boolean logAnswer(Translation translation, Difficulty difficulty, Date time) {
+    public boolean logAnswer(Translation translation, Answer answer, Date time) {
 
         for (Translation t: inMemoryTranslations) {
             if (Objects.equals(t.getId(), translation.getId())) {
-                return t.getMetadata().getRecentDifficulty().add(new DifficultyAtTime(difficulty, time));
+                return t.getMetadata().getRecentDifficulty().add(new DifficultyAtTime(answer, time));
             }
         }
         return false;

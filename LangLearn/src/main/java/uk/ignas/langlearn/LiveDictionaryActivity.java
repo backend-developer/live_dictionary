@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import com.google.common.base.Supplier;
 import uk.ignas.langlearn.core.*;
 
 public class LiveDictionaryActivity extends Activity implements ModifyDictionaryDialog.ModifyDictionaryListener {
@@ -68,7 +67,7 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
                 @Override
                 public void onClick(View view) {
                     publishNextTranslation();
-                    dictionary.mark(currentTranslation, Difficulty.EASY);
+                    dictionary.mark(currentTranslation, Answer.CORRECT);
                 }
             });
 
@@ -76,7 +75,7 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
                 @Override
                 public void onClick(View view) {
                     publishNextTranslation();
-                    dictionary.mark(currentTranslation, Difficulty.DIFFICULT);
+                    dictionary.mark(currentTranslation, Answer.INCORRECT);
                 }
             });
         }catch (Exception e){

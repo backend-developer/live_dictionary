@@ -154,7 +154,7 @@ public class Reminder {
     private List<DifficultyAtTime> getSuccessLogAfterLastFailure(TranslationMetadata metadata) {
         List<DifficultyAtTime> successLogAfterLastFailure = new ArrayList<>();
         for (DifficultyAtTime difficultyAtTime : metadata.getRecentDifficulty()) {
-            if (difficultyAtTime.getDifficulty() == Difficulty.DIFFICULT) {
+            if (difficultyAtTime.getAnswer() == Answer.INCORRECT) {
                 successLogAfterLastFailure.clear();
             } else {
                 successLogAfterLastFailure.add(difficultyAtTime);
