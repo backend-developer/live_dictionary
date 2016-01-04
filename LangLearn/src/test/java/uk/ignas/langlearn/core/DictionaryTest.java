@@ -21,10 +21,7 @@ import static uk.ignas.langlearn.testutils.LiveDictionaryDsl.countPercentageOfRe
 import static uk.ignas.langlearn.testutils.LiveDictionaryDsl.retrieveTranslationsNTimes;
 
 public class DictionaryTest {
-
-
     private static final Date NOW;
-
 
     static {
         Calendar c = Calendar.getInstance();
