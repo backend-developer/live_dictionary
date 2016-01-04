@@ -34,11 +34,23 @@ public class Dictionary {
         Collections.reverse(questions);
         this.difficultTranslations.clear();
         for (Translation t : new ArrayList<>(questions)) {
-            if (getDifficulty(t.getMetadata()) == Answer.INCORRECT) {
+            TranslationMetadata metadata = t.getMetadata();
+            boolean isLastAnswerIncorrect = isLastAnswerCorrect(metadata);
+            if (!isLastAnswerIncorrect) {
                 questions.remove(t);
                 difficultTranslations.add(t);
             }
         }
+    }
+
+    private boolean isLastAnswerCorrect(TranslationMetadata metadata) {
+        Answer result;
+        if (metadata.getRecentAnswers().size() == 0) {
+            result = Answer.CORRECT;
+        } else {
+            result = metadata.getRecentAnswers().get(metadata.getRecentAnswers().size() - 1).getAnswer();
+        }
+        return result != Answer.INCORRECT;
     }
 
     public Answer getDifficulty(TranslationMetadata metadata) {
