@@ -7,7 +7,7 @@ public class Translation {
     private TranslationMetadata metadata;
 
     public Translation(ForeignWord foreignWord, NativeWord nativeWord) {
-        this(foreignWord, nativeWord, null);
+        this(foreignWord, nativeWord, TranslationMetadata.createEmpty());
     }
 
     public Translation(ForeignWord foreignWord, NativeWord nativeWord, TranslationMetadata metadata) {
@@ -22,7 +22,7 @@ public class Translation {
     }
 
     public Translation(Integer id, ForeignWord foreignWord, NativeWord nativeWord) {
-        this(id, foreignWord, nativeWord, null);
+        this(id, foreignWord, nativeWord, TranslationMetadata.createEmpty());
     }
 
     public Translation(Integer id, ForeignWord foreignWord, NativeWord nativeWord, TranslationMetadata metadata) {

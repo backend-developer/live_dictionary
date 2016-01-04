@@ -16,6 +16,10 @@ public class TranslationMetadata {
         );
     }
 
+    public static TranslationMetadata createEmpty() {
+        return new TranslationMetadata(new ArrayList<AnswerAtTime>());
+    }
+
     public List<AnswerAtTime> getRecentAnswers() {
         return recentAnswers;
     }

@@ -23,12 +23,10 @@ public class TranslationDaoStub implements TranslationDao {
             return false;
         }
 
-        TranslationMetadata emptyMetadata = new TranslationMetadata(new ArrayList<AnswerAtTime>());
         inMemoryTranslations.add(new Translation(
                 sequence++,
                 translation.getForeignWord(),
-                translation.getNativeWord(),
-                emptyMetadata));
+                translation.getNativeWord()));
         return true;
     }
 
@@ -36,8 +34,7 @@ public class TranslationDaoStub implements TranslationDao {
     public int update(int id, ForeignWord foreignWord, NativeWord nativeWord) {
         Translation oldTranslation = getTranslationById(id);
         if (oldTranslation != null) {
-            TranslationMetadata emptyMetadata = new TranslationMetadata(new ArrayList<AnswerAtTime>());
-            Translation translationsToUpgrade = new Translation(foreignWord, nativeWord, emptyMetadata);
+            Translation translationsToUpgrade = new Translation(foreignWord, nativeWord);
             inMemoryTranslations.remove(oldTranslation);
             inMemoryTranslations.add(new Translation(id, translationsToUpgrade));
             return 1;
