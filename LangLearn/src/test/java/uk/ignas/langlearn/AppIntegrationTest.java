@@ -72,7 +72,7 @@ public class AppIntegrationTest {
 
         createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, dao);
 
-        assertThat(getFirst(dao.getAllTranslations(), null).getForeignWord().get(), is(equalTo("morado")));
+        assertThat(getFirst(dao.getAllTranslationsWithMetadata(), null).getForeignWord().get(), is(equalTo("morado")));
     }
 
     @Test
@@ -83,7 +83,7 @@ public class AppIntegrationTest {
 
         createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, dao);
 
-        assertThat(dao.getAllTranslations(), not(hasItem(translationsToBeReplaced)));
+        assertThat(dao.getAllTranslationsWithMetadata(), not(hasItem(translationsToBeReplaced)));
     }
 
     @Test
@@ -91,7 +91,7 @@ public class AppIntegrationTest {
         TranslationDaoStub dao = new TranslationDaoStub();
         createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, dao);
         Dictionary q = new Dictionary(dao);
-        List<Translation> translations = dao.getAllTranslations();
+        List<Translation> translations = dao.getAllTranslationsWithMetadata();
         int size = translations.size();
         List<Translation> eldestTranslations = translations.subList(0, 100);
         List<Translation> newestTranslations = translations.subList(size - 100, size);

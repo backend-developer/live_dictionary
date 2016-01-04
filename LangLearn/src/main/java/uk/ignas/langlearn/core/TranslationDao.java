@@ -13,7 +13,7 @@ public interface TranslationDao {
 
     void delete(Collection<Translation> translations);
 
-    List<Translation> getAllTranslations();
+    List<Translation> getAllTranslationsWithMetadata();
 
     boolean logAnswer(Translation translation, Difficulty difficulty, Date time);
 }

@@ -6,8 +6,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 public class TranslationDaoSqlite extends SQLiteOpenHelper implements TranslationDao {
 
@@ -73,7 +78,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         SQLiteDatabase db = this.getWritableDatabase();
         try {
             db.beginTransaction();
-            for (Translation translation: translations) {
+            for (Translation translation : translations) {
                 if (!this.insertSingle(translation)) {
                     throw new RuntimeException("could not insert all values");
                 }
@@ -122,7 +127,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         SQLiteDatabase db = this.getWritableDatabase();
         try {
             db.beginTransaction();
-            for (Translation translation: translations) {
+            for (Translation translation : translations) {
                 this.deleteSingle(translation);
             }
             db.setTransactionSuccessful();
@@ -146,53 +151,67 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     }
 
     @Override
-    public List<Translation> getAllTranslations() {
+    public List<Translation> getAllTranslationsWithMetadata() {
+        List<Translation> allTranslations = getAllTranslations();
+        ListMultimap<Integer, DifficultyAtTime> answersLogByTranslationId = getAnswersLogByTranslationId();
+        for (Translation translation : allTranslations) {
+            List<DifficultyAtTime> answersLog = answersLogByTranslationId.get(translation.getId());
+            translation.getMetadata().getRecentDifficulty().addAll(answersLog);
+        }
+        return allTranslations;
+    }
+
+
+    private List<Translation> getAllTranslations() {
         List<Translation> translations = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
-        String thisTranslationId = "this_translation_id";
         Cursor res = null;
         try {
-            res = db.rawQuery("select " +
-                    TRANSLATIONS_TABLE_NAME + "." + COLUMN_ID + " as " + thisTranslationId + ", " +
-                    COLUMN_FOREIGN_WORD + ", " +
-                    COLUMN_NATIVE_WORD + ", " +
-                    COLUMN_TIME_ANSWERED + ", " +
-                    COLUMN_TRANSLATION_DIFFICULTY
-                    + " from " + TRANSLATIONS_TABLE_NAME + " LEFT JOIN " + ANSWERS_LOG_TABLE_NAME + " ON " + TRANSLATIONS_TABLE_NAME + "." + COLUMN_ID + " = " + ANSWERS_LOG_TABLE_NAME + "." + COLUMN_TRANSLATION_ID + " ORDER BY " + thisTranslationId, null);
+            res = db.rawQuery("select * from " + TRANSLATIONS_TABLE_NAME, null);
             res.moveToFirst();
-            Translation currentTranslation = null;
-            int lastTranslation = -1;
+
             while (!res.isAfterLast()) {
-                int newTranslationId = res.getInt(res.getColumnIndex(thisTranslationId));
-                Difficulty difficulty = Difficulty.valueOf(res.getString(res.getColumnIndex(COLUMN_TRANSLATION_DIFFICULTY)));
-                if (newTranslationId != lastTranslation) {
-                    currentTranslation = new Translation(
-                            newTranslationId,
-                            new ForeignWord(res.getString(res.getColumnIndex(COLUMN_FOREIGN_WORD))),
-                            new NativeWord(res.getString(res.getColumnIndex(COLUMN_NATIVE_WORD))),
-                            new TranslationMetadata(difficulty,
-                                    new ArrayList<DifficultyAtTime>()));
-                    translations.add(currentTranslation);
-                    lastTranslation = newTranslationId;
-                }
-
-                long timeOfAnswer = res.getLong(res.getColumnIndex(COLUMN_TIME_ANSWERED));
-
-                currentTranslation.getMetadata().getRecentDifficulty().add(new DifficultyAtTime(
-                        difficulty, new Date(timeOfAnswer)
-                ));
-
+                translations.add(new Translation(
+                        res.getInt(res.getColumnIndex(COLUMN_ID)),
+                        new ForeignWord(res.getString(res.getColumnIndex(COLUMN_FOREIGN_WORD))),
+                        new NativeWord(res.getString(res.getColumnIndex(COLUMN_NATIVE_WORD))),
+                        new TranslationMetadata(Difficulty.EASY,
+                                new ArrayList<DifficultyAtTime>())));
                 res.moveToNext();
             }
         } finally {
-             if (res != null) {
-                 res.close();
-             }
+            if (res != null) {
+                res.close();
+            }
         }
         return translations;
     }
 
+    private ListMultimap<Integer, DifficultyAtTime> getAnswersLogByTranslationId() {
+        ListMultimap<Integer, DifficultyAtTime> answersLogByTranslationId = ArrayListMultimap.create();
+
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = null;
+        try {
+            res = db.rawQuery("select * from " + ANSWERS_LOG_TABLE_NAME, null);
+            res.moveToFirst();
+
+            while (!res.isAfterLast()) {
+                Difficulty difficulty = res.getInt(res.getColumnIndex(COLUMN_IS_CORRECT)) > 0 ? Difficulty.EASY : Difficulty.DIFFICULT;
+                int newTranslationId = res.getInt(res.getColumnIndex(COLUMN_TRANSLATION_ID));
+                long timeOfAnswer = res.getLong(res.getColumnIndex(COLUMN_TIME_ANSWERED));
+                answersLogByTranslationId.put(newTranslationId, new DifficultyAtTime(difficulty, new Date(timeOfAnswer)));
+                res.moveToNext();
+            }
+        } finally {
+            if (res != null) {
+                res.close();
+            }
+        }
+        return answersLogByTranslationId;
+    }
 
     public static final String ANSWERS_LOG_TABLE_NAME = "answer_log";
 

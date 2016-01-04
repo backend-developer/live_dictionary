@@ -59,7 +59,7 @@ public class TranslationDaoStub implements TranslationDao {
     }
 
     @Override
-    public List<Translation> getAllTranslations() {
+    public List<Translation> getAllTranslationsWithMetadata() {
         List<Translation> copy = new ArrayList<>();
         for (Translation t : inMemoryTranslations) {
             copy.add(new Translation(

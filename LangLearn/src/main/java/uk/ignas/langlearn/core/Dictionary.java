@@ -30,7 +30,7 @@ public class Dictionary {
     }
 
     private void reloadTranslations() {
-        questions = dao.getAllTranslations();
+        questions = dao.getAllTranslationsWithMetadata();
         Collections.reverse(questions);
         this.difficultTranslations.clear();
         for (Translation t : new ArrayList<>(questions)) {
