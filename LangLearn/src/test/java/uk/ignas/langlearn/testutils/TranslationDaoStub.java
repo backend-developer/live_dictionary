@@ -8,6 +8,7 @@ import java.util.*;
 
 public class TranslationDaoStub implements TranslationDao {
     private List<Translation> inMemoryTranslations = new ArrayList<>();
+    private ListMultimap<Integer, AnswerAtTime> answersByTranslationId = ArrayListMultimap.create();
     private int sequence = 1;
     @Override
     public void insert(List<Translation> translations) {
@@ -22,11 +23,12 @@ public class TranslationDaoStub implements TranslationDao {
             return false;
         }
 
-        TranslationMetadata metadata = translation.getMetadata();
-        if (metadata == null) {
-            metadata = new TranslationMetadata(new ArrayList<AnswerAtTime>());
-        }
-        inMemoryTranslations.add(new Translation(sequence++, translation.getForeignWord(), translation.getNativeWord(), metadata));
+        TranslationMetadata emptyMetadata = new TranslationMetadata(new ArrayList<AnswerAtTime>());
+        inMemoryTranslations.add(new Translation(
+                sequence++,
+                translation.getForeignWord(),
+                translation.getNativeWord(),
+                emptyMetadata));
         return true;
     }
 
@@ -34,7 +36,8 @@ public class TranslationDaoStub implements TranslationDao {
     public int update(int id, ForeignWord foreignWord, NativeWord nativeWord) {
         Translation oldTranslation = getTranslationById(id);
         if (oldTranslation != null) {
-            Translation translationsToUpgrade = new Translation(foreignWord, nativeWord, oldTranslation.getMetadata());
+            TranslationMetadata emptyMetadata = new TranslationMetadata(new ArrayList<AnswerAtTime>());
+            Translation translationsToUpgrade = new Translation(foreignWord, nativeWord, emptyMetadata);
             inMemoryTranslations.remove(oldTranslation);
             inMemoryTranslations.add(new Translation(id, translationsToUpgrade));
             return 1;
@@ -70,27 +73,21 @@ public class TranslationDaoStub implements TranslationDao {
                     t.getNativeWord(),
                     TranslationMetadata.copy(t.getMetadata())));
         }
-
         return copy;
     }
 
     @Override
     public ListMultimap<Integer, AnswerAtTime> getAnswersLogByTranslationId() {
-        ListMultimap<Integer, AnswerAtTime> result = ArrayListMultimap.create();
-        for (Translation translation : inMemoryTranslations) {
-            result.putAll(translation.getId(), translation.getMetadata().getRecentAnswers());
-        }
-        return result;
+        return answersByTranslationId;
     }
 
     @Override
     public boolean logAnswer(Translation translation, Answer answer, Date time) {
-
-        for (Translation t: inMemoryTranslations) {
-            if (Objects.equals(t.getId(), translation.getId())) {
-                return t.getMetadata().getRecentAnswers().add(new AnswerAtTime(answer, time));
-            }
+        List<AnswerAtTime> answerAtTimes = answersByTranslationId.get(translation.getId());
+        boolean doesTranslationExist = getTranslationById(translation.getId()) != null;
+        if (doesTranslationExist) {
+            answerAtTimes.add(new AnswerAtTime(answer, time));
         }
-        return false;
+        return doesTranslationExist;
     }
 }
