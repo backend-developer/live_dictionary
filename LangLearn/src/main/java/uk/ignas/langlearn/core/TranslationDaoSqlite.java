@@ -41,12 +41,12 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
                         ")"
         );
         db.execSQL(
-                "create table " + ANSWERS_LOG_TABLE_NAME + " " +
+                "create table " + AnswersTable.ANSWERS_LOG_TABLE_NAME + " " +
                         "(" +
-                        COLUMN_ID + " integer primary key, " +
-                        COLUMN_TRANSLATION_ID + " integer," +
-                        COLUMN_TIME_ANSWERED + " integer, " +
-                        COLUMN_IS_CORRECT + " integer" +
+                        AnswersTable.COLUMN_ID + " integer primary key, " +
+                        AnswersTable.COLUMN_TRANSLATION_ID + " integer," +
+                        AnswersTable.COLUMN_TIME_ANSWERED + " integer, " +
+                        AnswersTable.COLUMN_IS_CORRECT + " integer" +
                         ")"
         );
         insertSeedData(db);
@@ -75,7 +75,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TRANSLATIONS_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + ANSWERS_LOG_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + AnswersTable.ANSWERS_LOG_TABLE_NAME);
         onCreate(db);
     }
 
@@ -196,6 +196,35 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
     }
 
 
+    public static class AnswersTable {
+        public static final String COLUMN_ID = "id";
+        public static final String ANSWERS_LOG_TABLE_NAME = "answer_log";
+        public static final String COLUMN_TRANSLATION_ID = "translation_id";
+
+        public static final String COLUMN_TIME_ANSWERED = "time_answered";
+
+        public static final String COLUMN_IS_CORRECT = "is_correct";
+    }
+    @Override
+    public boolean logAnswer(Translation translation, Answer answer, Date time) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(AnswersTable.COLUMN_TRANSLATION_ID, translation.getId());
+        contentValues.put(AnswersTable.COLUMN_TIME_ANSWERED, time.getTime());
+        contentValues.put(AnswersTable.COLUMN_IS_CORRECT, answer.isCorrect());
+        long id = db.insert(AnswersTable.ANSWERS_LOG_TABLE_NAME, null, contentValues);
+        return id != ERROR_OCURRED;
+    }
+
+    private void deleteAnswersByTranslationIds(List<Integer> translationIdsToDelete) {
+        String inClause = Joiner.on(", ").join(translationIdsToDelete);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(AnswersTable.ANSWERS_LOG_TABLE_NAME,
+                AnswersTable.COLUMN_TRANSLATION_ID + " IN (?) ",
+                new String[]{inClause});
+    }
+
     public ListMultimap<Integer, AnswerAtTime> getAnswersLogByTranslationId() {
         ListMultimap<Integer, AnswerAtTime> answersLogByTranslationId = ArrayListMultimap.create();
 
@@ -203,16 +232,16 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         Cursor res = null;
         try {
             res = db.rawQuery("select " +
-                    COLUMN_IS_CORRECT + ", " +
-                    COLUMN_TRANSLATION_ID + ", " +
-                    COLUMN_TIME_ANSWERED +
-                    " from " + ANSWERS_LOG_TABLE_NAME, null);
+                    AnswersTable.COLUMN_IS_CORRECT + ", " +
+                    AnswersTable.COLUMN_TRANSLATION_ID + ", " +
+                    AnswersTable.COLUMN_TIME_ANSWERED +
+                    " from " + AnswersTable.ANSWERS_LOG_TABLE_NAME, null);
             res.moveToFirst();
 
             while (!res.isAfterLast()) {
-                int newTranslationId = res.getInt(res.getColumnIndex(COLUMN_TRANSLATION_ID));
-                Answer answer = res.getInt(res.getColumnIndex(COLUMN_IS_CORRECT)) > 0 ? Answer.CORRECT : Answer.INCORRECT;
-                long timeOfAnswer = res.getLong(res.getColumnIndex(COLUMN_TIME_ANSWERED));
+                int newTranslationId = res.getInt(res.getColumnIndex(AnswersTable.COLUMN_TRANSLATION_ID));
+                Answer answer = res.getInt(res.getColumnIndex(AnswersTable.COLUMN_IS_CORRECT)) > 0 ? Answer.CORRECT : Answer.INCORRECT;
+                long timeOfAnswer = res.getLong(res.getColumnIndex(AnswersTable.COLUMN_TIME_ANSWERED));
                 answersLogByTranslationId.put(newTranslationId, new AnswerAtTime(answer, new Date(timeOfAnswer)));
                 res.moveToNext();
             }
@@ -222,31 +251,5 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
             }
         }
         return answersLogByTranslationId;
-    }
-
-    public static final String ANSWERS_LOG_TABLE_NAME = "answer_log";
-
-    public static final String COLUMN_TRANSLATION_ID = "translation_id";
-
-    public static final String COLUMN_TIME_ANSWERED = "time_answered";
-    public static final String COLUMN_IS_CORRECT = "is_correct";
-    @Override
-    public boolean logAnswer(Translation translation, Answer answer, Date time) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COLUMN_TRANSLATION_ID, translation.getId());
-        contentValues.put(COLUMN_TIME_ANSWERED, time.getTime());
-        contentValues.put(COLUMN_IS_CORRECT, answer.isCorrect());
-        long id = db.insert(ANSWERS_LOG_TABLE_NAME, null, contentValues);
-        return id != ERROR_OCURRED;
-    }
-
-    private void deleteAnswersByTranslationIds(List<Integer> translationIdsToDelete) {
-        String inClause = Joiner.on(", ").join(translationIdsToDelete);
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(ANSWERS_LOG_TABLE_NAME,
-                COLUMN_TRANSLATION_ID + " IN (?) ",
-                new String[]{inClause});
     }
 }
