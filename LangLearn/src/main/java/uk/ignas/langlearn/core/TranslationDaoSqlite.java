@@ -15,19 +15,26 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-public class TranslationDaoSqlite extends SQLiteOpenHelper implements TranslationDao {
+public class TranslationDaoSqlite extends SQLiteOpenHelper implements TranslationDao{
 
+    public static final int ERROR_OCURRED = -1;
     public static final String DATABASE_NAME = "LiveDictionary.db";
 
-
+    public static class AnswersLog {
+        public static final String TABLE_NAME = "answer_log";
+        public static final String ID = "id";
+        public static final String TRANSLATION_ID = "translation_id";
+        public static final String TIME_ANSWERED = "time_answered";
+        public static final String IS_CORRECT = "is_correct";
+    }
     public static class Translations {
         public static final String TABLE_NAME = "translations";
         public static final String ID = "id";
         public static final String NATIVE_WORD = "nativeWord";
-        public static final String FOREIGN_WORD = "foreignWord";
-    }
 
-    public static final int ERROR_OCURRED = -1;
+        public static final String FOREIGN_WORD = "foreignWord";
+
+    }
 
     public TranslationDaoSqlite(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -165,7 +172,6 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         return db.delete(Translations.TABLE_NAME,
                 Translations.NATIVE_WORD + " = ? AND " + Translations.FOREIGN_WORD + " = ? ",
                 new String[]{translation.getNativeWord().get(), translation.getForeignWord().get()});
-
     }
 
     @Override
@@ -197,14 +203,6 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
             }
         }
         return translations;
-    }
-
-    public static class AnswersLog {
-        public static final String TABLE_NAME = "answer_log";
-        public static final String ID = "id";
-        public static final String TRANSLATION_ID = "translation_id";
-        public static final String TIME_ANSWERED = "time_answered";
-        public static final String IS_CORRECT = "is_correct";
     }
 
     @Override
