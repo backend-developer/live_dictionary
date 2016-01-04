@@ -164,7 +164,11 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = null;
         try {
-            res = db.rawQuery("select * from " + TRANSLATIONS_TABLE_NAME, null);
+            res = db.rawQuery("select " +
+                    COLUMN_ID + ", " +
+                    COLUMN_FOREIGN_WORD + ", " +
+                    COLUMN_NATIVE_WORD +
+                    " from " + TRANSLATIONS_TABLE_NAME, null);
             res.moveToFirst();
 
             while (!res.isAfterLast()) {
@@ -190,12 +194,16 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = null;
         try {
-            res = db.rawQuery("select * from " + ANSWERS_LOG_TABLE_NAME, null);
+            res = db.rawQuery("select " +
+                    COLUMN_IS_CORRECT + ", " +
+                    COLUMN_TRANSLATION_ID + ", " +
+                    COLUMN_TIME_ANSWERED +
+                    " from " + ANSWERS_LOG_TABLE_NAME, null);
             res.moveToFirst();
 
             while (!res.isAfterLast()) {
-                Difficulty difficulty = res.getInt(res.getColumnIndex(COLUMN_IS_CORRECT)) > 0 ? Difficulty.EASY : Difficulty.DIFFICULT;
                 int newTranslationId = res.getInt(res.getColumnIndex(COLUMN_TRANSLATION_ID));
+                Difficulty difficulty = res.getInt(res.getColumnIndex(COLUMN_IS_CORRECT)) > 0 ? Difficulty.EASY : Difficulty.DIFFICULT;
                 long timeOfAnswer = res.getLong(res.getColumnIndex(COLUMN_TIME_ANSWERED));
                 answersLogByTranslationId.put(newTranslationId, new DifficultyAtTime(difficulty, new Date(timeOfAnswer)));
                 res.moveToNext();
