@@ -22,7 +22,7 @@ public class TranslationDaoStub implements TranslationDao {
 
         TranslationMetadata metadata = translation.getMetadata();
         if (metadata == null) {
-            metadata = new TranslationMetadata(Difficulty.EASY, new ArrayList<DifficultyAtTime>());
+            metadata = new TranslationMetadata(new ArrayList<DifficultyAtTime>());
         }
         inMemoryTranslations.add(new Translation(sequence++, translation.getForeignWord(), translation.getNativeWord(), metadata));
         return true;

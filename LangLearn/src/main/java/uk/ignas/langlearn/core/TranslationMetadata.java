@@ -4,22 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TranslationMetadata {
-    private Difficulty difficulty;
     private List<DifficultyAtTime> recentDifficulty = new ArrayList<>();
 
-    public TranslationMetadata(Difficulty difficulty, List<DifficultyAtTime> recentDifficulty) {
-        this.difficulty = difficulty;
+    public TranslationMetadata(List<DifficultyAtTime> recentDifficulty) {
         this.recentDifficulty = recentDifficulty;
     }
 
     public static TranslationMetadata copy(TranslationMetadata from) {
         return new TranslationMetadata(
-                Difficulty.EASY,
                 new ArrayList<>(from.getRecentDifficulty())
         );
     }
-
-
 
     public List<DifficultyAtTime> getRecentDifficulty() {
         return recentDifficulty;
