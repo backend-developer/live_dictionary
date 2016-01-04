@@ -234,31 +234,4 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         }
     }
 
-    public List<DifficultyAtTime> getAnswersForTranslation(int translationId) {
-        List<DifficultyAtTime> dates = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = null;
-        try {
-            res = db.query(ANSWERS_LOG_TABLE_NAME, new String[]{COLUMN_TIME_ANSWERED, COLUMN_IS_CORRECT}, COLUMN_TRANSLATION_ID + " = ? ", new String[]{String.valueOf(translationId)}, null, null, null);
-            res.moveToFirst();
-
-            List<DifficultyAtTime> recentLatestDatesWhenMarketAsEasy = new ArrayList<>();
-            while (!res.isAfterLast()) {
-
-                long timeOfAnswer = res.getInt(res.getColumnIndex(COLUMN_TIME_ANSWERED));
-                boolean isCorrectlyAnswered = res.getInt(res.getColumnIndex(COLUMN_IS_CORRECT)) > 0;
-                Difficulty difficulty = isCorrectlyAnswered ? Difficulty.EASY: Difficulty.DIFFICULT;
-                if (timeOfAnswer != 0) {
-                    recentLatestDatesWhenMarketAsEasy.add(new DifficultyAtTime(difficulty, new Date(timeOfAnswer)));
-                }
-                res.moveToNext();
-            }
-            dates = recentLatestDatesWhenMarketAsEasy;
-        } finally {
-            if (res != null) {
-                res.close();
-            }
-        }
-        return dates;
-    }
 }
