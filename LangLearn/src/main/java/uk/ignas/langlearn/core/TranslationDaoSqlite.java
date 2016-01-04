@@ -17,7 +17,7 @@ import java.util.List;
 
 public class TranslationDaoSqlite extends SQLiteOpenHelper implements TranslationDao {
 
-    public static final String DATABASE_NAME = "MyDBName3.db";
+    public static final String DATABASE_NAME = "LiveDictionary.db";
     public static final String TRANSLATIONS_TABLE_NAME = "translations";
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_NATIVE_WORD = "nativeWord";
