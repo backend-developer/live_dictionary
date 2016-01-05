@@ -15,13 +15,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-public class TranslationDaoSqlite extends SQLiteOpenHelper implements TranslationDao{
+public class TranslationDaoSqlite extends SQLiteOpenHelper implements TranslationDao {
 
     public static final int ERROR_OCURRED = -1;
     public static final String DATABASE_NAME = "LiveDictionary.db";
 
     public static class AnswersLog {
-        public static final String TABLE_NAME = "answer_log";
+        public static final String TABLE_NAME = "answers_log";
         public static final String ID = "id";
         public static final String TRANSLATION_ID = "translation_id";
         public static final String TIME_ANSWERED = "time_answered";
@@ -31,9 +31,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         public static final String TABLE_NAME = "translations";
         public static final String ID = "id";
         public static final String NATIVE_WORD = "nativeWord";
-
         public static final String FOREIGN_WORD = "foreignWord";
-
     }
 
     public TranslationDaoSqlite(Context context) {
