@@ -55,7 +55,9 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
                         AnswersLog.ID + " integer primary key, " +
                         AnswersLog.TRANSLATION_ID + " integer," +
                         AnswersLog.TIME_ANSWERED + " integer, " +
-                        AnswersLog.IS_CORRECT + " integer" +
+                        AnswersLog.IS_CORRECT + " integer, " +
+                        "FOREIGN KEY(" + AnswersLog.TRANSLATION_ID + ") " +
+                        "REFERENCES " + Translations.TABLE_NAME + "(" + Translations.ID + ")" +
                         ")"
         );
         insertSeedData(db);
