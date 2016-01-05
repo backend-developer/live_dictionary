@@ -21,10 +21,7 @@ import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.countPercentag
 import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.retrieveTranslationsNTimes;
 
 public class DictionaryTest {
-
-
     private static final Date NOW;
-
 
     static {
         Calendar c = Calendar.getInstance();
@@ -64,7 +61,7 @@ public class DictionaryTest {
     }
 
     @Test
-    public void shouldNotCrashWhenAllTheWordsAreUncorrectlyAnswered() {
+    public void shouldNotCrashWhenAllTheWordsAreIncorrectlyAnswered() {
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslations().get(0);
         Dictionary dictionary = new Dictionary(dao);
@@ -198,7 +195,7 @@ public class DictionaryTest {
         assertThat(percentage, allOf(greaterThan(45), lessThan(55)));
     }
     @Test
-    public void mistakenTranslationShouldBeAsked3TimesToEngagePromotion() {
+    public void mistakenTranslationShouldBeAsked3TimesToBeRestrictedFromBeingAskedByPromotionPeriod() {
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslations().get(0);
         Dictionary dictionary = new Dictionary(dao);
@@ -212,7 +209,7 @@ public class DictionaryTest {
     }
 
     @Test
-    public void onceStagedZeroLevelTranslationShouldNotBeAsked() {
+    public void onceRestrictedByPromotionZerothLevelTranslationShouldNotBeAsked() {
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslations().get(0);
         Clock clock = mock(Clock.class);
@@ -227,7 +224,7 @@ public class DictionaryTest {
     }
 
     @Test
-    public void onceZerothLevelTranslationIsStagedOthersShouldBeAsked() {
+    public void onceZerothLevelTranslationIsRestrictedByPromotionOtherTranslationsShouldBeAsked() {
         dao.insertSingle(createForeignToNativeTranslation("la palabra", "word"));
         dao.insertSingle(createForeignToNativeTranslation("la frase", "phrase"));
         Translation easyTranslation = dao.getAllTranslations().get(0);
