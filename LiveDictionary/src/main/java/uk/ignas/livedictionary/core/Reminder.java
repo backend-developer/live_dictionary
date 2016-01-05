@@ -166,15 +166,15 @@ public class Reminder {
     private List<Integer> findIndexesForSubsequentRecordsWithinPeriod(List<AnswerAtTime> logOrderedByTime, MsgCountAndNumOfHours msgCountAndNumOfHours) {
         int recordsCount = msgCountAndNumOfHours.count;
         int hours = msgCountAndNumOfHours.numOfHours;
-        List<Integer> foundMessages = new ArrayList<>();
+        List<Integer> foundMessagesIndexes = new ArrayList<>();
         for (int i = recordsCount - 1; i < logOrderedByTime.size(); i++) {
             long timeDifference = getTimeDifferenceBetweenRecords(logOrderedByTime, i - recordsCount + 1, i);
             if (timeDifference < hours) {
-                foundMessages.addAll(getClosedRange(i - recordsCount + 1, i));
+                foundMessagesIndexes.addAll(getClosedRange(i - recordsCount + 1, i));
                 break;
             }
         }
-        return foundMessages;
+        return foundMessagesIndexes;
     }
 
     private ArrayList<Integer> getClosedRange(int start, int end) {
