@@ -5,9 +5,6 @@ import android.content.Intent;
 import uk.ignas.langlearn.core.DataImporterExporter;
 import uk.ignas.langlearn.core.Dictionary;
 
-/**
- * Created by ignas on 1/3/16.
- */
 public class ImportExportActivity {
     private DataImporterExporter dataImporterExporter;
     private Dictionary dictionary;
