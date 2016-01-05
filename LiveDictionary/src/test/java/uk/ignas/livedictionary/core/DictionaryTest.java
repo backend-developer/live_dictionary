@@ -129,14 +129,13 @@ public class DictionaryTest {
     public void afterFinding20DifficultTranslationsShouldNeverAskForOthers() {
         dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
         dao.insert(getNTranslationsWithNativeWordStartingWith(20, "DifficultWord"));
-
         Dictionary dictionary = new Dictionary(dao);
-
         for (Translation t: new HashSet<>(dao.getAllTranslations())) {
             if (t.getNativeWord().get().contains("DifficultWord")) {
                 dictionary.mark(t, Answer.INCORRECT);
             }
         }
+
         final List<Translation> retrievedTranslations = retrieveTranslationsNTimes(dictionary, 100);
 
         int percentage = countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrievedTranslations, "DifficultWord");
@@ -148,9 +147,7 @@ public class DictionaryTest {
         dao.insert(getNTranslationsWithNativeWordStartingWith(80, "Other"));
         dao.insert(getNTranslationsWithNativeWordStartingWith(10, "DifficultWord"));
         dao.insert(getNTranslationsWithNativeWordStartingWith(10, "WasDifficultButNowEasyWord"));
-
         Dictionary dictionary = new Dictionary(dao);
-
         for (Translation t: new HashSet<>(dao.getAllTranslations())) {
             if (t.getNativeWord().get().contains("DifficultWord")) {
                 dictionary.mark(t, Answer.INCORRECT);
@@ -160,6 +157,7 @@ public class DictionaryTest {
                 dictionary.mark(t, Answer.CORRECT);
             }
         }
+
         final List<Translation> retrievedTranslations = retrieveTranslationsNTimes(dictionary, 1000);
 
         int percentage = countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrievedTranslations, "DifficultWord");
@@ -171,12 +169,12 @@ public class DictionaryTest {
         dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
         dao.insert(getNTranslationsWithNativeWordStartingWith(10, "DifficultWord"));
         Dictionary dictionary = new Dictionary(dao);
-
         for (Translation t: new HashSet<>(dao.getAllTranslations())) {
             if (t.getNativeWord().get().contains("DifficultWord")) {
                 dictionary.mark(t, Answer.INCORRECT);
             }
         }
+
         final List<Translation> retrievedTranslations = retrieveTranslationsNTimes(dictionary, 1000);
 
         int percentage = countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrievedTranslations, "DifficultWord");
