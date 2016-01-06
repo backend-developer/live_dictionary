@@ -2,7 +2,6 @@ package integration;
 
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -113,7 +112,7 @@ public class AppIntegrationTest {
 
     private TranslationDao createSqliteDao() {
         LiveDictionaryActivity activity = Robolectric.setupActivity(LiveDictionaryActivity.class);
-        return new TranslationDaoSqlite(activity);
+        return new TranslationDao(activity);
     }
 
     private DataImporterExporter createImportedAndimportDataToDao(String liveDataResourceName, TranslationDao dao) throws URISyntaxException, IOException {

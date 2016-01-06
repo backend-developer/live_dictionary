@@ -51,7 +51,7 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
 
         guiError = new GuiError(this);
         try {
-            dao = new TranslationDaoSqlite(LiveDictionaryActivity.this);
+            dao = new TranslationDao(LiveDictionaryActivity.this);
             dictionary = new Dictionary(dao);
             importExportActivity = new ImportExportActivity(new DataImporterExporter(dao), dictionary, guiError);
 

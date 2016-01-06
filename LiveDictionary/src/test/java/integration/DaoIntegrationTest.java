@@ -51,6 +51,6 @@ public class DaoIntegrationTest {
 
     private TranslationDao createDao() {
         LiveDictionaryActivity activity = Robolectric.setupActivity(LiveDictionaryActivity.class);
-        return new TranslationDaoSqlite(activity);
+        return new TranslationDao(activity);
     }
 }
