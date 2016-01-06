@@ -8,4 +8,5 @@ GUI is really self explanatory
 ./gradlew test
 
 # install to android
-./gradlew installDebug
+1) it is needed to have android connected to a computer and having turned on Developer Mode
+2) ./gradlew installDebug
