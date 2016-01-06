@@ -95,7 +95,7 @@ public class AppIntegrationTest {
     }
 
     @Test
-    public void newestTranslationsShouldBeMixedUpWithOldestOnes() throws IOException, URISyntaxException {
+    public void newestTranslationsShouldBeAskedMoreOftenThanOldOnes() throws IOException, URISyntaxException {
         TranslationDao dao = createSqliteDao();
         createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, dao);
         Dictionary q = new Dictionary(dao);
