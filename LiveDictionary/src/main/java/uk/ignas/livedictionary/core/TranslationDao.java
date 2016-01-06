@@ -223,9 +223,8 @@ public class TranslationDao extends SQLiteOpenHelper {
         String inClause = Joiner.on(", ").join(translationIdsToDelete);
 
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(AnswersLog.TABLE_NAME,
-                AnswersLog.TRANSLATION_ID + " IN (?) ",
-                new String[]{inClause});
+        db.execSQL("DELETE FROM " + AnswersLog.TABLE_NAME + " WHERE " +
+                AnswersLog.TRANSLATION_ID + " IN (" + inClause + ") ");
     }
 
     public ListMultimap<Integer, AnswerAtTime> getAnswersLogByTranslationId() {

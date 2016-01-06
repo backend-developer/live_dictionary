@@ -43,6 +43,33 @@ public class DaoIntegrationTest {
         assertThat(dao.getAnswersLogByTranslationId().values(), empty());
     }
 
+    @Test
+    public void deletingSingleTranslationShouldCascadeDeleteAnswers() {
+        TranslationDao dao = createDaoEmpty();
+        dao.insertSingle(new Translation(new ForeignWord("la palabra"), new NativeWord("a word")));
+        Translation translation = dao.getAllTranslations().get(0);
+        dao.logAnswer(translation, Answer.CORRECT, new Date());
+
+        dao.delete(Collections.singleton(translation));
+
+        assertThat(dao.getAllTranslations(), empty());
+        assertThat(dao.getAnswersLogByTranslationId().values(), empty());
+    }
+
+    @Test
+    public void deletingMultipleTranslationShouldCascadeDeleteAnswers() {
+        TranslationDao dao = createDaoEmpty();
+        dao.insertSingle(new Translation(new ForeignWord("la palabra"), new NativeWord("a word")));
+        dao.insertSingle(new Translation(new ForeignWord("la otra"), new NativeWord("other")));
+        dao.logAnswer(dao.getAllTranslations().get(0), Answer.CORRECT, new Date());
+        dao.logAnswer(dao.getAllTranslations().get(1), Answer.CORRECT, new Date());
+
+        dao.delete(dao.getAllTranslations());
+
+        assertThat(dao.getAllTranslations(), empty());
+        assertThat(dao.getAnswersLogByTranslationId().values(), empty());
+    }
+
     private TranslationDao createDaoEmpty() {
         TranslationDao dao = createDao();
         dao.delete(dao.getAllTranslations());

@@ -80,7 +80,7 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
             });
         }catch (Exception e){
             Log.e(TAG, "critical error ", e);
-            guiError.showErrorDialogAndExitActivity(e.getMessage());
+            guiError.showErrorDialogAndExitActivity(e);
         }
     }
 
@@ -101,10 +101,10 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
         try {
             currentTranslation = dictionary.getRandomTranslation();
         } catch (LiveDictionaryException e) {
-            guiError.showErrorDialogAndContinue(e.getMessage());
+            guiError.showErrorDialogAndContinue(e);
             currentTranslation = EMPTY_TRANSLATION;
         } catch (RuntimeException e) {
-            guiError.showErrorDialogAndExitActivity(e.getMessage());
+            guiError.showErrorDialogAndExitActivity(e);
         }
         enableTranslationAndNotSubmittionButtons(true);
         askUserToTranslate();

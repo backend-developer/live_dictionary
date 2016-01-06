@@ -28,7 +28,7 @@ public class ImportExportActivity {
             try {
                 dataImporterExporter.importFromFile(filePath);
             } catch (RuntimeException e) {
-                guiError.showErrorDialogAndContinue(e.getMessage());
+                guiError.showErrorDialogAndContinue(e);
             }
             dictionary.reloadData();
         }
@@ -40,7 +40,7 @@ public class ImportExportActivity {
             try {
                 dataImporterExporter.export(filePath);
             } catch (RuntimeException e) {
-                guiError.showErrorDialogAndContinue(e.getMessage());
+                guiError.showErrorDialogAndContinue(e);
             }
             dictionary.reloadData();
         }
