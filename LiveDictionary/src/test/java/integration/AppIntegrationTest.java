@@ -1,4 +1,4 @@
-package uk.ignas.livedictionary;
+package integration;
 
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
@@ -9,6 +9,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
+import uk.ignas.livedictionary.BuildConfig;
+import uk.ignas.livedictionary.LiveDictionaryActivity;
 import uk.ignas.livedictionary.core.*;
 import uk.ignas.livedictionary.core.Dictionary;
 import uk.ignas.livedictionary.testutils.LiveDictionaryDsl;
@@ -107,15 +109,6 @@ public class AppIntegrationTest {
         int eldestCounter = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordInExpectedSet(retrieved, eldestTranslations);
         int newestCounter = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordInExpectedSet(retrieved, newestTranslations);
         assertThat(newestCounter, is(greaterThan(eldestCounter)));
-    }
-
-    @Test
-    public void dbShouldHaveSeedData() {
-        TranslationDaoSqlite dao = createSqliteDao();
-
-        List<Translation> allTranslations = dao.getAllTranslations();
-
-        assertThat(allTranslations, Matchers.hasSize(17));
     }
 
     private TranslationDaoSqlite createSqliteDao() {
