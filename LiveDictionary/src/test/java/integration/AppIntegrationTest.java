@@ -58,7 +58,7 @@ public class AppIntegrationTest {
 
         dataImporterExporter.export(EXPORT_FILE_NAME);
 
-        int numberOfLines = 2610;
+        int numberOfLines = 2652;
         validateNumberOfEntriesInFile(EXPORT_FILE_NAME, numberOfLines);
         validateNumberOfEntriesInFile(IMPORT_FILE_NAME, numberOfLines);
         validateImportedAndExportedFilesMatch(IMPORT_FILE_NAME, EXPORT_FILE_NAME);

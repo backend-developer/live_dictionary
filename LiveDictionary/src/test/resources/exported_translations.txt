@@ -532,7 +532,7 @@ peinarse el cabello - to comb one's hair
 cepillarse los dientes - to brush one's teeth
 cepillarse el pelo - to brush one's hair
 ducharse - to take a shower
-lavarse la cara - to wash one's face
+lavarse la cara - to wash the face
 afeitarse - to shave
 hacer la cama - to make the bed
 Los hábitos - daily routine
@@ -794,7 +794,7 @@ todabía - yet
 todabía, no e visto - i havent seen yet
 e puesto - i have put
 seguro - sure
-e olvidado - i have forgotten
+he olvidado - i have forgotten
 dejar - leave behind
 he dejado un recado - i left a message
 la idea - idea
@@ -1015,7 +1015,7 @@ animal - animal
 el ingeniero - en engineer
 mi/tu/su - my/your/his/her/your polite
 aficiones - hobbies
-invitacioó - invitation
+la invitación - invitation
 ordenar - order
 rubio - blonde
 material - material
@@ -1053,7 +1053,7 @@ sustantivo - noun
 el nombre - noun
 el ahorcado - kartuves
 cerrar la puerta - close the doors
-responder - answer
+responder - to answer
 churra - luck
 aceite de oliva - olive oil
 casadar con - married to
@@ -1188,7 +1188,7 @@ el cumpleaños - birthday
 16 de octubre de 2015 - 16 of Octobre, 2015
 el payaso - clown
 el anuncio - advertisement
-el creador - ceater
+el creador - creater
 el príncipe - prince
 la princesa - princess
 abajo - down
@@ -1576,7 +1576,7 @@ pelirrojo - ryzas
 pelo moreno - black hair
 joven - young
 mayor - older person
-bajito - lower peraon
+bajito - lower person
 alto - high
 describir - describe
 tiene una reunión - have a meeting
@@ -1685,7 +1685,7 @@ sin fin - endless
 reírse - laugh
 reírse sin fin - laugh endlessly
 reír - make laugh
-la partida - a match
+la partida - a game match
 la partida - departure
 tu partida - your departure
 lograr - achieve
@@ -1998,7 +1998,7 @@ la razón - reason
 aprovechan - they take an advantage of
 aprovecháis - you take advantage of
 aprovechamos - we take an advantage of
-aprovecha - he,she,Vd takes an advantage og
+aprovecha - he,she,Vd takes an advantage of
 aprovechas - you take an advantage of
 aprovecho - i take an advantage of
 aprovechar - take advantage of
@@ -2570,7 +2570,7 @@ la venganza - revenge
 el accidente - crash
 una accidente de coche - a car crash
 darse cuenta de - find out
-ellos se dan cuenta - they find out
+se dan cuenta de - they find out
 me di cuenta cómo era realmente - i found out what he was really like
 equivocado/a - wrong
 el número equivocado - a wrong number
@@ -2608,3 +2608,45 @@ no quiero lastimarte - i don't want to hurt you
 la ocasión - an occasion
 tronchar - to cut off
 brevemente - briefly
+costar - to be difficult
+me costó decirle la verdad - it was difficult for me to tell him the truth
+me cuestan mucho los verbos irregulares - irregular verbs are very difficult for me
+la pareja - a pair
+la sed - a thirst
+tener sed - to be thirsty
+Dinamarca/o/a - Denmark/denmark person
+el portaequipajes - luggage rack
+lo peor - the worst
+el volumen - a volume
+escuchar música a todo volumen - to listen to music at full volume
+bajar - to turn down
+bajar la música - to turn the music down
+la resaca - a hangover
+molesto/a - upset
+molesto - annoying
+ser molesto - to be annoying
+estar molesto - to be upset
+cumplir - fulfill
+cumplir las obligaciones - to fulfill the obligations
+la obligación - a duty
+la lista - a list
+cumplir la lista de propositos - to fulfill resolution list
+¡oye! - listen!
+la caridad - a charity
+querido/a - dear
+pedir - to ask for
+lloamó para pedir más dinero - he called to ask for more money
+un montón de dinero - a lot of money
+crecer - to grow up
+crecí en España - i grew up in Spain
+anotarse - enrol
+hablar por teléfono - to be on a phone
+el telefono - a phone
+... pero hay algo - ... but there are some
+el capítulo - a chapter
+obviamente - obviously
+el desastre - a disaster
+me cae bien - i like him
+me cae mal - i don't like him
+no me cae nada bien - i don't like him at all
+Pedro no le cae a mi padre - my father dont like pedro
