@@ -2,12 +2,16 @@ package uk.ignas.livedictionary;
 
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
 import uk.ignas.livedictionary.core.*;
 import uk.ignas.livedictionary.core.Dictionary;
 import uk.ignas.livedictionary.testutils.LiveDictionaryDsl;
-import uk.ignas.livedictionary.testutils.TranslationDaoStub;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -25,6 +29,8 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21)
 public class AppIntegrationTest {
 
     public static final String IMPORT_FILE_NAME = "import.txt";
@@ -46,7 +52,7 @@ public class AppIntegrationTest {
 
     @Test
     public void exportFileShouldContainSameNumberOfLines() throws IOException, URISyntaxException {
-        DataImporterExporter dataImporterExporter = createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, new TranslationDaoStub());
+        DataImporterExporter dataImporterExporter = createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, createSqliteDao());
 
         dataImporterExporter.export(EXPORT_FILE_NAME);
 
@@ -59,7 +65,7 @@ public class AppIntegrationTest {
     @Test
     public void exportAndImportFilesShouldHaveSameOrderOfRecords() throws IOException, URISyntaxException {
 
-        DataImporterExporter dataImporterExporter = createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, new TranslationDaoStub());
+        DataImporterExporter dataImporterExporter = createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, createSqliteDao());
         dataImporterExporter.export(EXPORT_FILE_NAME);
 
         assertThat(readFile(IMPORT_FILE_NAME).get(0), is(equalTo("morado - purple")));
@@ -68,7 +74,7 @@ public class AppIntegrationTest {
 
     @Test
     public void importedDataToDbShouldPreserveAnOrderInFile() throws IOException, URISyntaxException {
-        TranslationDaoStub dao = new TranslationDaoStub();
+        TranslationDao dao = createSqliteDao();
 
         createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, dao);
 
@@ -77,7 +83,7 @@ public class AppIntegrationTest {
 
     @Test
     public void importedDataReplaceDbContents() throws IOException, URISyntaxException {
-        TranslationDaoStub dao = new TranslationDaoStub();
+        TranslationDao dao = createSqliteDao();
         Translation translationsToBeReplaced = new Translation(new ForeignWord("palabra para borrar"), new NativeWord("word to delete"));
         dao.insertSingle(translationsToBeReplaced);
 
@@ -88,7 +94,7 @@ public class AppIntegrationTest {
 
     @Test
     public void newestTranslationsShouldBeMixedUpWithOldestOnes() throws IOException, URISyntaxException {
-        TranslationDaoStub dao = new TranslationDaoStub();
+        TranslationDao dao = createSqliteDao();
         createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, dao);
         Dictionary q = new Dictionary(dao);
         List<Translation> translations = dao.getAllTranslations();
@@ -103,7 +109,21 @@ public class AppIntegrationTest {
         assertThat(newestCounter, is(greaterThan(eldestCounter)));
     }
 
-    private DataImporterExporter createImportedAndimportDataToDao(String liveDataResourceName, TranslationDaoStub dao) throws URISyntaxException, IOException {
+    @Test
+    public void dbShouldHaveSeedData() {
+        TranslationDaoSqlite dao = createSqliteDao();
+
+        List<Translation> allTranslations = dao.getAllTranslations();
+
+        assertThat(allTranslations, Matchers.hasSize(17));
+    }
+
+    private TranslationDaoSqlite createSqliteDao() {
+        LiveDictionaryActivity activity = Robolectric.setupActivity(LiveDictionaryActivity.class);
+        return new TranslationDaoSqlite(activity);
+    }
+
+    private DataImporterExporter createImportedAndimportDataToDao(String liveDataResourceName, TranslationDao dao) throws URISyntaxException, IOException {
         URL resource = Resources.getResource(liveDataResourceName);
         File importFile = new File(resource.toURI());
         Files.copy(importFile, new File(IMPORT_FILE_NAME));
