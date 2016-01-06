@@ -2,14 +2,13 @@ package integration;
 
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
+import integration.testutils.DaoCreator;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 import uk.ignas.livedictionary.BuildConfig;
-import uk.ignas.livedictionary.LiveDictionaryActivity;
 import uk.ignas.livedictionary.core.*;
 import uk.ignas.livedictionary.core.Dictionary;
 import uk.ignas.livedictionary.testutils.LiveDictionaryDsl;
@@ -32,7 +31,7 @@ import static org.hamcrest.core.IsNot.not;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class AppIntegrationTest {
+public class ExporterImporterIntegrationTest {
 
     public static final String IMPORT_FILE_NAME = "import.txt";
     public static final String LIVE_DATA_RESOURCE_NAME = "exported_translations.txt";
@@ -53,7 +52,7 @@ public class AppIntegrationTest {
 
     @Test
     public void exportFileShouldContainSameNumberOfLines() throws IOException, URISyntaxException {
-        DataImporterExporter dataImporterExporter = createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, createSqliteDao());
+        DataImporterExporter dataImporterExporter = createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, DaoCreator.create());
 
         dataImporterExporter.export(EXPORT_FILE_NAME);
 
@@ -66,7 +65,7 @@ public class AppIntegrationTest {
     @Test
     public void exportAndImportFilesShouldHaveSameOrderOfRecords() throws IOException, URISyntaxException {
 
-        DataImporterExporter dataImporterExporter = createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, createSqliteDao());
+        DataImporterExporter dataImporterExporter = createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, DaoCreator.create());
         dataImporterExporter.export(EXPORT_FILE_NAME);
 
         assertThat(readFile(IMPORT_FILE_NAME).get(0), is(equalTo("morado - purple")));
@@ -75,7 +74,7 @@ public class AppIntegrationTest {
 
     @Test
     public void importedDataToDbShouldPreserveAnOrderInFile() throws IOException, URISyntaxException {
-        TranslationDao dao = createSqliteDao();
+        TranslationDao dao = DaoCreator.create();
 
         createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, dao);
 
@@ -84,7 +83,7 @@ public class AppIntegrationTest {
 
     @Test
     public void importedDataReplaceDbContents() throws IOException, URISyntaxException {
-        TranslationDao dao = createSqliteDao();
+        TranslationDao dao = DaoCreator.create();
         Translation translationsToBeReplaced = new Translation(new ForeignWord("palabra para borrar"), new NativeWord("word to delete"));
         dao.insertSingle(translationsToBeReplaced);
 
@@ -95,7 +94,7 @@ public class AppIntegrationTest {
 
     @Test
     public void newestTranslationsShouldBeAskedMoreOftenThanOldOnes() throws IOException, URISyntaxException {
-        TranslationDao dao = createSqliteDao();
+        TranslationDao dao = DaoCreator.create();
         createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, dao);
         Dictionary q = new Dictionary(dao);
         List<Translation> translations = dao.getAllTranslations();
@@ -108,11 +107,6 @@ public class AppIntegrationTest {
         int eldestCounter = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordInExpectedSet(retrieved, eldestTranslations);
         int newestCounter = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordInExpectedSet(retrieved, newestTranslations);
         assertThat(newestCounter, is(greaterThan(eldestCounter)));
-    }
-
-    private TranslationDao createSqliteDao() {
-        LiveDictionaryActivity activity = Robolectric.setupActivity(LiveDictionaryActivity.class);
-        return new TranslationDao(activity);
     }
 
     private DataImporterExporter createImportedAndimportDataToDao(String liveDataResourceName, TranslationDao dao) throws URISyntaxException, IOException {

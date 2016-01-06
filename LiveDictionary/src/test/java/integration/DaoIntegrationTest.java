@@ -1,12 +1,11 @@
 package integration;
 
+import integration.testutils.DaoCreator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 import uk.ignas.livedictionary.BuildConfig;
-import uk.ignas.livedictionary.LiveDictionaryActivity;
 import uk.ignas.livedictionary.core.*;
 
 import java.util.Collections;
@@ -23,7 +22,7 @@ public class DaoIntegrationTest {
 
     @Test
     public void dbShouldHaveSeedData() {
-        TranslationDao dao = createDao();
+        TranslationDao dao = DaoCreator.create();
 
         List<Translation> allTranslations = dao.getAllTranslations();
 
@@ -32,7 +31,7 @@ public class DaoIntegrationTest {
 
     @Test
     public void deletingTranslationShouldCascadeDeleteAnswers() {
-        TranslationDao dao = createDaoEmpty();
+        TranslationDao dao = DaoCreator.createEmpty();
         dao.insertSingle(new Translation(new ForeignWord("la palabra"), new NativeWord("a word")));
         Translation translation = dao.getAllTranslations().get(0);
         dao.logAnswer(translation, Answer.CORRECT, new Date());
@@ -45,7 +44,7 @@ public class DaoIntegrationTest {
 
     @Test
     public void deletingSingleTranslationShouldCascadeDeleteAnswers() {
-        TranslationDao dao = createDaoEmpty();
+        TranslationDao dao = DaoCreator.createEmpty();
         dao.insertSingle(new Translation(new ForeignWord("la palabra"), new NativeWord("a word")));
         Translation translation = dao.getAllTranslations().get(0);
         dao.logAnswer(translation, Answer.CORRECT, new Date());
@@ -58,7 +57,7 @@ public class DaoIntegrationTest {
 
     @Test
     public void deletingMultipleTranslationShouldCascadeDeleteAnswers() {
-        TranslationDao dao = createDaoEmpty();
+        TranslationDao dao = DaoCreator.createEmpty();
         dao.insertSingle(new Translation(new ForeignWord("la palabra"), new NativeWord("a word")));
         dao.insertSingle(new Translation(new ForeignWord("la otra"), new NativeWord("other")));
         dao.logAnswer(dao.getAllTranslations().get(0), Answer.CORRECT, new Date());
@@ -70,14 +69,5 @@ public class DaoIntegrationTest {
         assertThat(dao.getAnswersLogByTranslationId().values(), empty());
     }
 
-    private TranslationDao createDaoEmpty() {
-        TranslationDao dao = createDao();
-        dao.delete(dao.getAllTranslations());
-        return dao;
-    }
 
-    private TranslationDao createDao() {
-        LiveDictionaryActivity activity = Robolectric.setupActivity(LiveDictionaryActivity.class);
-        return new TranslationDao(activity);
-    }
 }

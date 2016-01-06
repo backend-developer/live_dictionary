@@ -1,13 +1,12 @@
 package integration;
 
+import integration.testutils.DaoCreator;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 import uk.ignas.livedictionary.BuildConfig;
-import uk.ignas.livedictionary.LiveDictionaryActivity;
 import uk.ignas.livedictionary.core.*;
 import uk.ignas.livedictionary.core.Dictionary;
 import uk.ignas.livedictionary.testutils.LiveDictionaryDsl;
@@ -29,7 +28,7 @@ import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.retrieveTransl
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class LiveDictionaryTest {
+public class LiveDictionaryIntegrationTest {
     private static final Date NOW;
 
     static {
@@ -42,7 +41,7 @@ public class LiveDictionaryTest {
 
     private static int uniqueSequence = 0;
 
-    private TranslationDao dao = createDaoEmpty();
+    private TranslationDao dao = DaoCreator.createEmpty();
 
     @Test
     public void shouldThrowWhenIfThereAreNoTranslationToRetrieve() {
@@ -372,14 +371,5 @@ public class LiveDictionaryTest {
         return uniqueSequence++;
     }
 
-    private TranslationDao createDaoEmpty() {
-        TranslationDao dao = createDao();
-        dao.delete(dao.getAllTranslations());
-        return dao;
-    }
 
-    private TranslationDao createDao() {
-        LiveDictionaryActivity activity = Robolectric.setupActivity(LiveDictionaryActivity.class);
-        return new TranslationDao(activity);
-    }
 }
