@@ -44,8 +44,8 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
                 "create table " + Translations.TABLE_NAME + " " +
                         "(" +
                         Translations.ID + " integer primary key, " +
-                        Translations.NATIVE_WORD + " text," +
-                        Translations.FOREIGN_WORD + " text, " +
+                        Translations.NATIVE_WORD + " text NOT NULL," +
+                        Translations.FOREIGN_WORD + " text NOT NULL, " +
                         "CONSTRAINT uniqueWT UNIQUE (" + Translations.NATIVE_WORD + ", " + Translations.FOREIGN_WORD + ")" +
                         ")"
         );
@@ -53,9 +53,9 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
                 "create table " + AnswersLog.TABLE_NAME + " " +
                         "(" +
                         AnswersLog.ID + " integer primary key, " +
-                        AnswersLog.TRANSLATION_ID + " integer," +
-                        AnswersLog.TIME_ANSWERED + " integer, " +
-                        AnswersLog.IS_CORRECT + " integer, " +
+                        AnswersLog.TRANSLATION_ID + " integer NOT NULL," +
+                        AnswersLog.TIME_ANSWERED + " integer NOT NULL, " +
+                        AnswersLog.IS_CORRECT + " integer NOT NULL, " +
                         "FOREIGN KEY(" + AnswersLog.TRANSLATION_ID + ") " +
                         "REFERENCES " + Translations.TABLE_NAME + "(" + Translations.ID + ")" +
                         ")"
@@ -88,6 +88,14 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         db.execSQL("DROP TABLE IF EXISTS " + Translations.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + AnswersLog.TABLE_NAME);
         onCreate(db);
+    }
+
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+        if (!db.isReadOnly()) {
+            db.execSQL("PRAGMA foreign_keys=ON;");
+        }
     }
 
     @Override
@@ -213,6 +221,7 @@ public class TranslationDaoSqlite extends SQLiteOpenHelper implements Translatio
         contentValues.put(AnswersLog.TIME_ANSWERED, time.getTime());
         contentValues.put(AnswersLog.IS_CORRECT, answer.isCorrect());
         long id = db.insert(AnswersLog.TABLE_NAME, null, contentValues);
+        ListMultimap<Integer, AnswerAtTime> answersLogByTranslationId = getAnswersLogByTranslationId();
         return id != ERROR_OCURRED;
     }
 
