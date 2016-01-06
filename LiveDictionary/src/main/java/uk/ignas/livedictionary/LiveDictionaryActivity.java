@@ -28,7 +28,7 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
 
     private volatile Translation currentTranslation = EMPTY_TRANSLATION;
     private Dictionary dictionary;
-    private TranslationDaoSqlite dao;
+    private TranslationDao dao;
     private GuiError guiError;
 
     private ImportExportActivity importExportActivity;

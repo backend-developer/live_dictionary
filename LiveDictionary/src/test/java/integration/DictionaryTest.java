@@ -371,13 +371,13 @@ public class DictionaryTest {
         return uniqueSequence++;
     }
 
-    private TranslationDaoSqlite createDaoEmpty() {
-        TranslationDaoSqlite dao = createDao();
+    private TranslationDao createDaoEmpty() {
+        TranslationDao dao = createDao();
         dao.delete(dao.getAllTranslations());
         return dao;
     }
 
-    private TranslationDaoSqlite createDao() {
+    private TranslationDao createDao() {
         LiveDictionaryActivity activity = Robolectric.setupActivity(LiveDictionaryActivity.class);
         return new TranslationDaoSqlite(activity);
     }

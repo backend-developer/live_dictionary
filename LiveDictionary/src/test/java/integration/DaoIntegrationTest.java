@@ -23,7 +23,7 @@ public class DaoIntegrationTest {
 
     @Test
     public void dbShouldHaveSeedData() {
-        TranslationDaoSqlite dao = createDao();
+        TranslationDao dao = createDao();
 
         List<Translation> allTranslations = dao.getAllTranslations();
 
@@ -32,7 +32,7 @@ public class DaoIntegrationTest {
 
     @Test
     public void deletingTranslationShouldCascadeDeleteAnswers() {
-        TranslationDaoSqlite dao = createDaoEmpty();
+        TranslationDao dao = createDaoEmpty();
         dao.insertSingle(new Translation(new ForeignWord("la palabra"), new NativeWord("a word")));
         Translation translation = dao.getAllTranslations().get(0);
         dao.logAnswer(translation, Answer.CORRECT, new Date());
@@ -43,13 +43,13 @@ public class DaoIntegrationTest {
         assertThat(dao.getAnswersLogByTranslationId().values(), empty());
     }
 
-    private TranslationDaoSqlite createDaoEmpty() {
-        TranslationDaoSqlite dao = createDao();
+    private TranslationDao createDaoEmpty() {
+        TranslationDao dao = createDao();
         dao.delete(dao.getAllTranslations());
         return dao;
     }
 
-    private TranslationDaoSqlite createDao() {
+    private TranslationDao createDao() {
         LiveDictionaryActivity activity = Robolectric.setupActivity(LiveDictionaryActivity.class);
         return new TranslationDaoSqlite(activity);
     }

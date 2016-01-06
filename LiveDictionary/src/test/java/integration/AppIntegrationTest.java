@@ -111,7 +111,7 @@ public class AppIntegrationTest {
         assertThat(newestCounter, is(greaterThan(eldestCounter)));
     }
 
-    private TranslationDaoSqlite createSqliteDao() {
+    private TranslationDao createSqliteDao() {
         LiveDictionaryActivity activity = Robolectric.setupActivity(LiveDictionaryActivity.class);
         return new TranslationDaoSqlite(activity);
     }
