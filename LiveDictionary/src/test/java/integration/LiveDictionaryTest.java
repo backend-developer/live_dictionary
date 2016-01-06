@@ -9,6 +9,7 @@ import org.robolectric.annotation.Config;
 import uk.ignas.livedictionary.BuildConfig;
 import uk.ignas.livedictionary.LiveDictionaryActivity;
 import uk.ignas.livedictionary.core.*;
+import uk.ignas.livedictionary.core.Dictionary;
 import uk.ignas.livedictionary.testutils.LiveDictionaryDsl;
 
 import java.util.*;
@@ -28,7 +29,7 @@ import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.retrieveTransl
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class DictionaryTest {
+public class LiveDictionaryTest {
     private static final Date NOW;
 
     static {
@@ -45,7 +46,7 @@ public class DictionaryTest {
 
     @Test
     public void shouldThrowWhenIfThereAreNoTranslationToRetrieve() {
-        uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao);
+        Dictionary dictionary = new Dictionary(dao);
         try {
             dictionary.getRandomTranslation();
             fail();
@@ -61,7 +62,7 @@ public class DictionaryTest {
     @Test
     public void shouldNotCrashWhenThereAreFewTranslations() {
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
-        uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao);
+        Dictionary dictionary = new Dictionary(dao);
 
         Translation translation = dictionary.getRandomTranslation();
 
@@ -72,7 +73,7 @@ public class DictionaryTest {
     public void shouldNotCrashWhenAllTheWordsAreIncorrectlyAnswered() {
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslations().get(0);
-        uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao);
+        Dictionary dictionary = new Dictionary(dao);
         dictionary.mark(translation, Answer.INCORRECT);
 
         List<Translation> translations = LiveDictionaryDsl.retrieveTranslationsNTimes(dictionary, 10);
@@ -84,7 +85,7 @@ public class DictionaryTest {
 
     @Test
     public void shouldSynchronizeWithDbOnDemand() {
-        uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao);
+        Dictionary dictionary = new Dictionary(dao);
         dao.insertSingle(createForeignToNativeTranslation("la palabra", "word"));
 
         dictionary.reloadData();
@@ -97,7 +98,7 @@ public class DictionaryTest {
     public void shouldPersistDifficultTranslations() {
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = getOnlyElement(dao.getAllTranslations());
-        uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao);
+        Dictionary dictionary = new Dictionary(dao);
 
         dictionary.mark(translation, Answer.INCORRECT);
 
@@ -109,7 +110,7 @@ public class DictionaryTest {
     public void shouldGetNewest100TranslationsWith80PercentProbability() {
         dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
         dao.insert(getNTranslationsWithNativeWordStartingWith(100, "LastQ"));
-        uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao);
+        Dictionary dictionary = new Dictionary(dao);
 
         final List<Translation> retrievedTranslations = retrieveTranslationsNTimes(dictionary, 1000);
 
@@ -121,7 +122,7 @@ public class DictionaryTest {
     public void shouldHandle100Translations() {
         for (int i = 0; i < 100; i++) {
             dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Any"));
-            uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao);
+            Dictionary dictionary = new Dictionary(dao);
 
             List<Translation> translations = LiveDictionaryDsl.retrieveTranslationsNTimes(dictionary, 100);
 
@@ -134,7 +135,7 @@ public class DictionaryTest {
     public void afterFinding20DifficultTranslationsShouldNeverAskForOthers() {
         dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
         dao.insert(getNTranslationsWithNativeWordStartingWith(20, "DifficultWord"));
-        uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao);
+        Dictionary dictionary = new Dictionary(dao);
         for (Translation t: new HashSet<>(dao.getAllTranslations())) {
             if (t.getNativeWord().get().contains("DifficultWord")) {
                 dictionary.mark(t, Answer.INCORRECT);
@@ -152,7 +153,7 @@ public class DictionaryTest {
         dao.insert(getNTranslationsWithNativeWordStartingWith(80, "Other"));
         dao.insert(getNTranslationsWithNativeWordStartingWith(10, "DifficultWord"));
         dao.insert(getNTranslationsWithNativeWordStartingWith(10, "WasDifficultButNowEasyWord"));
-        uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao);
+        Dictionary dictionary = new Dictionary(dao);
         for (Translation t: new HashSet<>(dao.getAllTranslations())) {
             if (t.getNativeWord().get().contains("DifficultWord")) {
                 dictionary.mark(t, Answer.INCORRECT);
@@ -173,7 +174,7 @@ public class DictionaryTest {
     public void difficultTranslationsShouldBeAskedEvery20thTime() {
         dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
         dao.insert(getNTranslationsWithNativeWordStartingWith(10, "DifficultWord"));
-        uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao);
+        Dictionary dictionary = new Dictionary(dao);
         for (Translation t: new HashSet<>(dao.getAllTranslations())) {
             if (t.getNativeWord().get().contains("DifficultWord")) {
                 dictionary.mark(t, Answer.INCORRECT);
@@ -195,7 +196,7 @@ public class DictionaryTest {
                 dao.logAnswer(t, Answer.INCORRECT, new Date());
             }
         }
-        uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao);
+        Dictionary dictionary = new Dictionary(dao);
 
         final List<Translation> retrievedTranslations = retrieveTranslationsNTimes(dictionary, 1000);
 
@@ -206,7 +207,7 @@ public class DictionaryTest {
     public void mistakenTranslationShouldBeAsked3TimesToBeRestrictedFromBeingAskedByPromotionPeriod() {
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslations().get(0);
-        uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao);
+        Dictionary dictionary = new Dictionary(dao);
         dictionary.mark(translation, Answer.CORRECT);
         dictionary.mark(translation, Answer.INCORRECT);
         dictionary.mark(translation, Answer.CORRECT);
@@ -221,7 +222,7 @@ public class DictionaryTest {
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslations().get(0);
         Clock clock = mock(Clock.class);
-        uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao, clock);
+        Dictionary dictionary = new Dictionary(dao, clock);
         when(clock.getTime()).thenReturn(NOW);
         dictionary.mark(translation, Answer.CORRECT);
         dictionary.mark(translation, Answer.CORRECT);
@@ -237,7 +238,7 @@ public class DictionaryTest {
         dao.insertSingle(createForeignToNativeTranslation("la frase", "phrase"));
         Translation easyTranslation = dao.getAllTranslations().get(0);
         Translation otherTranslation = dao.getAllTranslations().get(1);
-        uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao);
+        Dictionary dictionary = new Dictionary(dao);
 
         dictionary.mark(easyTranslation, Answer.CORRECT);
         dictionary.mark(easyTranslation, Answer.CORRECT);
@@ -251,7 +252,7 @@ public class DictionaryTest {
 
     @Test
     public void shouldInsertTranslation() {
-        uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao);
+        Dictionary dictionary = new Dictionary(dao);
 
         dictionary.insert(createForeignToNativeTranslation("la palabra", "word"));
 
@@ -261,7 +262,7 @@ public class DictionaryTest {
 
     @Test
     public void shouldNotInsertDuplicates() {
-        uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao);
+        Dictionary dictionary = new Dictionary(dao);
 
         dictionary.insert(createForeignToNativeTranslation("duplicate", "dup_translation"));
         dictionary.insert(createForeignToNativeTranslation("duplicate", "dup_translation"));
@@ -273,7 +274,7 @@ public class DictionaryTest {
     public void shouldDeleteTranslation() {
         dao.insertSingle(createForeignToNativeTranslation("word", "la palabra"));
         Translation translation = dao.getAllTranslations().get(0);
-        uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao);
+        Dictionary dictionary = new Dictionary(dao);
 
         dictionary.delete(translation);
 
@@ -290,7 +291,7 @@ public class DictionaryTest {
     public void answersShouldBeDeletedAlongWithTranslation() {
         dao.insertSingle(createForeignToNativeTranslation("word", "la palabra"));
         Translation translation = dao.getAllTranslations().get(0);
-        uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao);
+        Dictionary dictionary = new Dictionary(dao);
         dictionary.mark(translation, Answer.CORRECT);
 
         dictionary.delete(translation);
@@ -300,7 +301,7 @@ public class DictionaryTest {
 
     @Test
     public void shouldNotAllowToAnswerTranslationsWithoutId() {
-        uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao);
+        Dictionary dictionary = new Dictionary(dao);
 
         boolean isUpdated = dictionary.mark(createForeignToNativeTranslation("duplicate", "dup_translation"), Answer.INCORRECT);
 
@@ -309,7 +310,7 @@ public class DictionaryTest {
 
     @Test
     public void shouldNotAllowToAnswerTranslationsApsentInDb() {
-        uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao);
+        Dictionary dictionary = new Dictionary(dao);
         int nonexistentId = 8949861;
 
         boolean isUpdated = dictionary.mark(new Translation(nonexistentId, new ForeignWord("la duplicado"), new NativeWord("duplication")), Answer.INCORRECT);
@@ -319,7 +320,7 @@ public class DictionaryTest {
 
     @Test
     public void shouldAllowAnswerIncorrectly() {
-        uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao);
+        Dictionary dictionary = new Dictionary(dao);
         dao.insert(singletonList(createForeignToNativeTranslation("word", "la palabra")));
         Translation translation = dao.getAllTranslations().iterator().next();
 
@@ -331,7 +332,7 @@ public class DictionaryTest {
     @Test
     public void shouldUpdateTranslation() {
         dao.insert(singletonList(createForeignToNativeTranslation("la palabra", "word")));
-        uk.ignas.livedictionary.core.Dictionary dictionary = new uk.ignas.livedictionary.core.Dictionary(dao);
+        Dictionary dictionary = new Dictionary(dao);
         Translation translation = dao.getAllTranslations().iterator().next();
 
         boolean isUpdated = dictionary.update(new Translation(translation.getId(), new ForeignWord("la palabra cambiada"), new NativeWord("modified word")));
@@ -350,7 +351,7 @@ public class DictionaryTest {
         return c.getTime();
     }
 
-    private void gettingNextTranslationShouldThroughLDEwithMessage(uk.ignas.livedictionary.core.Dictionary dictionary, String message) {
+    private void gettingNextTranslationShouldThroughLDEwithMessage(Dictionary dictionary, String message) {
         try {
             dictionary.getRandomTranslation();
             fail();
