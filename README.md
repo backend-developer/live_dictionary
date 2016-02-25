@@ -4,7 +4,7 @@ Program aids in the process of learning new language by asking the words user wa
 # How to use
 GUI is really self explanatory
 
-# run tests
+# run the tests
 ./gradlew test
 
 # install to android
