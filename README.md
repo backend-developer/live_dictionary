@@ -9,4 +9,4 @@ GUI is really self explanatory
 
 # install to android
 1) it is needed to have android connected to a computer and having turned on Developer Mode
-2) ./gradlew installDebug
+2) ./build.sh
