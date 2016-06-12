@@ -27,6 +27,7 @@ android {
 }
 
 dependencies {
+    compile 'commons-lang:commons-lang:2.6'
     compile 'com.google.guava:guava:18.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.robolectric:robolectric:3.0'

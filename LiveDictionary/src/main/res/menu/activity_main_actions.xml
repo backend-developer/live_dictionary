@@ -15,4 +15,10 @@
     <item android:id="@+id/export_data_button"
           android:title="@string/export_data"
           android:showAsAction="never" />
+    <item android:id="@+id/manage_labels_button"
+          android:title="@string/manage_labels"
+          android:showAsAction="never" />
+    <item android:id="@+id/add_label_button"
+          android:title="@string/add_label"
+          android:showAsAction="never" />
 </menu>

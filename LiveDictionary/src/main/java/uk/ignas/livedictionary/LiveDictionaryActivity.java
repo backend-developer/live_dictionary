@@ -29,6 +29,7 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
     private volatile Translation currentTranslation = EMPTY_TRANSLATION;
     private Dictionary dictionary;
     private TranslationDao dao;
+    private Labeler labeler;
     private GuiError guiError;
 
     private ImportExportActivity importExportActivity;
@@ -53,6 +54,7 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
         try {
             dao = new TranslationDao(LiveDictionaryActivity.this);
             dictionary = new Dictionary(dao);
+            labeler = new Labeler(dao);
             importExportActivity = new ImportExportActivity(new DataImporterExporter(dao), dictionary, guiError);
 
             publishNextTranslation();
@@ -170,6 +172,13 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
                 return true;
             case R.id.export_data_button:
                 importExportActivity.startActivity(this, PICK_EXPORT_FILE_RESULT_CODE);
+                return true;
+            case R.id.manage_labels_button:
+                Intent intent = new Intent(this, LabellingActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.add_label_button:
+                labeler.addLabel(currentTranslation);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

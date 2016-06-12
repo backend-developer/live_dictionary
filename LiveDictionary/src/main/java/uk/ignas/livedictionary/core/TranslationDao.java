@@ -10,10 +10,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class TranslationDao extends SQLiteOpenHelper {
 
@@ -33,33 +30,41 @@ public class TranslationDao extends SQLiteOpenHelper {
         public static final String NATIVE_WORD = "nativeWord";
         public static final String FOREIGN_WORD = "foreignWord";
     }
-
-    public TranslationDao(Context context) {
-        super(context, DATABASE_NAME, null, 1);
+    public static class LabelledTranslation {
+        public static final String TABLE_NAME = "labelled_translation";
+        public static final String ID = "id";
+        public static final String TRANSLATION_ID = "translation_id";
+        public static final String UNIQUE_TRANSLATION_INDEX = "LTT83YROS3HVD";
     }
-
+    public TranslationDao(Context context) {
+        super(context, DATABASE_NAME, null, 2);
+    }
     @Override
     public void onCreate(SQLiteDatabase db) {
+        prepareDbV1(db);
+        prepareDbV2(db);
+    }
+    private void prepareDbV1(SQLiteDatabase db) {
         db.execSQL(
-                "create table " + Translations.TABLE_NAME + " " +
-                        "(" +
-                        Translations.ID + " integer primary key, " +
-                        Translations.NATIVE_WORD + " text NOT NULL," +
-                        Translations.FOREIGN_WORD + " text NOT NULL, " +
-                        "CONSTRAINT uniqueWT UNIQUE (" + Translations.NATIVE_WORD + ", " + Translations.FOREIGN_WORD + ")" +
-                        ")"
-        );
+            "create table " + Translations.TABLE_NAME + " " +
+            "(" +
+            Translations.ID + " integer primary key, " +
+            Translations.NATIVE_WORD + " text NOT NULL," +
+            Translations.FOREIGN_WORD + " text NOT NULL, " +
+            "CONSTRAINT uniqueWT UNIQUE (" + Translations.NATIVE_WORD + ", " + Translations.FOREIGN_WORD + ")" +
+            ")"
+                  );
         db.execSQL(
-                "create table " + AnswersLog.TABLE_NAME + " " +
-                        "(" +
-                        AnswersLog.ID + " integer primary key, " +
-                        AnswersLog.TRANSLATION_ID + " integer NOT NULL," +
-                        AnswersLog.TIME_ANSWERED + " integer NOT NULL, " +
-                        AnswersLog.IS_CORRECT + " integer NOT NULL, " +
-                        "FOREIGN KEY(" + AnswersLog.TRANSLATION_ID + ") " +
-                        "REFERENCES " + Translations.TABLE_NAME + "(" + Translations.ID + ")" +
-                        ")"
-        );
+            "create table " + AnswersLog.TABLE_NAME + " " +
+            "(" +
+            AnswersLog.ID + " integer primary key, " +
+            AnswersLog.TRANSLATION_ID + " integer NOT NULL," +
+            AnswersLog.TIME_ANSWERED + " integer NOT NULL, " +
+            AnswersLog.IS_CORRECT + " integer NOT NULL, " +
+            "FOREIGN KEY(" + AnswersLog.TRANSLATION_ID + ") " +
+            "REFERENCES " + Translations.TABLE_NAME + "(" + Translations.ID + ")" +
+            ")"
+                  );
         insertSeedData(db);
     }
 
@@ -83,11 +88,26 @@ public class TranslationDao extends SQLiteOpenHelper {
         insertSingleUsingDb(new Translation(new ForeignWord("Los coroles"), new NativeWord("colors")), db);
     }
 
+    private void prepareDbV2(SQLiteDatabase db) {
+        db.execSQL(
+            "create table " + LabelledTranslation.TABLE_NAME + " " +
+            "(" +
+            LabelledTranslation.ID + " integer primary key, " +
+            LabelledTranslation.TRANSLATION_ID + " integer NOT NULL," +
+            "FOREIGN KEY(" + LabelledTranslation.TRANSLATION_ID + ") " +
+            "REFERENCES " + Translations.TABLE_NAME + "(" + Translations.ID + ")," +
+            "CONSTRAINT uniqueLT UNIQUE (" + LabelledTranslation.TRANSLATION_ID + ")" +
+            ")"
+        );
+//        db.execSQL("CREATE UNIQUE INDEX " + LabelledTranslation.UNIQUE_TRANSLATION_INDEX +
+//                   " ON " + LabelledTranslation.TABLE_NAME + "(" + LabelledTranslation.TRANSLATION_ID + "); ");
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + Translations.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + AnswersLog.TABLE_NAME);
-        onCreate(db);
+        if (oldVersion < 2) {
+            prepareDbV2(db);
+        }
     }
 
     @Override
@@ -124,6 +144,14 @@ public class TranslationDao extends SQLiteOpenHelper {
         contentValues.put(Translations.FOREIGN_WORD, translation.getForeignWord().get());
         long id = db.insert(Translations.TABLE_NAME, null, contentValues);
         return id != ERROR_OCURRED;
+    }
+
+    public void addLabel(Translation translation) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(LabelledTranslation.TRANSLATION_ID, translation.getId());
+        this.getWritableDatabase().execSQL("insert into " +
+                                           LabelledTranslation.TABLE_NAME + " (" + LabelledTranslation.TRANSLATION_ID + ") "
+                                           + "VALUES (" + translation.getId() + ")");
     }
 
     public int update(int id, ForeignWord foreignWord, NativeWord nativeWord) {
@@ -176,6 +204,39 @@ public class TranslationDao extends SQLiteOpenHelper {
         return db.delete(Translations.TABLE_NAME,
                 Translations.NATIVE_WORD + " = ? AND " + Translations.FOREIGN_WORD + " = ? ",
                 new String[]{translation.getNativeWord().get(), translation.getForeignWord().get()});
+    }
+
+    public Collection<Integer> getTranslationWithLabelIds() {
+        List<Integer> translationIds = new ArrayList<>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = null;
+        try {
+            res = db.rawQuery("select " +
+                              LabelledTranslation.TRANSLATION_ID + " " +
+                              " from " + LabelledTranslation.TABLE_NAME, null);
+            res.moveToFirst();
+
+            while (!res.isAfterLast()) {
+                translationIds.add(res.getInt(res.getColumnIndex(LabelledTranslation.TRANSLATION_ID)));
+                res.moveToNext();
+            }
+        } finally {
+            if (res != null) {
+                res.close();
+            }
+        }
+        return translationIds;
+    }
+
+    public Collection<Translation> getTranslationsByIds(Collection<Integer> translationIds) {
+        List<Translation> translations = getAllTranslations();
+        for (Iterator<Translation> iter = translations.iterator(); iter.hasNext(); ) {
+            if (!translationIds.contains(iter.next().getId())) {
+                iter.remove();
+            }
+        }
+        return translations;
     }
 
     public List<Translation> getAllTranslations() {

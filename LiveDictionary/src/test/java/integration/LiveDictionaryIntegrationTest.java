@@ -13,12 +13,15 @@ import uk.ignas.livedictionary.testutils.LiveDictionaryDsl;
 
 import java.util.*;
 
+import static com.google.common.collect.Iterables.getFirst;
 import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -246,8 +249,6 @@ public class LiveDictionaryIntegrationTest {
         int percentage = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern(notYetStaged, otherTranslation.getNativeWord().get());
         assertThat(percentage, is(equalTo(100)));
     }
-
-
 
     @Test
     public void shouldInsertTranslation() {

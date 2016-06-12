@@ -56,16 +56,14 @@ function verifyPreviousBackups {
 function pushLatestBackupToAndroid {
 	local internalNameForDbBackup=$(ls -la $1 | awk '{print $9}' | sort | tail -n1) 
 	adb push $1/$internalNameForDbBackup /sdcard/$internalNameForDbBackup
-echo "!!pushed"
 	adb shell "run-as uk.ignas.livedictionary chmod 666 databases/LiveDictionary.db"
-echo "!! permissionsChanged"
 	adb shell "cp /sdcard/$internalNameForDbBackup /data/data/uk.ignas.livedictionary/databases/LiveDictionary.db"
-echo "!!copied"
 	echo "${BASH_SOURCE[0]}: last backup of db pushed"
 }
 
 function initializeAppFiles {
 	adb shell am start -n uk.ignas.livedictionary/uk.ignas.livedictionary.LiveDictionaryActivity
+	sleep 1
 	adb shell am force-stop uk.ignas.livedictionary
 }
 

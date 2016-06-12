@@ -6,6 +6,8 @@
 	<string name="easy_translation">Easy!</string>
     <string name="difficult_translation">Help me learn it!</string>
     <string name="export_data">Export Data</string>
+    <string name="manage_labels">Manage Labels</string>
+    <string name="add_label">Add Label</string>
     <string name="add_translation">Add translation</string>
     <string name="cancel">Cancel</string>
     <string name="foreign_word">Foreign</string>
