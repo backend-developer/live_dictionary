@@ -14,9 +14,9 @@ public class Labeler {
         this.dao = dao;
     }
 
-    public void addLabel(Translation translation) {
+    public void addLabel(Translation translation, Label label) {
         try {
-            dao.addLabel(translation);
+            dao.addLabelledTranslation(translation, label);
         } catch (Exception e) {
             uniqueConstraintViolation(e);
         }
@@ -40,8 +40,12 @@ public class Labeler {
         return message.toLowerCase().contains("unique");
     }
 
-    public Collection<Translation> getLabelled() {
-        Collection<Integer> translationIds = dao.getTranslationWithLabelIds();
+    public Collection<Translation> getLabelled(Label label) {
+        Collection<Integer> translationIds = dao.getTranslationIdsWithLabel(label);
         return dao.getTranslationsByIds(translationIds);
+    }
+
+    public void removeLabel(Translation translation, Label label) {
+        dao.deleteLabelledTranslation(translation, label);
     }
 }

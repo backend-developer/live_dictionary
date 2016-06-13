@@ -178,7 +178,7 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
                 startActivity(intent);
                 return true;
             case R.id.add_label_button:
-                labeler.addLabel(currentTranslation);
+                labeler.addLabel(currentTranslation, Label.A);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

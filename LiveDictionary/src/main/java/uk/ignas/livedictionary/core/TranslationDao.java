@@ -12,12 +12,15 @@ import com.google.common.collect.ListMultimap;
 
 import java.util.*;
 
+import static java.util.Arrays.asList;
+
 public class TranslationDao extends SQLiteOpenHelper {
 
     public static final int ERROR_OCURRED = -1;
     public static final String DATABASE_NAME = "LiveDictionary.db";
 
     public static class AnswersLog {
+
         public static final String TABLE_NAME = "answers_log";
         public static final String ID = "id";
         public static final String TRANSLATION_ID = "translation_id";
@@ -34,15 +37,21 @@ public class TranslationDao extends SQLiteOpenHelper {
         public static final String TABLE_NAME = "labelled_translation";
         public static final String ID = "id";
         public static final String TRANSLATION_ID = "translation_id";
-        public static final String UNIQUE_TRANSLATION_INDEX = "LTT83YROS3HVD";
+        public static final String LABEL_ID = "label_id";;
+    }
+    public static class Label {
+        public static final String TABLE_NAME = "label";
+        public static final String ID = "id";
+        public static final String NAME = "translation_id";
     }
     public TranslationDao(Context context) {
-        super(context, DATABASE_NAME, null, 2);
+        super(context, DATABASE_NAME, null, 3);
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
         prepareDbV1(db);
         prepareDbV2(db);
+        prepareDbV3(db);
     }
     private void prepareDbV1(SQLiteDatabase db) {
         db.execSQL(
@@ -67,7 +76,6 @@ public class TranslationDao extends SQLiteOpenHelper {
                   );
         insertSeedData(db);
     }
-
     private void insertSeedData(SQLiteDatabase db) {
         insertSingleUsingDb(new Translation(new ForeignWord("morado"), new NativeWord("purple")), db);
         insertSingleUsingDb(new Translation(new ForeignWord("verde"), new NativeWord("green")), db);
@@ -99,14 +107,54 @@ public class TranslationDao extends SQLiteOpenHelper {
             "CONSTRAINT uniqueLT UNIQUE (" + LabelledTranslation.TRANSLATION_ID + ")" +
             ")"
         );
-//        db.execSQL("CREATE UNIQUE INDEX " + LabelledTranslation.UNIQUE_TRANSLATION_INDEX +
-//                   " ON " + LabelledTranslation.TABLE_NAME + "(" + LabelledTranslation.TRANSLATION_ID + "); ");
+    }
+
+    private void prepareDbV3(SQLiteDatabase db) {
+        db.execSQL(
+            "DROP TABLE " + LabelledTranslation.TABLE_NAME
+        );
+        db.execSQL(
+            "create table " + Label.TABLE_NAME + " " +
+            "(" +
+            Label.ID + " integer primary key, " +
+            Label.NAME + " text NOT NULL" +
+            ")"
+        );
+
+        insertLabel(db, "RED");
+        insertLabel(db, "BLACK");
+        insertLabel(db, "YELLOW");
+        insertLabel(db, "GREEN");
+
+        db.execSQL(
+            "create table " + LabelledTranslation.TABLE_NAME + " " +
+            "(" +
+            LabelledTranslation.ID + " integer primary key, " +
+            LabelledTranslation.TRANSLATION_ID + " integer NOT NULL," +
+            LabelledTranslation.LABEL_ID + " integer NOT NULL," +
+            "FOREIGN KEY(" + LabelledTranslation.TRANSLATION_ID + ") " +
+            "REFERENCES " + Translations.TABLE_NAME + "(" + Translations.ID + ")," +
+            "FOREIGN KEY(" + LabelledTranslation.LABEL_ID + ") " +
+            "REFERENCES " + Label.TABLE_NAME + "(" + Label.ID + ")," +
+            "CONSTRAINT uniqueLTLT UNIQUE " +
+            "(" + LabelledTranslation.TRANSLATION_ID + ", " + LabelledTranslation.LABEL_ID + ")" +
+            ")"
+        );
+    }
+
+    private void insertLabel(SQLiteDatabase db, String value) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Label.NAME, value);
+        db.insert(Label.TABLE_NAME, null, contentValues);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < 2) {
             prepareDbV2(db);
+        }
+        if (oldVersion < 3) {
+            prepareDbV3(db);
         }
     }
 
@@ -146,12 +194,14 @@ public class TranslationDao extends SQLiteOpenHelper {
         return id != ERROR_OCURRED;
     }
 
-    public void addLabel(Translation translation) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(LabelledTranslation.TRANSLATION_ID, translation.getId());
+    public void addLabelledTranslation(Translation translation, uk.ignas.livedictionary.core.Label label) {
         this.getWritableDatabase().execSQL("insert into " +
-                                           LabelledTranslation.TABLE_NAME + " (" + LabelledTranslation.TRANSLATION_ID + ") "
-                                           + "VALUES (" + translation.getId() + ")");
+                                           LabelledTranslation.TABLE_NAME + " (" +
+                                           LabelledTranslation.TRANSLATION_ID + ", " +
+                                           LabelledTranslation.LABEL_ID + ") "
+                                           + "VALUES (" +
+                                           translation.getId() + ", " +
+                                           label.getId() + ")");
     }
 
     public int update(int id, ForeignWord foreignWord, NativeWord nativeWord) {
@@ -175,6 +225,7 @@ public class TranslationDao extends SQLiteOpenHelper {
         try {
             db.beginTransaction();
             deleteAnswersByTranslationIds(collectIds(translations));
+            deleteLabelledTranslationsByTranslationIds(collectIds(translations));
             for (Translation translation : translations) {
                 this.deleteSingle(translation);
             }
@@ -182,6 +233,29 @@ public class TranslationDao extends SQLiteOpenHelper {
         } finally {
             db.endTransaction();
         }
+    }
+
+    private void deleteAnswersByTranslationIds(List<Integer> translationIdsToDelete) {
+        String inClause = Joiner.on(", ").join(translationIdsToDelete);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM " + AnswersLog.TABLE_NAME + " WHERE " +
+                   AnswersLog.TRANSLATION_ID + " IN (" + inClause + ") ");
+    }
+
+    private void deleteLabelledTranslationsByTranslationIds(List<Integer> translationIds) {
+        String inClause = Joiner.on(", ").join(translationIds);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM " + LabelledTranslation.TABLE_NAME + " WHERE " +
+                   LabelledTranslation.TRANSLATION_ID + " IN (" + inClause + ") ");
+    }
+
+    public void deleteLabelledTranslation(Translation translation, uk.ignas.livedictionary.core.Label label) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM " + LabelledTranslation.TABLE_NAME + " WHERE " +
+                   LabelledTranslation.TRANSLATION_ID + " = " + translation.getId() + " AND " +
+                   LabelledTranslation.LABEL_ID + " = " + label.getId());
     }
 
     private List<Integer> collectIds(Collection<Translation> translations) {
@@ -206,7 +280,7 @@ public class TranslationDao extends SQLiteOpenHelper {
                 new String[]{translation.getNativeWord().get(), translation.getForeignWord().get()});
     }
 
-    public Collection<Integer> getTranslationWithLabelIds() {
+    public Collection<Integer> getTranslationIdsWithLabel(uk.ignas.livedictionary.core.Label label) {
         List<Integer> translationIds = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -214,7 +288,8 @@ public class TranslationDao extends SQLiteOpenHelper {
         try {
             res = db.rawQuery("select " +
                               LabelledTranslation.TRANSLATION_ID + " " +
-                              " from " + LabelledTranslation.TABLE_NAME, null);
+                              " from " + LabelledTranslation.TABLE_NAME + " where " +
+                LabelledTranslation.LABEL_ID + " = " + label.getId(), null);
             res.moveToFirst();
 
             while (!res.isAfterLast()) {
@@ -278,14 +353,6 @@ public class TranslationDao extends SQLiteOpenHelper {
         long id = db.insert(AnswersLog.TABLE_NAME, null, contentValues);
         ListMultimap<Integer, AnswerAtTime> answersLogByTranslationId = getAnswersLogByTranslationId();
         return id != ERROR_OCURRED;
-    }
-
-    private void deleteAnswersByTranslationIds(List<Integer> translationIdsToDelete) {
-        String inClause = Joiner.on(", ").join(translationIdsToDelete);
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DELETE FROM " + AnswersLog.TABLE_NAME + " WHERE " +
-                AnswersLog.TRANSLATION_ID + " IN (" + inClause + ") ");
     }
 
     public ListMultimap<Integer, AnswerAtTime> getAnswersLogByTranslationId() {

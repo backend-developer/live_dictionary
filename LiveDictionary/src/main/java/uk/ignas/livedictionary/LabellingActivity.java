@@ -35,7 +35,7 @@ public class LabellingActivity extends Activity {
         }
         final ListView listview = (ListView) findViewById(R.id.listview);
 
-        Collection<Translation> labelled = labeler.getLabelled();
+        Collection<Translation> labelled = labeler.getLabelled(Label.A);
         final ArrayList<String> list = new ArrayList<String>();
         for (Translation t: labelled) {
             list.add(t.toString());
