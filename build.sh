@@ -8,7 +8,7 @@ function verifyCurrentBackup {
 	
 	. ./build.properties;
 	[[ -z $expectedNumberOfWords ]] && echo "${BASH_COURSE[0]}: expectedNumberOfWords variable not found" && eixt 1
-	[[ $actualNumberOfWords -lt $expectedNumberOfWords ]] && echo "${BASH_SOURCE[0]}: old database file might be old" && exit 1
+	[[ $actualNumberOfWords -lt $expectedNumberOfWords ]] && echo "${BASH_SOURCE[0]}: database file might be old. expected number of words: $expectedNumberOfWords , found: $actualNumberOfWords" && exit 1
 	[[ $actualNumberOfWords -gt $expectedNumberOfWords ]] && echo "${BASH_SOURCE[0]}: unexpected number of records, verify and update expectedNumberOfWords" && exit 1
 	
 	echo "${BASH_SOURCE[0]}: database backup is located in $1"

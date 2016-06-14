@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.*;
 import uk.ignas.livedictionary.core.*;
 
@@ -24,7 +27,6 @@ public class LabellingActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_labelling);
 
-
         guiError = new GuiError(this);
         try {
             dao = new TranslationDao(LabellingActivity.this);
@@ -35,41 +37,40 @@ public class LabellingActivity extends Activity {
         }
         final ListView listview = (ListView) findViewById(R.id.listview);
 
-        Collection<Translation> labelled = labeler.getLabelled(Label.A);
-        final ArrayList<String> list = new ArrayList<String>();
-        for (Translation t: labelled) {
-            list.add(t.toString());
-        }
-        final StableArrayAdapter adapter = new StableArrayAdapter(this,
-                                                                  android.R.layout.simple_list_item_1, list);
+        List<Translation> labelledTranslations = new ArrayList<>(labeler.getLabelled(Label.A));
+        final StableArrayAdapter adapter = new StableArrayAdapter(this, labelledTranslations);
         listview.setAdapter(adapter);
-
     }
 
-    private class StableArrayAdapter extends ArrayAdapter<String> {
+    private class StableArrayAdapter extends ArrayAdapter<Translation> {
 
-        HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
+        private final List<Translation> translations;
 
-        public StableArrayAdapter(Context context, int textViewResourceId,
-                                  List<String> objects) {
-            super(context, textViewResourceId, objects);
-            for (int i = 0; i < objects.size(); ++i) {
-                mIdMap.put(objects.get(i), i);
+        public StableArrayAdapter(Context context, List<Translation> translations) {
+            super(context, 0, translations);
+            this.translations = translations;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            final Translation translation = getItem(position);
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_translation, parent, false);
             }
-        }
+            TextView translationTextView = (TextView) convertView.findViewById(R.id.translation);
+            translationTextView.setText(translation.getNativeWord().get() + " - " + translation.getForeignWord().get());
 
-        @Override
-        public long getItemId(int position) {
-            String item = getItem(position);
-            return mIdMap.get(item);
+            TextView deleteLabelButton = (Button) convertView.findViewById(R.id.delete_label);
+            deleteLabelButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    labeler.removeLabel(translation, Label.A);
+                    translations.remove(translation);
+                    notifyDataSetChanged();
+                    view.setAlpha(1);
+                }
+            });
+            return convertView;
         }
-
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
-
     }
-
 }
-
