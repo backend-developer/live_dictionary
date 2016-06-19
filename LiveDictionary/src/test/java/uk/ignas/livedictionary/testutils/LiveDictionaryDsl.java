@@ -1,12 +1,19 @@
 package uk.ignas.livedictionary.testutils;
 
 import uk.ignas.livedictionary.core.Dictionary;
+import uk.ignas.livedictionary.core.ForeignWord;
+import uk.ignas.livedictionary.core.NativeWord;
 import uk.ignas.livedictionary.core.Translation;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class LiveDictionaryDsl {
+    public static Translation createForeignToNativeTranslation(String foreignWord, String nativeWord) {
+        return new Translation(new ForeignWord(foreignWord), new NativeWord(nativeWord));
+    }
+
+
     public static List<Translation> retrieveTranslationsNTimes(Dictionary dictionary, int timesToExecute) {
         final List<Translation> retrievedTranslations = new ArrayList<>();
         for (int i = 0; i < timesToExecute; i++) {

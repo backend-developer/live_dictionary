@@ -1,7 +1,6 @@
 package integration;
 
 import integration.testutils.DaoCreator;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
@@ -16,15 +15,14 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static junit.framework.Assert.fail;
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class LabelerIntegrationTest {
     private TranslationDao dao = DaoCreator.createEmpty();
+    private Labeler labeler = new Labeler(dao, new DaoObjectsFetcher(dao));
 
     private Translation createForeignToNativeTranslation(String foreignWord, String nativeWord) {
         return new Translation(new ForeignWord(foreignWord), new NativeWord(nativeWord));
@@ -33,8 +31,6 @@ public class LabelerIntegrationTest {
     @Test
     public void unlabeledTranslationShouldNotHaveLabel() {
         dao.insert(singletonList(createForeignToNativeTranslation("la palabra", "word")));
-        Translation translation = dao.getAllTranslations().iterator().next();
-        Labeler labeler = new Labeler(dao);
 
         Collection<Translation> labelledTranslations = labeler.getLabelled(Label.A);
 
@@ -46,7 +42,6 @@ public class LabelerIntegrationTest {
     public void shouldAddLabel() {
         dao.insert(singletonList(createForeignToNativeTranslation("la palabra", "word")));
         Translation translation = dao.getAllTranslations().iterator().next();
-        Labeler labeler = new Labeler(dao);
 
         labeler.addLabel(translation, Label.A);
         Collection<Translation> labelledTranslations = labeler.getLabelled(Label.A);
@@ -60,7 +55,6 @@ public class LabelerIntegrationTest {
     public void shouldBeAbleToRemoveLabel() {
         dao.insert(singletonList(createForeignToNativeTranslation("la palabra", "word")));
         Translation translation = dao.getAllTranslations().iterator().next();
-        Labeler labeler = new Labeler(dao);
 
         labeler.addLabel(translation, Label.A);
         labeler.removeLabel(translation, Label.A);
@@ -74,7 +68,6 @@ public class LabelerIntegrationTest {
     public void shouldBeAbleToRemoveSpecificLabel() {
         dao.insert(singletonList(createForeignToNativeTranslation("la palabra", "word")));
         Translation translation = dao.getAllTranslations().iterator().next();
-        Labeler labeler = new Labeler(dao);
 
         labeler.addLabel(translation, Label.A);
         labeler.addLabel(translation, Label.B);
@@ -92,7 +85,6 @@ public class LabelerIntegrationTest {
     public void shouldBeSilentlyIgnoreRemovalOfUnexistingLabel() {
         dao.insert(singletonList(createForeignToNativeTranslation("la palabra", "word")));
         Translation translation = dao.getAllTranslations().iterator().next();
-        Labeler labeler = new Labeler(dao);
 
         labeler.removeLabel(translation, Label.A);
         Collection<Translation> labelledTranslations = labeler.getLabelled(Label.A);
@@ -105,7 +97,6 @@ public class LabelerIntegrationTest {
     public void shouldDeleteLabelledWordWithAllLabels() {
         dao.insert(singletonList(createForeignToNativeTranslation("la palabra", "word")));
         Translation translation = dao.getAllTranslations().iterator().next();
-        Labeler labeler = new Labeler(dao);
 
         labeler.addLabel(translation, Label.A);
         labeler.addLabel(translation, Label.B);
@@ -125,7 +116,6 @@ public class LabelerIntegrationTest {
         dao.insert(singletonList(createForeignToNativeTranslation("la cocina", "kitchen")));
         Translation translation1 = getFirst(dao.getAllTranslations(), null);
         Translation translation2 = getLast(dao.getAllTranslations());
-        Labeler labeler = new Labeler(dao);
 
         labeler.addLabel(translation1, Label.A);
         labeler.addLabel(translation2, Label.A);
@@ -143,7 +133,6 @@ public class LabelerIntegrationTest {
         dao.insert(singletonList(createForeignToNativeTranslation("la palabra", "word")));
         Iterator<Translation> iterator = dao.getAllTranslations().iterator();
         Translation translation = iterator.next();
-        Labeler labeler = new Labeler(dao);
 
         labeler.addLabel(translation, Label.A);
         labeler.addLabel(translation, Label.A);
@@ -158,7 +147,6 @@ public class LabelerIntegrationTest {
         dao.insert(singletonList(createForeignToNativeTranslation("la palabra", "word")));
         Iterator<Translation> iterator = dao.getAllTranslations().iterator();
         Translation translation = iterator.next();
-        Labeler labeler = new Labeler(dao);
 
         labeler.addLabel(translation, Label.A);
         labeler.addLabel(translation, Label.B);
@@ -174,7 +162,6 @@ public class LabelerIntegrationTest {
     @Test()
     public void shouldThrowIfNotPersistedTranslationIsPassedIn() {
         Translation translation = createForeignToNativeTranslation("la palabra", "word");
-        Labeler labeler = new Labeler(dao);
 
         try {
             labeler.addLabel(translation, Label.A);

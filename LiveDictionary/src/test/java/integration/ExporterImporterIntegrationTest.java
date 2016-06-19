@@ -37,6 +37,8 @@ public class ExporterImporterIntegrationTest {
     public static final String LIVE_DATA_RESOURCE_NAME = "exported_translations.txt";
     public static final String EXPORT_FILE_NAME = "export.txt";
 
+    private Clock clock = new Clock();
+
     @After
     public void teardown() {
         removeFileIfExists(IMPORT_FILE_NAME);
@@ -96,7 +98,9 @@ public class ExporterImporterIntegrationTest {
     public void newestTranslationsShouldBeAskedMoreOftenThanOldOnes() throws IOException, URISyntaxException {
         TranslationDao dao = DaoCreator.create();
         createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, dao);
-        Dictionary q = new Dictionary(dao);
+        DaoObjectsFetcher fetcher = new DaoObjectsFetcher(dao);
+        Labeler labeler = new Labeler(dao, fetcher);
+        Dictionary q = new Dictionary(dao, fetcher, labeler, clock);
         List<Translation> translations = dao.getAllTranslations();
         int size = translations.size();
         List<Translation> eldestTranslations = translations.subList(0, 100);

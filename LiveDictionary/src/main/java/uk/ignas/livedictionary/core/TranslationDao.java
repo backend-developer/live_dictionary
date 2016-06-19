@@ -304,16 +304,6 @@ public class TranslationDao extends SQLiteOpenHelper {
         return translationIds;
     }
 
-    public Collection<Translation> getTranslationsByIds(Collection<Integer> translationIds) {
-        List<Translation> translations = getAllTranslations();
-        for (Iterator<Translation> iter = translations.iterator(); iter.hasNext(); ) {
-            if (!translationIds.contains(iter.next().getId())) {
-                iter.remove();
-            }
-        }
-        return translations;
-    }
-
     public List<Translation> getAllTranslations() {
         List<Translation> translations = new ArrayList<>();
 
@@ -341,6 +331,7 @@ public class TranslationDao extends SQLiteOpenHelper {
                 res.close();
             }
         }
+
         return translations;
     }
 
@@ -351,7 +342,6 @@ public class TranslationDao extends SQLiteOpenHelper {
         contentValues.put(AnswersLog.TIME_ANSWERED, time.getTime());
         contentValues.put(AnswersLog.IS_CORRECT, answer.isCorrect());
         long id = db.insert(AnswersLog.TABLE_NAME, null, contentValues);
-        ListMultimap<Integer, AnswerAtTime> answersLogByTranslationId = getAnswersLogByTranslationId();
         return id != ERROR_OCURRED;
     }
 

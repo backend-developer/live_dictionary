@@ -191,7 +191,7 @@ public class Reminder {
         return TimeUnit.MILLISECONDS.toHours(currentLatest.getTime() - currentEarlest.getTime());
     }
 
-    class MsgCountAndNumOfHours {
+    private static class MsgCountAndNumOfHours {
         private final int count;
         private final int numOfHours;
 
@@ -214,7 +214,7 @@ public class Reminder {
                 //for higher than 7 - use value for 7
                 .build();
 
-        public Integer getHoursByLevel(int level) {
+        Integer getHoursByLevel(int level) {
             if (level > 6) {
                 return periodsByLevel.get(7);
             } else if (level >= 0) {

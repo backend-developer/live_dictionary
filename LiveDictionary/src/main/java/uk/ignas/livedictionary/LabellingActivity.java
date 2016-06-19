@@ -11,14 +11,13 @@ import android.widget.*;
 import uk.ignas.livedictionary.core.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 public class LabellingActivity extends Activity {
     private static final String TAG = LabellingActivity.class.getName();
 
     private TranslationDao dao;
+    private DaoObjectsFetcher fetcher;
     private GuiError guiError;
     private Labeler labeler;
 
@@ -30,7 +29,8 @@ public class LabellingActivity extends Activity {
         guiError = new GuiError(this);
         try {
             dao = new TranslationDao(LabellingActivity.this);
-            labeler = new Labeler(dao);
+            fetcher = new DaoObjectsFetcher(dao);
+            labeler = new Labeler(dao, fetcher);
         } catch (Exception e) {
             Log.e(TAG, "critical error ", e);
             guiError.showErrorDialogAndExitActivity(e);

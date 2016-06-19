@@ -1,7 +1,5 @@
 package uk.ignas.livedictionary.core;
 
-import com.google.common.collect.ListMultimap;
-
 import java.util.*;
 
 import static java.util.Collections.singleton;
@@ -11,47 +9,46 @@ public class Dictionary {
     public static final int NEWEST_100_QUESTIONS = 100;
     public static final int PROBABILITY_OF_80_PERCENT = 80;
 
-    private List<Translation> questions;
+    private List<Translation> translations;
     private final Set<Translation> difficultTranslations = new HashSet<>();
     private final Reminder reminder;
     private List<Translation> veryEasyTranslations = new ArrayList<>();
     private final Random random = new Random();
     private TranslationDao dao;
+    private DaoObjectsFetcher fetcher;
+    private Labeler labeler;
     private Clock clock;
 
-    public Dictionary(TranslationDao dao) {
-        this(dao, new Clock());
-    }
-
-    public Dictionary(TranslationDao dao, Clock clock) {
+    public Dictionary(TranslationDao dao, DaoObjectsFetcher fetcher, Labeler labeler, Clock clock) {
         this.dao = dao;
+        this.fetcher = fetcher;
+        this.labeler = labeler;
         this.clock = clock;
         reminder = new Reminder(clock);
-        //making sure data structure preserves insertion order even the code is changed
         reloadTranslations();
     }
 
     private void reloadTranslations() {
-        questions = getAllTranslationsWithMetadata();
-        Collections.reverse(questions);
+        List<Translation> translations = dao.getAllTranslations();
+        fetcher.fetchAnswersLog(translations);
+        translations = filterNonLabelledTranslations(translations);
+        Collections.reverse(translations);
         this.difficultTranslations.clear();
-        for (Translation t : new ArrayList<>(questions)) {
+        for (Translation t : new ArrayList<>(translations)) {
             TranslationMetadata metadata = t.getMetadata();
             if (!isLastAnswerCorrect(metadata)) {
-                questions.remove(t);
+                translations.remove(t);
                 difficultTranslations.add(t);
             }
         }
+        this.translations = translations;
     }
 
-    private List<Translation> getAllTranslationsWithMetadata() {
-        List<Translation> allTranslations = dao.getAllTranslations();
-        ListMultimap<Integer, AnswerAtTime> answersLogByTranslationId = dao.getAnswersLogByTranslationId();
-        for (Translation translation : allTranslations) {
-            List<AnswerAtTime> answersLog = answersLogByTranslationId.get(translation.getId());
-            translation.getMetadata().getRecentAnswers().addAll(answersLog);
-        }
-        return allTranslations;
+    private List<Translation> filterNonLabelledTranslations(List<Translation> translations) {
+        List<Translation> nonLabelledTranslations = new ArrayList<>(translations);
+        Collection<Translation> labelled = labeler.getLabelled(Label.A);
+        nonLabelledTranslations.removeAll(labelled);
+        return nonLabelledTranslations;
     }
 
     private boolean isLastAnswerCorrect(TranslationMetadata metadata) {
@@ -64,7 +61,7 @@ public class Dictionary {
     }
 
     public Translation getRandomTranslation() {
-        if (questions.size() == 0 && difficultTranslations.size() == 0 && veryEasyTranslations.size() == 0) {
+        if (translations.size() == 0 && difficultTranslations.size() == 0 && veryEasyTranslations.size() == 0) {
             throw new LiveDictionaryException("no questions found");
         }
         Translation translationToReturn = null;
@@ -75,18 +72,18 @@ public class Dictionary {
                 translationToReturn = candidateTranslation;
             } else {
                 veryEasyTranslations.add(candidateTranslation);
-                questions.remove(candidateTranslation);
+                translations.remove(candidateTranslation);
             }
         }
         return translationToReturn;
     }
 
     private Translation chooseTranslationPreferingDifficultOrNewer() {
-        if (questions.size() == 0 && difficultTranslations.size() == 0) {
+        if (translations.size() == 0 && difficultTranslations.size() == 0) {
             throw new LiveDictionaryException("There are no more difficult words");
         }
         Translation translationToReturn;
-        if (questions.size() == 0 ||
+        if (translations.size() == 0 ||
                 difficultTranslations.size() > 0 &&
                 difficultTranslations.size() > random.nextInt(DIFFICULT_TRANSLATIONS_LIMIT)) {
             translationToReturn = getRandomDifficultTranslation();
@@ -98,9 +95,9 @@ public class Dictionary {
 
     private Translation chooseTranslationPreferringNewer() {
         Translation translationToReturn;
-        int size = questions.size();
+        int size = translations.size();
         if (size <= NEWEST_100_QUESTIONS) {
-            translationToReturn = questions.get(random.nextInt(size));
+            translationToReturn = translations.get(random.nextInt(size));
         } else {
             if (is80PercentOfTimes()) {
                 translationToReturn = getOneOfTheNewest100Translations();
@@ -116,12 +113,12 @@ public class Dictionary {
     }
 
     private Translation getOneOfTheNewest100Translations() {
-        return questions.get(random.nextInt(NEWEST_100_QUESTIONS));
+        return translations.get(random.nextInt(NEWEST_100_QUESTIONS));
     }
 
     private Translation getTranslationNotOutOf100Newest() {
-        int randomGreaterOrEqualsTo100 = random.nextInt(questions.size() - NEWEST_100_QUESTIONS) + NEWEST_100_QUESTIONS;
-        return questions.get(randomGreaterOrEqualsTo100);
+        int randomGreaterOrEqualsTo100 = random.nextInt(translations.size() - NEWEST_100_QUESTIONS) + NEWEST_100_QUESTIONS;
+        return translations.get(randomGreaterOrEqualsTo100);
     }
 
     private Translation getRandomDifficultTranslation() {
@@ -160,7 +157,7 @@ public class Dictionary {
         }
 
         boolean updatedAsDifficultCount = updateIfIsAnIdOfAnyOfTranslations(translation, difficultTranslations);
-        boolean updatedAsEasyCount = updateIfIsAnIdOfAnyOfTranslations(translation, questions);
+        boolean updatedAsEasyCount = updateIfIsAnIdOfAnyOfTranslations(translation, translations);
         reloadTranslations();
         return updatedAsDifficultCount || updatedAsEasyCount;
     }

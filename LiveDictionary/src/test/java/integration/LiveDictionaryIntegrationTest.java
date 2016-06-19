@@ -13,7 +13,6 @@ import uk.ignas.livedictionary.testutils.LiveDictionaryDsl;
 
 import java.util.*;
 
-import static com.google.common.collect.Iterables.getFirst;
 import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static java.util.Collections.singletonList;
@@ -27,6 +26,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern;
+import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.createForeignToNativeTranslation;
 import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.retrieveTranslationsNTimes;
 
 @RunWith(RobolectricGradleTestRunner.class)
@@ -34,21 +34,27 @@ import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.retrieveTransl
 public class LiveDictionaryIntegrationTest {
     private static final Date NOW;
 
+    private Clock clock = new Clock();
+
     static {
         Calendar c = Calendar.getInstance();
         c.set(2015, Calendar.JANUARY, 1, 12, 0);
         NOW = c.getTime();
     }
 
-    public static final Date LEVEL_1_STAGING_PERIOD_NOT_YET_PASSED = createDateDifferingBy(NOW, 3*60+59, Calendar.MINUTE);
+    public static final Date LEVEL_1_STAGING_PERIOD_NOT_YET_PASSED =
+        createDateDifferingBy(NOW, 3 * 60 + 59, Calendar.MINUTE);
 
     private static int uniqueSequence = 0;
 
     private TranslationDao dao = DaoCreator.createEmpty();
+    private DaoObjectsFetcher fetcher = new DaoObjectsFetcher(dao);
+    private Labeler labeler = new Labeler(dao, fetcher);
+    private Dictionary dictionary = new Dictionary(dao, fetcher, labeler, clock);
 
     @Test
     public void shouldThrowWhenIfThereAreNoTranslationToRetrieve() {
-        Dictionary dictionary = new Dictionary(dao);
+        Dictionary dictionary = new Dictionary(dao, fetcher, labeler, clock);
         try {
             dictionary.getRandomTranslation();
             fail();
@@ -57,14 +63,11 @@ public class LiveDictionaryIntegrationTest {
         }
     }
 
-    private Translation createForeignToNativeTranslation(String foreignWord, String nativeWord) {
-        return new Translation(new ForeignWord(foreignWord), new NativeWord(nativeWord));
-    }
 
     @Test
     public void shouldNotCrashWhenThereAreFewTranslations() {
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
-        Dictionary dictionary = new Dictionary(dao);
+        dictionary.reloadData();
 
         Translation translation = dictionary.getRandomTranslation();
 
@@ -75,19 +78,19 @@ public class LiveDictionaryIntegrationTest {
     public void shouldNotCrashWhenAllTheWordsAreIncorrectlyAnswered() {
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslations().get(0);
-        Dictionary dictionary = new Dictionary(dao);
+        dictionary.reloadData();
         dictionary.mark(translation, Answer.INCORRECT);
 
         List<Translation> translations = LiveDictionaryDsl.retrieveTranslationsNTimes(dictionary, 10);
 
-        int percentage = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern(translations, "word");
+        int percentage =
+            LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern(translations, "word");
         assertThat(percentage, is(100));
     }
 
 
     @Test
     public void shouldSynchronizeWithDbOnDemand() {
-        Dictionary dictionary = new Dictionary(dao);
         dao.insertSingle(createForeignToNativeTranslation("la palabra", "word"));
 
         dictionary.reloadData();
@@ -100,7 +103,7 @@ public class LiveDictionaryIntegrationTest {
     public void shouldPersistDifficultTranslations() {
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = getOnlyElement(dao.getAllTranslations());
-        Dictionary dictionary = new Dictionary(dao);
+        dictionary.reloadData();
 
         dictionary.mark(translation, Answer.INCORRECT);
 
@@ -112,7 +115,7 @@ public class LiveDictionaryIntegrationTest {
     public void shouldGetNewest100TranslationsWith80PercentProbability() {
         dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
         dao.insert(getNTranslationsWithNativeWordStartingWith(100, "LastQ"));
-        Dictionary dictionary = new Dictionary(dao);
+        dictionary.reloadData();
 
         final List<Translation> retrievedTranslations = retrieveTranslationsNTimes(dictionary, 1000);
 
@@ -124,21 +127,45 @@ public class LiveDictionaryIntegrationTest {
     public void shouldHandle100Translations() {
         for (int i = 0; i < 100; i++) {
             dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Any"));
-            Dictionary dictionary = new Dictionary(dao);
+            dictionary.reloadData();
 
             List<Translation> translations = LiveDictionaryDsl.retrieveTranslationsNTimes(dictionary, 100);
 
-            int percentage = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern(translations, "Any");
+            int percentage =
+                LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern(translations, "Any");
             assertThat(percentage, is(100));
         }
+    }
+
+    @Test
+    public void shouldNotRetrieveLabelledWords() {
+        dao.insertSingle(createForeignToNativeTranslation("la palabra", "a word"));
+        dao.insertSingle(createForeignToNativeTranslation("la cocina", "a kitchen"));
+        Translation labelledTranslation = retrieveTranslationWithNativeWordFromDb("a kitchen");
+        dao.addLabelledTranslation(labelledTranslation, Label.A);
+        dictionary.reloadData();
+
+        List<Translation> translations = LiveDictionaryDsl.retrieveTranslationsNTimes(dictionary, 10);
+
+        int percentage = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern(translations, "a word");
+        assertThat(percentage, is(100));
+    }
+
+    private Translation retrieveTranslationWithNativeWordFromDb(String nativeWord) {
+        for (Translation t : dao.getAllTranslations()) {
+            if (t.getNativeWord().get().equals(nativeWord)) {
+                return t;
+            }
+        }
+        throw new RuntimeException("no such word: '" + nativeWord + "' in database");
     }
 
     @Test
     public void afterFinding20DifficultTranslationsShouldNeverAskForOthers() {
         dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
         dao.insert(getNTranslationsWithNativeWordStartingWith(20, "DifficultWord"));
-        Dictionary dictionary = new Dictionary(dao);
-        for (Translation t: new HashSet<>(dao.getAllTranslations())) {
+        dictionary.reloadData();
+        for (Translation t : new HashSet<>(dao.getAllTranslations())) {
             if (t.getNativeWord().get().contains("DifficultWord")) {
                 dictionary.mark(t, Answer.INCORRECT);
             }
@@ -146,7 +173,8 @@ public class LiveDictionaryIntegrationTest {
 
         final List<Translation> retrievedTranslations = retrieveTranslationsNTimes(dictionary, 100);
 
-        int percentage = countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrievedTranslations, "DifficultWord");
+        int percentage =
+            countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrievedTranslations, "DifficultWord");
         assertThat(percentage, is(equalTo(100)));
     }
 
@@ -155,8 +183,8 @@ public class LiveDictionaryIntegrationTest {
         dao.insert(getNTranslationsWithNativeWordStartingWith(80, "Other"));
         dao.insert(getNTranslationsWithNativeWordStartingWith(10, "DifficultWord"));
         dao.insert(getNTranslationsWithNativeWordStartingWith(10, "WasDifficultButNowEasyWord"));
-        Dictionary dictionary = new Dictionary(dao);
-        for (Translation t: new HashSet<>(dao.getAllTranslations())) {
+        dictionary.reloadData();
+        for (Translation t : new HashSet<>(dao.getAllTranslations())) {
             if (t.getNativeWord().get().contains("DifficultWord")) {
                 dictionary.mark(t, Answer.INCORRECT);
             }
@@ -168,7 +196,8 @@ public class LiveDictionaryIntegrationTest {
 
         final List<Translation> retrievedTranslations = retrieveTranslationsNTimes(dictionary, 1000);
 
-        int percentage = countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrievedTranslations, "DifficultWord");
+        int percentage =
+            countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrievedTranslations, "DifficultWord");
         assertThat(percentage, allOf(greaterThan(45), lessThan(55)));
     }
 
@@ -176,8 +205,8 @@ public class LiveDictionaryIntegrationTest {
     public void difficultTranslationsShouldBeAskedEvery20thTime() {
         dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
         dao.insert(getNTranslationsWithNativeWordStartingWith(10, "DifficultWord"));
-        Dictionary dictionary = new Dictionary(dao);
-        for (Translation t: new HashSet<>(dao.getAllTranslations())) {
+        dictionary.reloadData();
+        for (Translation t : new HashSet<>(dao.getAllTranslations())) {
             if (t.getNativeWord().get().contains("DifficultWord")) {
                 dictionary.mark(t, Answer.INCORRECT);
             }
@@ -185,7 +214,8 @@ public class LiveDictionaryIntegrationTest {
 
         final List<Translation> retrievedTranslations = retrieveTranslationsNTimes(dictionary, 1000);
 
-        int percentage = countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrievedTranslations, "DifficultWord");
+        int percentage =
+            countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrievedTranslations, "DifficultWord");
         assertThat(percentage, allOf(greaterThan(45), lessThan(55)));
     }
 
@@ -193,23 +223,25 @@ public class LiveDictionaryIntegrationTest {
     public void difficultTranslationsShouldBeAskedEvery20thTimeEvenIfTheyWerePassedInitially() {
         dao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
         dao.insert(getNTranslationsWithNativeWordStartingWith(10, "DifficultWord"));
-        for (Translation t: new HashSet<>(dao.getAllTranslations())) {
+        for (Translation t : new HashSet<>(dao.getAllTranslations())) {
             if (t.getNativeWord().get().contains("DifficultWord")) {
                 dao.logAnswer(t, Answer.INCORRECT, new Date());
             }
         }
-        Dictionary dictionary = new Dictionary(dao);
+        dictionary.reloadData();
 
         final List<Translation> retrievedTranslations = retrieveTranslationsNTimes(dictionary, 1000);
 
-        int percentage = countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrievedTranslations, "DifficultWord");
+        int percentage =
+            countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrievedTranslations, "DifficultWord");
         assertThat(percentage, allOf(greaterThan(45), lessThan(55)));
     }
+
     @Test
     public void mistakenTranslationShouldBeAsked3TimesToBeRestrictedFromBeingAskedByPromotionPeriod() {
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslations().get(0);
-        Dictionary dictionary = new Dictionary(dao);
+        dictionary.reloadData();
         dictionary.mark(translation, Answer.CORRECT);
         dictionary.mark(translation, Answer.INCORRECT);
         dictionary.mark(translation, Answer.CORRECT);
@@ -224,7 +256,7 @@ public class LiveDictionaryIntegrationTest {
         dao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = dao.getAllTranslations().get(0);
         Clock clock = mock(Clock.class);
-        Dictionary dictionary = new Dictionary(dao, clock);
+        dictionary.reloadData();
         when(clock.getTime()).thenReturn(NOW);
         dictionary.mark(translation, Answer.CORRECT);
         dictionary.mark(translation, Answer.CORRECT);
@@ -240,19 +272,21 @@ public class LiveDictionaryIntegrationTest {
         dao.insertSingle(createForeignToNativeTranslation("la frase", "phrase"));
         Translation easyTranslation = dao.getAllTranslations().get(0);
         Translation otherTranslation = dao.getAllTranslations().get(1);
-        Dictionary dictionary = new Dictionary(dao);
+        dictionary.reloadData();
 
         dictionary.mark(easyTranslation, Answer.CORRECT);
         dictionary.mark(easyTranslation, Answer.CORRECT);
 
         List<Translation> notYetStaged = LiveDictionaryDsl.retrieveTranslationsNTimes(dictionary, 10);
-        int percentage = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern(notYetStaged, otherTranslation.getNativeWord().get());
+        int percentage = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern(notYetStaged,
+                                                                                                   otherTranslation
+                                                                                                       .getNativeWord()
+                                                                                                       .get());
         assertThat(percentage, is(equalTo(100)));
     }
 
     @Test
     public void shouldInsertTranslation() {
-        Dictionary dictionary = new Dictionary(dao);
 
         dictionary.insert(createForeignToNativeTranslation("la palabra", "word"));
 
@@ -262,7 +296,6 @@ public class LiveDictionaryIntegrationTest {
 
     @Test
     public void shouldNotInsertDuplicates() {
-        Dictionary dictionary = new Dictionary(dao);
 
         dictionary.insert(createForeignToNativeTranslation("duplicate", "dup_translation"));
         dictionary.insert(createForeignToNativeTranslation("duplicate", "dup_translation"));
@@ -274,7 +307,7 @@ public class LiveDictionaryIntegrationTest {
     public void shouldDeleteTranslation() {
         dao.insertSingle(createForeignToNativeTranslation("word", "la palabra"));
         Translation translation = dao.getAllTranslations().get(0);
-        Dictionary dictionary = new Dictionary(dao);
+        dictionary.reloadData();
 
         dictionary.delete(translation);
 
@@ -283,7 +316,7 @@ public class LiveDictionaryIntegrationTest {
             dictionary.getRandomTranslation();
             fail();
         } catch (LiveDictionaryException e) {
-            assertThat(e.getMessage(), containsString("no questions found")) ;
+            assertThat(e.getMessage(), containsString("no questions found"));
         }
     }
 
@@ -291,7 +324,7 @@ public class LiveDictionaryIntegrationTest {
     public void answersShouldBeDeletedAlongWithTranslation() {
         dao.insertSingle(createForeignToNativeTranslation("word", "la palabra"));
         Translation translation = dao.getAllTranslations().get(0);
-        Dictionary dictionary = new Dictionary(dao);
+        dictionary.reloadData();
         dictionary.mark(translation, Answer.CORRECT);
 
         dictionary.delete(translation);
@@ -301,26 +334,26 @@ public class LiveDictionaryIntegrationTest {
 
     @Test
     public void shouldNotAllowToAnswerTranslationsWithoutId() {
-        Dictionary dictionary = new Dictionary(dao);
 
-        boolean isUpdated = dictionary.mark(createForeignToNativeTranslation("duplicate", "dup_translation"), Answer.INCORRECT);
+        boolean isUpdated =
+            dictionary.mark(createForeignToNativeTranslation("duplicate", "dup_translation"), Answer.INCORRECT);
 
         assertThat(isUpdated, is(false));
     }
 
     @Test
     public void shouldNotAllowToAnswerTranslationsApsentInDb() {
-        Dictionary dictionary = new Dictionary(dao);
         int nonexistentId = 8949861;
 
-        boolean isUpdated = dictionary.mark(new Translation(nonexistentId, new ForeignWord("la duplicado"), new NativeWord("duplication")), Answer.INCORRECT);
+        boolean isUpdated = dictionary
+            .mark(new Translation(nonexistentId, new ForeignWord("la duplicado"), new NativeWord("duplication")),
+                  Answer.INCORRECT);
 
         assertThat(isUpdated, is(false));
     }
 
     @Test
     public void shouldAllowAnswerIncorrectly() {
-        Dictionary dictionary = new Dictionary(dao);
         dao.insert(singletonList(createForeignToNativeTranslation("word", "la palabra")));
         Translation translation = dao.getAllTranslations().iterator().next();
 
@@ -332,10 +365,12 @@ public class LiveDictionaryIntegrationTest {
     @Test
     public void shouldUpdateTranslation() {
         dao.insert(singletonList(createForeignToNativeTranslation("la palabra", "word")));
-        Dictionary dictionary = new Dictionary(dao);
+        dictionary.reloadData();
         Translation translation = dao.getAllTranslations().iterator().next();
 
-        boolean isUpdated = dictionary.update(new Translation(translation.getId(), new ForeignWord("la palabra cambiada"), new NativeWord("modified word")));
+        boolean isUpdated = dictionary.update(
+            new Translation(translation.getId(), new ForeignWord("la palabra cambiada"),
+                            new NativeWord("modified word")));
 
         assertThat(isUpdated, is(true));
         Translation modifiedWord = dao.getAllTranslations().iterator().next();
@@ -363,7 +398,8 @@ public class LiveDictionaryIntegrationTest {
     public List<Translation> getNTranslationsWithNativeWordStartingWith(int n, String prefix) {
         List<Translation> translations = new ArrayList<>();
         for (int i = 0; i < n; i++) {
-            translations.add(new Translation(new ForeignWord("desconocido" + getUniqueInt()), new NativeWord(prefix + getUniqueInt())));
+            translations.add(new Translation(new ForeignWord("desconocido" + getUniqueInt()),
+                                             new NativeWord(prefix + getUniqueInt())));
         }
         return translations;
     }
@@ -371,6 +407,4 @@ public class LiveDictionaryIntegrationTest {
     private int getUniqueInt() {
         return uniqueSequence++;
     }
-
-
 }

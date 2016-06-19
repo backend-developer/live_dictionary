@@ -29,7 +29,9 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
     private volatile Translation currentTranslation = EMPTY_TRANSLATION;
     private Dictionary dictionary;
     private TranslationDao dao;
+    private DaoObjectsFetcher fetcher;
     private Labeler labeler;
+
     private GuiError guiError;
 
     private ImportExportActivity importExportActivity;
@@ -53,8 +55,9 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
         guiError = new GuiError(this);
         try {
             dao = new TranslationDao(LiveDictionaryActivity.this);
-            dictionary = new Dictionary(dao);
-            labeler = new Labeler(dao);
+            fetcher = new DaoObjectsFetcher(dao);
+            labeler = new Labeler(dao, fetcher);
+            dictionary = new Dictionary(dao, fetcher, labeler, new Clock());
             importExportActivity = new ImportExportActivity(new DataImporterExporter(dao), dictionary, guiError);
 
             publishNextTranslation();
