@@ -1,8 +1,12 @@
 package uk.ignas.livedictionary.core;
 
+import android.database.sqlite.SQLiteException;
+
 import java.util.*;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
+import static uk.ignas.livedictionary.core.ExceptionAnalyser.isUniqueConstraintViolation;
 
 public class Dictionary {
     public static final int DIFFICULT_TRANSLATIONS_LIMIT = 20;
@@ -165,8 +169,15 @@ public class Dictionary {
     private boolean updateIfIsAnIdOfAnyOfTranslations(Translation translation, Collection<Translation> questions) {
         for (Translation t : questions) {
             if (Objects.equals(t.getId(), translation.getId())) {
-
-                dao.update(translation.getId(), translation.getForeignWord(), translation.getNativeWord());
+                try {
+                    dao.update(translation.getId(), translation.getForeignWord(), translation.getNativeWord());
+                } catch (Exception e) {
+                    if (isUniqueConstraintViolation(e)) {
+                        dao.delete(asList(translation));
+                    } else {
+                        throw e;
+                    }
+                }
                 return true;
             }
         }

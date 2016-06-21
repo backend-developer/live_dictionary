@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static uk.ignas.livedictionary.core.ExceptionAnalyser.isUniqueConstraintViolation;
+
 public class Labeler {
     private final TranslationDao dao;
     private final DaoObjectsFetcher fetcher;
@@ -21,26 +23,14 @@ public class Labeler {
         try {
             dao.addLabelledTranslation(translation, label);
         } catch (Exception e) {
-            uniqueConstraintViolation(e);
+            rejectDuplicateLabelSilently(e);
         }
     }
 
-    private void uniqueConstraintViolation(Exception e) {
-        @SuppressWarnings("unchecked")
-        List<Throwable> throwables = (List<Throwable>) ExceptionUtils.getThrowableList(e);
-        boolean isUniqueConstrainViolation = false;
-        for (Throwable t: throwables) {
-            if (uniqueConstraintViolation(t.getMessage())) {
-                isUniqueConstrainViolation = true;
-            }
-        }
-        if (!isUniqueConstrainViolation) {
+    private void rejectDuplicateLabelSilently(Exception e) {
+        if (!isUniqueConstraintViolation(e)) {
             throw new SQLiteException("Cannot set label", e);
         }
-    }
-
-    private boolean uniqueConstraintViolation(String message) {
-        return message.toLowerCase().contains("unique");
     }
 
     public Collection<Translation> getLabelled(Label label) {

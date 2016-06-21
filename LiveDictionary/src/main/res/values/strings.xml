@@ -18,5 +18,6 @@
     <string name="update_translation">Update Translation</string>
     <string name="import_data">Import Data</string>
     <string name="delete_label">Delete Label</string>
+    <string name="labeled">Labelled</string>
 </resources>
 

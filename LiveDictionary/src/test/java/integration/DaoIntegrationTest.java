@@ -30,16 +30,13 @@ public class DaoIntegrationTest {
     }
 
     @Test
-    public void deletingTranslationShouldCascadeDeleteAnswers() {
+    public void shouldSilentlyIgnoreDeletingWithoutId() {
         TranslationDao dao = DaoCreator.createEmpty();
-        dao.insertSingle(new Translation(new ForeignWord("la palabra"), new NativeWord("a word")));
-        Translation translation = dao.getAllTranslations().get(0);
-        dao.logAnswer(translation, Answer.CORRECT, new Date());
+        Translation translation = new Translation(new ForeignWord("la palabra"), new NativeWord("a word"));
 
         dao.delete(Collections.singleton(translation));
 
         assertThat(dao.getAllTranslations(), empty());
-        assertThat(dao.getAnswersLogByTranslationId().values(), empty());
     }
 
     @Test

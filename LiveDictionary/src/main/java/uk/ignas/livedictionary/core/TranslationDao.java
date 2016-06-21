@@ -224,8 +224,10 @@ public class TranslationDao extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         try {
             db.beginTransaction();
-            deleteAnswersByTranslationIds(collectIds(translations));
-            deleteLabelledTranslationsByTranslationIds(collectIds(translations));
+            List<Integer> ids = collectIds(translations);
+            ids.removeAll(Collections.singleton(null));
+            deleteAnswersByTranslationIds(ids);
+            deleteLabelledTranslationsByTranslationIds(ids);
             for (Translation translation : translations) {
                 this.deleteSingle(translation);
             }
@@ -274,10 +276,12 @@ public class TranslationDao extends SQLiteOpenHelper {
     }
 
     private Integer deleteSingle(Translation translation) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(Translations.TABLE_NAME,
-                Translations.NATIVE_WORD + " = ? AND " + Translations.FOREIGN_WORD + " = ? ",
-                new String[]{translation.getNativeWord().get(), translation.getForeignWord().get()});
+        if (translation.getId() != null) {
+            SQLiteDatabase db = this.getWritableDatabase();
+            return db.delete(Translations.TABLE_NAME, Translations.ID + " = ? ", new String[]{String.valueOf(translation.getId())});
+        } else {
+            return 0;
+        }
     }
 
     public Collection<Integer> getTranslationIdsWithLabel(uk.ignas.livedictionary.core.Label label) {

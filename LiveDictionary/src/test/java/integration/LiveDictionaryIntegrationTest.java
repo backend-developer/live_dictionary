@@ -379,6 +379,23 @@ public class LiveDictionaryIntegrationTest {
         assertThat(dictionary.getRandomTranslation().getNativeWord().get(), is("modified word"));
     }
 
+    @Test
+    public void shouldDeleteIfUpdateEndsUpWithExistingTranslation() {
+        dao.insert(singletonList(createForeignToNativeTranslation("la palabra", "word")));
+        dao.insert(singletonList(createForeignToNativeTranslation("la cocina", "a kitchen")));
+        dictionary.reloadData();
+        Translation translation = retrieveTranslationWithNativeWordFromDb("a kitchen");
+
+        boolean isUpdated = dictionary.update(
+            new Translation(translation.getId(), new ForeignWord("la palabra"),
+                            new NativeWord("word")));
+
+        assertThat(isUpdated, is(true));
+        assertThat(dao.getAllTranslations(), hasSize(1));
+        Translation modifiedWord = getLast(dao.getAllTranslations());
+        assertThat(modifiedWord.getForeignWord().get(), is(equalTo("la palabra")));
+    }
+
     private static Date createDateDifferingBy(Date now, int amount, int calendarField) {
         Calendar c = Calendar.getInstance();
         c.setTime(now);

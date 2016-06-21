@@ -35,4 +35,5 @@
             android:fontFamily="sans-serif"
             android:hint="@string/foreign_word"
     />
+
 </LinearLayout>
