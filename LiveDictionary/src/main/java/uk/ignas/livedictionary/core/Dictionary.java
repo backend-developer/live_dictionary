@@ -170,7 +170,7 @@ public class Dictionary {
         for (Translation t : questions) {
             if (Objects.equals(t.getId(), translation.getId())) {
                 try {
-                    dao.update(translation.getId(), translation.getForeignWord(), translation.getNativeWord());
+                    dao.update(translation);
                 } catch (Exception e) {
                     if (isUniqueConstraintViolation(e)) {
                         dao.delete(asList(translation));

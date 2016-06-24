@@ -3,6 +3,7 @@ package integration.testutils;
 
 import org.robolectric.Robolectric;
 import uk.ignas.livedictionary.LiveDictionaryActivity;
+import uk.ignas.livedictionary.core.Dao;
 import uk.ignas.livedictionary.core.TranslationDao;
 
 public class DaoCreator {
@@ -14,6 +15,6 @@ public class DaoCreator {
 
     public static TranslationDao create() {
         LiveDictionaryActivity activity = Robolectric.setupActivity(LiveDictionaryActivity.class);
-        return new TranslationDao(activity);
+        return new TranslationDao(new Dao(activity));
     }
 }
