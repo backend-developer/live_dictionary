@@ -11,10 +11,13 @@ import static org.apache.commons.lang.Validate.notNull;
 
 public class DaoObjectsFetcher {
 
-    private TranslationDao dao;
+    private final LabelDao labelDao;
 
-    public DaoObjectsFetcher(TranslationDao dao) {
-        this.dao = dao;
+    private TranslationDao translationDao;
+
+    public DaoObjectsFetcher(LabelDao labelDao, TranslationDao translationDao) {
+        this.labelDao = labelDao;
+        this.translationDao = translationDao;
     }
 
     public void fetchLabels(Collection<Translation> translations) {
@@ -52,7 +55,7 @@ public class DaoObjectsFetcher {
     private Multimap<Label, Integer> getLabelsToTranslationIds() {
         Multimap<Label, Integer> labelsToTranslationIds = ArrayListMultimap.<Label, Integer>create();
         for (Label l: Label.values()) {
-            labelsToTranslationIds.putAll(l, dao.getTranslationIdsWithLabel(l));
+            labelsToTranslationIds.putAll(l, labelDao.getTranslationIdsWithLabel(l));
         }
         return labelsToTranslationIds;
     }
@@ -69,7 +72,7 @@ public class DaoObjectsFetcher {
     public void fetchAnswersLog(List<Translation> allTranslations) {
         checkForNonNullIds(allTranslations);
 
-        ListMultimap<Integer, AnswerAtTime> answersLogByTranslationId = dao.getAnswersLogByTranslationId();
+        ListMultimap<Integer, AnswerAtTime> answersLogByTranslationId = translationDao.getAnswersLogByTranslationId();
         for (Translation translation : allTranslations) {
             List<AnswerAtTime> answersLog = answersLogByTranslationId.get(translation.getId());
             translation.getMetadata().getRecentAnswers().addAll(answersLog);

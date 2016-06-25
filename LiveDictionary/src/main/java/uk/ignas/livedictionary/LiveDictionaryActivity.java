@@ -55,9 +55,10 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
         guiError = new GuiError(this);
         try {
             Dao dao = new Dao(LiveDictionaryActivity.this);
-            this.dao = new TranslationDao(dao);
-            fetcher = new DaoObjectsFetcher(this.dao);
-            labeler = new Labeler(this.dao, fetcher);
+            LabelDao labelDao = new LabelDao(dao);
+            this.dao = new TranslationDao(labelDao, dao);
+            fetcher = new DaoObjectsFetcher(labelDao, this.dao);
+            labeler = new Labeler(this.dao, fetcher, labelDao);
             dictionary = new Dictionary(this.dao, fetcher, labeler, new Clock());
             importExportActivity = new ImportExportActivity(new DataImporterExporter(this.dao), dictionary, guiError);
 

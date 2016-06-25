@@ -20,6 +20,8 @@ public class TranslationDao {
 
     public static final int ERROR_OCURRED = -1;
 
+    private final LabelDao labelDao;
+
     private final Dao dao;
 
     public static class AnswersLog {
@@ -45,26 +47,10 @@ public class TranslationDao {
         public static final String FOREIGN_WORD = "foreignWord";
     }
 
-    public static class LabelledTranslation {
-        public static final String TABLE_NAME = "labelled_translation";
 
-        public static final String ID = "id";
 
-        public static final String TRANSLATION_ID = "translation_id";
-
-        public static final String LABEL_ID = "label_id";
-
-    }
-
-    public static class Label {
-        public static final String TABLE_NAME = "label";
-
-        public static final String ID = "id";
-
-        public static final String NAME = "translation_id";
-    }
-
-    public TranslationDao(Dao dao) {
+    public TranslationDao(LabelDao labelDao, Dao dao) {
+        this.labelDao = labelDao;
         this.dao = dao;
     }
 
@@ -90,7 +76,7 @@ public class TranslationDao {
                 boolean result = (id != ERROR_OCURRED);
                 if (result) {
                     for (uk.ignas.livedictionary.core.Label label : translation.getMetadata().getLabels()) {
-                        addLabelledTranslation(new Translation((int) id, translation), label);
+                        labelDao.addLabelledTranslation(new Translation((int) id, translation), label);
                     }
                 }
                 return result;
@@ -107,14 +93,6 @@ public class TranslationDao {
         return dao.insert(Translations.TABLE_NAME, contentValues);
     }
 
-    public void addLabelledTranslation(Translation translation, uk.ignas.livedictionary.core.Label label) {
-        dao.execSql("insert into " +
-                LabelledTranslation.TABLE_NAME + " (" +
-                LabelledTranslation.TRANSLATION_ID + ", " +
-                LabelledTranslation.LABEL_ID + ") " + "VALUES (" +
-                translation.getId() + ", " +
-                label.getId() + ")");
-    }
 
     public int update(final Translation translation) {
         Transactable<Integer> transactable = new Transactable<Integer>() {
@@ -129,9 +107,9 @@ public class TranslationDao {
                     deleteById(translation.getId());
                     return 1;
                 }
-                deleteLabelledTranslationsByTranslationIds(asList(translation.getId()));
+                labelDao.deleteLabelledTranslationsByTranslationIds(asList(translation.getId()));
                 for (uk.ignas.livedictionary.core.Label l : translation.getMetadata().getLabels()) {
-                    addLabelledTranslation(translation, l);
+                    labelDao.addLabelledTranslation(translation, l);
                 }
                 return result;
             }
@@ -145,7 +123,7 @@ public class TranslationDao {
         contentValues.put(Translations.NATIVE_WORD, translation.getNativeWord().get());
         contentValues.put(Translations.FOREIGN_WORD, translation.getForeignWord().get());
         return dao.update(Translations.TABLE_NAME, contentValues, Translations.ID + " = ? ",
-                      new String[]{String.valueOf(translation.getId())});
+                          new String[]{String.valueOf(translation.getId())});
     }
 
     public void delete(final Collection<Translation> translations) {
@@ -155,7 +133,7 @@ public class TranslationDao {
                 List<Integer> ids = collectIds(translations);
                 ids.removeAll(Collections.singleton(null));
                 deleteAnswersByTranslationIds(ids);
-                deleteLabelledTranslationsByTranslationIds(ids);
+                labelDao.deleteLabelledTranslationsByTranslationIds(ids);
                 for (Translation translation : translations) {
                     deleteSingle(translation);
                 }
@@ -168,20 +146,9 @@ public class TranslationDao {
     private void deleteAnswersByTranslationIds(List<Integer> translationIdsToDelete) {
         String inClause = Joiner.on(", ").join(translationIdsToDelete);
         dao.execSql("DELETE FROM " + AnswersLog.TABLE_NAME + " WHERE " +
-                AnswersLog.TRANSLATION_ID + " IN (" + inClause + ") ");
+                    AnswersLog.TRANSLATION_ID + " IN (" + inClause + ") ");
     }
 
-    private void deleteLabelledTranslationsByTranslationIds(List<Integer> translationIds) {
-        String inClause = Joiner.on(", ").join(translationIds);
-        dao.execSql("DELETE FROM " + LabelledTranslation.TABLE_NAME + " WHERE " +
-                LabelledTranslation.TRANSLATION_ID + " IN (" + inClause + ") ");
-    }
-
-    public void deleteLabelledTranslation(Translation translation, uk.ignas.livedictionary.core.Label label) {
-        dao.execSql("DELETE FROM " + LabelledTranslation.TABLE_NAME + " WHERE " +
-                LabelledTranslation.TRANSLATION_ID + " = " + translation.getId() + " AND " +
-                LabelledTranslation.LABEL_ID + " = " + label.getId());
-    }
 
     private List<Integer> collectIds(Collection<Translation> translations) {
         List<Integer> translationIdsToDelete = new ArrayList<>();
@@ -204,30 +171,6 @@ public class TranslationDao {
         } else {
             return 0;
         }
-    }
-
-    public Collection<Integer> getTranslationIdsWithLabel(uk.ignas.livedictionary.core.Label label) {
-        List<Integer> translationIds = new ArrayList<>();
-
-        Cursor res = null;
-        try {
-            String sql = "select " +
-                         LabelledTranslation.TRANSLATION_ID + " " +
-                         " from " + LabelledTranslation.TABLE_NAME + " where " +
-                         LabelledTranslation.LABEL_ID + " = " + label.getId();
-            res = dao.rawQuery(sql);
-            res.moveToFirst();
-
-            while (!res.isAfterLast()) {
-                translationIds.add(res.getInt(res.getColumnIndex(LabelledTranslation.TRANSLATION_ID)));
-                res.moveToNext();
-            }
-        } finally {
-            if (res != null) {
-                res.close();
-            }
-        }
-        return translationIds;
     }
 
     public List<Translation> getAllTranslations() {

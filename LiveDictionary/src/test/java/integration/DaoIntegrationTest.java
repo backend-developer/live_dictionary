@@ -1,6 +1,5 @@
 package integration;
 
-import integration.testutils.DaoCreator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
@@ -23,7 +22,7 @@ public class DaoIntegrationTest {
 
     @Test
     public void dbShouldHaveSeedData() {
-        TranslationDao dao = DaoCreator.create();
+        TranslationDao dao = DaoCreator.createTranslationDao();
 
         List<Translation> allTranslations = dao.getAllTranslations();
 
@@ -43,13 +42,14 @@ public class DaoIntegrationTest {
     @Test
     public void shouldInsertTranslationAlongWithLabels() {
         TranslationDao dao = DaoCreator.createEmpty();
+        LabelDao labelDao = DaoCreator.clearDbAndCreateLabelDao();
         Translation translationToInsert = new Translation(new ForeignWord("la palabra"), new NativeWord("a word"));
         translationToInsert.getMetadata().getLabels().add(Label.C);
 
         dao.insertSingle(translationToInsert);
 
         Translation translation = dao.getAllTranslations().get(0);
-        Collection<Integer> translationIds = dao.getTranslationIdsWithLabel(Label.C);
+        Collection<Integer> translationIds = labelDao.getTranslationIdsWithLabel(Label.C);
         assertThat(translationIds, hasSize(1));
         assertThat(getLast(translationIds), notNullValue());
         assertThat(translation.getId(), is(getLast(translationIds)));
@@ -58,6 +58,7 @@ public class DaoIntegrationTest {
     @Test
     public void updatingTranslationShouldAddLabels() {
         TranslationDao dao = DaoCreator.createEmpty();
+        LabelDao labelDao = DaoCreator.clearDbAndCreateLabelDao();
         Translation translationToInsert = new Translation(new ForeignWord("la palabra"), new NativeWord("a word"));
         dao.insertSingle(translationToInsert);
         Translation insertedTranslation = getLast(dao.getAllTranslations());
@@ -65,7 +66,7 @@ public class DaoIntegrationTest {
 
         dao.update(insertedTranslation);
 
-        Collection<Integer> translationIds = dao.getTranslationIdsWithLabel(Label.D);
+        Collection<Integer> translationIds = labelDao.getTranslationIdsWithLabel(Label.D);
         assertThat(translationIds, hasSize(1));
         assertThat(getLast(translationIds), notNullValue());
         assertThat(insertedTranslation.getId(), is(getLast(translationIds)));
@@ -74,6 +75,7 @@ public class DaoIntegrationTest {
     @Test
     public void updatingTranslationShouldDeleteLabels() {
         TranslationDao dao = DaoCreator.createEmpty();
+        LabelDao labelDao = DaoCreator.clearDbAndCreateLabelDao();
         Translation translationToInsert = new Translation(new ForeignWord("la palabra"), new NativeWord("a word"));
         translationToInsert.getMetadata().getLabels().add(Label.C);
         dao.insertSingle(translationToInsert);
@@ -82,7 +84,7 @@ public class DaoIntegrationTest {
 
         dao.update(insertedTranslation);
 
-        Collection<Integer> translationIds = dao.getTranslationIdsWithLabel(Label.C);
+        Collection<Integer> translationIds = labelDao.getTranslationIdsWithLabel(Label.C);
         assertThat(translationIds, hasSize(0));
     }
 

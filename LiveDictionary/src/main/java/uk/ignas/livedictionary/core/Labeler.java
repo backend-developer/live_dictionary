@@ -13,15 +13,17 @@ public class Labeler {
     private final TranslationDao dao;
     private final DaoObjectsFetcher fetcher;
 
-    public Labeler(TranslationDao dao, DaoObjectsFetcher fetcher) {
+    private final LabelDao labelDao;
 
+    public Labeler(TranslationDao dao, DaoObjectsFetcher fetcher, LabelDao labelDao) {
         this.dao = dao;
         this.fetcher = fetcher;
+        this.labelDao = labelDao;
     }
 
     public void addLabel(Translation translation, Label label) {
         try {
-            dao.addLabelledTranslation(translation, label);
+            labelDao.addLabelledTranslation(translation, label);
         } catch (Exception e) {
             rejectDuplicateLabelSilently(e);
         }
@@ -45,6 +47,6 @@ public class Labeler {
     }
 
     public void removeLabel(Translation translation, Label label) {
-        dao.deleteLabelledTranslation(translation, label);
+        labelDao.deleteLabelledTranslation(translation, label);
     }
 }

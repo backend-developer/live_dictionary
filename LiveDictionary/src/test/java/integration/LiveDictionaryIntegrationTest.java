@@ -1,6 +1,5 @@
 package integration;
 
-import integration.testutils.DaoCreator;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,8 +47,9 @@ public class LiveDictionaryIntegrationTest {
     private static int uniqueSequence = 0;
 
     private TranslationDao dao = DaoCreator.createEmpty();
-    private DaoObjectsFetcher fetcher = new DaoObjectsFetcher(dao);
-    private Labeler labeler = new Labeler(dao, fetcher);
+    private LabelDao labelDao = DaoCreator.clearDbAndCreateLabelDao();
+    private DaoObjectsFetcher fetcher = new DaoObjectsFetcher(labelDao, dao);
+    private Labeler labeler = new Labeler(dao, fetcher, labelDao);
     private Dictionary dictionary = new Dictionary(dao, fetcher, labeler, clock);
 
     @Test
@@ -142,7 +142,7 @@ public class LiveDictionaryIntegrationTest {
         dao.insertSingle(createForeignToNativeTranslation("la palabra", "a word"));
         dao.insertSingle(createForeignToNativeTranslation("la cocina", "a kitchen"));
         Translation labelledTranslation = retrieveTranslationWithNativeWordFromDb("a kitchen");
-        dao.addLabelledTranslation(labelledTranslation, Label.A);
+        labelDao.addLabelledTranslation(labelledTranslation, Label.A);
         dictionary.reloadData();
 
         List<Translation> translations = LiveDictionaryDsl.retrieveTranslationsNTimes(dictionary, 10);

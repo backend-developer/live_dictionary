@@ -1,6 +1,5 @@
 package integration;
 
-import integration.testutils.DaoCreator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
@@ -22,7 +21,8 @@ import static org.mockito.Mockito.mock;
 @Config(constants = BuildConfig.class, sdk = 21)
 public class LabelerIntegrationTest {
     private TranslationDao dao = DaoCreator.createEmpty();
-    private Labeler labeler = new Labeler(dao, new DaoObjectsFetcher(dao));
+    private LabelDao labelDao = DaoCreator.clearDbAndCreateLabelDao();
+    private Labeler labeler = new Labeler(dao, new DaoObjectsFetcher(labelDao, dao), labelDao);
 
     private Translation createForeignToNativeTranslation(String foreignWord, String nativeWord) {
         return new Translation(new ForeignWord(foreignWord), new NativeWord(nativeWord));

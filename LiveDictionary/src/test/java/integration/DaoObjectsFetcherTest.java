@@ -1,31 +1,22 @@
 package integration;
 
-import integration.testutils.DaoCreator;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 import uk.ignas.livedictionary.BuildConfig;
 import uk.ignas.livedictionary.core.*;
-import uk.ignas.livedictionary.core.Dictionary;
-import uk.ignas.livedictionary.testutils.LiveDictionaryDsl;
 
 import java.util.*;
 
 import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
-import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern;
 import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.createForeignToNativeTranslation;
-import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.retrieveTranslationsNTimes;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -33,7 +24,9 @@ public class DaoObjectsFetcherTest {
 
     private TranslationDao dao = DaoCreator.createEmpty();
 
-    DaoObjectsFetcher fetcher = new DaoObjectsFetcher(dao);
+    private LabelDao labelDao = DaoCreator.clearDbAndCreateLabelDao();
+
+    private DaoObjectsFetcher fetcher = new DaoObjectsFetcher(labelDao, dao);
 
     public static final int ID1 = 1;
 
@@ -63,7 +56,7 @@ public class DaoObjectsFetcherTest {
     public void shouldFetchLabel() {
         Translation translation = new Translation(ID1, createForeignToNativeTranslation("la palabra", "a word"));
         dao.insertSingle(translation);
-        dao.addLabelledTranslation(translation, Label.A);
+        labelDao.addLabelledTranslation(translation, Label.A);
 
         fetcher.fetchLabels(asList(translation));
 
@@ -75,8 +68,8 @@ public class DaoObjectsFetcherTest {
     public void shouldFetchMultipleLabels() {
         Translation translation = new Translation(ID1, createForeignToNativeTranslation("la palabra", "a word"));
         dao.insertSingle(translation);
-        dao.addLabelledTranslation(translation, Label.A);
-        dao.addLabelledTranslation(translation, Label.B);
+        labelDao.addLabelledTranslation(translation, Label.A);
+        labelDao.addLabelledTranslation(translation, Label.B);
 
         fetcher.fetchLabels(asList(translation));
 
@@ -90,8 +83,8 @@ public class DaoObjectsFetcherTest {
         Translation translation2 = new Translation(ID2, createForeignToNativeTranslation("la cocina", "a kitchen"));
         dao.insertSingle(translation1);
         dao.insertSingle(translation2);
-        dao.addLabelledTranslation(translation1, Label.A);
-        dao.addLabelledTranslation(translation2, Label.B);
+        labelDao.addLabelledTranslation(translation1, Label.A);
+        labelDao.addLabelledTranslation(translation2, Label.B);
 
         fetcher.fetchLabels(asList(translation1, translation2));
 
