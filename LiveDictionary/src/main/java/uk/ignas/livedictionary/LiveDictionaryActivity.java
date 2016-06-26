@@ -13,6 +13,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import uk.ignas.livedictionary.core.*;
+import uk.ignas.livedictionary.core.label.Label;
+import uk.ignas.livedictionary.core.label.LabelDao;
+import uk.ignas.livedictionary.core.label.Labeler;
+import uk.ignas.livedictionary.core.util.Dao;
 
 public class LiveDictionaryActivity extends Activity implements ModifyDictionaryDialog.ModifyDictionaryListener {
     private static final String TAG = LiveDictionaryActivity.class.getName();

@@ -3,8 +3,8 @@ package integration;
 
 import org.robolectric.Robolectric;
 import uk.ignas.livedictionary.LiveDictionaryActivity;
-import uk.ignas.livedictionary.core.Dao;
-import uk.ignas.livedictionary.core.LabelDao;
+import uk.ignas.livedictionary.core.util.Dao;
+import uk.ignas.livedictionary.core.label.LabelDao;
 import uk.ignas.livedictionary.core.TranslationDao;
 
 class DaoCreator {

@@ -1,13 +1,17 @@
-package uk.ignas.livedictionary.core;
+package uk.ignas.livedictionary.core.label;
 
 import android.database.sqlite.SQLiteException;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import uk.ignas.livedictionary.core.DaoObjectsFetcher;
+import uk.ignas.livedictionary.core.Translation;
+import uk.ignas.livedictionary.core.TranslationDao;
+import uk.ignas.livedictionary.core.label.Label;
+import uk.ignas.livedictionary.core.label.LabelDao;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static uk.ignas.livedictionary.core.ExceptionAnalyser.isUniqueConstraintViolation;
+import static uk.ignas.livedictionary.core.util.ExceptionAnalyser.isUniqueConstraintViolation;
 
 public class Labeler {
     private final TranslationDao dao;

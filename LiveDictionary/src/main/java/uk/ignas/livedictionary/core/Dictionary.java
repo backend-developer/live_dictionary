@@ -1,12 +1,13 @@
 package uk.ignas.livedictionary.core;
 
-import android.database.sqlite.SQLiteException;
+import uk.ignas.livedictionary.core.label.Label;
+import uk.ignas.livedictionary.core.label.Labeler;
 
 import java.util.*;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
-import static uk.ignas.livedictionary.core.ExceptionAnalyser.isUniqueConstraintViolation;
+import static uk.ignas.livedictionary.core.util.ExceptionAnalyser.isUniqueConstraintViolation;
 
 public class Dictionary {
     public static final int DIFFICULT_TRANSLATIONS_LIMIT = 20;

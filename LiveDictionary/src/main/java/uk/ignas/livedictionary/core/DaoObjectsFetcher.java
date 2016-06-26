@@ -2,6 +2,8 @@ package uk.ignas.livedictionary.core;
 
 import com.google.common.base.Function;
 import com.google.common.collect.*;
+import uk.ignas.livedictionary.core.label.Label;
+import uk.ignas.livedictionary.core.label.LabelDao;
 
 import java.util.Collection;
 import java.util.List;

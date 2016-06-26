@@ -9,7 +9,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import uk.ignas.livedictionary.core.ForeignWord;
-import uk.ignas.livedictionary.core.Label;
+import uk.ignas.livedictionary.core.label.Label;
 import uk.ignas.livedictionary.core.NativeWord;
 import uk.ignas.livedictionary.core.Translation;
 

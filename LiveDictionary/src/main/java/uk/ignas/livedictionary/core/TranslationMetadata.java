@@ -1,5 +1,7 @@
 package uk.ignas.livedictionary.core;
 
+import uk.ignas.livedictionary.core.label.Label;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

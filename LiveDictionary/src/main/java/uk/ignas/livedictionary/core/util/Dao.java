@@ -1,10 +1,11 @@
-package uk.ignas.livedictionary.core;
+package uk.ignas.livedictionary.core.util;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import uk.ignas.livedictionary.core.util.Transactable;
 
 public class Dao extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "LiveDictionary.db";
@@ -118,12 +119,12 @@ public class Dao extends SQLiteOpenHelper {
         }
     }
 
-    long insert(String tableName, ContentValues contentValues) {
+    public long insert(String tableName, ContentValues contentValues) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.insert(tableName, null, contentValues);
     }
 
-    <T> T doInTransaction(Transactable<T> transactable) {
+    public <T> T doInTransaction(Transactable<T> transactable) {
         T result = null;
         SQLiteDatabase db = this.getWritableDatabase();
         try {
@@ -136,22 +137,22 @@ public class Dao extends SQLiteOpenHelper {
         return result;
     }
 
-    void execSql(String sql) {
+    public void execSql(String sql) {
         this.getWritableDatabase().execSQL(sql);
     }
 
-    int update(String tableName, ContentValues contentValues, String condition, String[] params) {
+    public int update(String tableName, ContentValues contentValues, String condition, String[] params) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.update(tableName, contentValues, condition, params);
     }
 
-    Integer delete(String tableName, String condition, String[] args) {
+    public Integer delete(String tableName, String condition, String[] args) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete(tableName, condition, args);
     }
 
 
-    Cursor rawQuery(String sql) {
+    public Cursor rawQuery(String sql) {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery(sql, null);
     }

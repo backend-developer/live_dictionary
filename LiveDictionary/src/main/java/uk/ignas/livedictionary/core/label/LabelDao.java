@@ -1,7 +1,9 @@
-package uk.ignas.livedictionary.core;
+package uk.ignas.livedictionary.core.label;
 
 import android.database.Cursor;
 import com.google.common.base.Joiner;
+import uk.ignas.livedictionary.core.Translation;
+import uk.ignas.livedictionary.core.util.Dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,7 +34,7 @@ public class LabelDao {
         this.dao = dao;
     }
 
-    public void addLabelledTranslation(Translation translation, uk.ignas.livedictionary.core.Label label) {
+    public void addLabelledTranslation(Translation translation, uk.ignas.livedictionary.core.label.Label label) {
         dao.execSql("insert into " +
                     LabelledTranslation.TABLE_NAME + " (" +
                     LabelledTranslation.TRANSLATION_ID + ", " +
@@ -41,19 +43,19 @@ public class LabelDao {
                     label.getId() + ")");
     }
 
-    void deleteLabelledTranslationsByTranslationIds(List<Integer> translationIds) {
+    public void deleteLabelledTranslationsByTranslationIds(List<Integer> translationIds) {
         String inClause = Joiner.on(", ").join(translationIds);
         dao.execSql("DELETE FROM " + LabelledTranslation.TABLE_NAME + " WHERE " +
                     LabelledTranslation.TRANSLATION_ID + " IN (" + inClause + ") ");
     }
 
-    public void deleteLabelledTranslation(Translation translation, uk.ignas.livedictionary.core.Label label) {
+    public void deleteLabelledTranslation(Translation translation, uk.ignas.livedictionary.core.label.Label label) {
         dao.execSql("DELETE FROM " + LabelledTranslation.TABLE_NAME + " WHERE " +
                     LabelledTranslation.TRANSLATION_ID + " = " + translation.getId() + " AND " +
                     LabelledTranslation.LABEL_ID + " = " + label.getId());
     }
 
-    public Collection<Integer> getTranslationIdsWithLabel(uk.ignas.livedictionary.core.Label label) {
+    public Collection<Integer> getTranslationIdsWithLabel(uk.ignas.livedictionary.core.label.Label label) {
         List<Integer> translationIds = new ArrayList<>();
 
         Cursor res = null;

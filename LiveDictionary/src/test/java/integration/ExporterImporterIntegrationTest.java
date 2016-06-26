@@ -5,13 +5,13 @@ import com.google.common.io.Resources;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 import uk.ignas.livedictionary.BuildConfig;
-import uk.ignas.livedictionary.LiveDictionaryActivity;
 import uk.ignas.livedictionary.core.*;
 import uk.ignas.livedictionary.core.Dictionary;
+import uk.ignas.livedictionary.core.label.LabelDao;
+import uk.ignas.livedictionary.core.label.Labeler;
 import uk.ignas.livedictionary.testutils.LiveDictionaryDsl;
 
 import java.io.BufferedReader;

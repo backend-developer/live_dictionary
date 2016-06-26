@@ -9,6 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import uk.ignas.livedictionary.core.*;
+import uk.ignas.livedictionary.core.label.Label;
+import uk.ignas.livedictionary.core.label.LabelDao;
+import uk.ignas.livedictionary.core.label.Labeler;
+import uk.ignas.livedictionary.core.util.Dao;
 
 import java.util.ArrayList;
 import java.util.List;

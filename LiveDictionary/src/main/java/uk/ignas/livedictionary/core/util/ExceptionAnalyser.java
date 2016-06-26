@@ -1,11 +1,11 @@
-package uk.ignas.livedictionary.core;
+package uk.ignas.livedictionary.core.util;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import java.util.List;
 
-class ExceptionAnalyser {
-    static boolean isUniqueConstraintViolation(Exception e) {
+public class ExceptionAnalyser {
+    public static boolean isUniqueConstraintViolation(Exception e) {
         @SuppressWarnings("unchecked")
         List<Throwable> throwables = (List<Throwable>) ExceptionUtils.getThrowableList(e);
         boolean isUniqueConstrainViolation = false;
@@ -17,7 +17,7 @@ class ExceptionAnalyser {
         return isUniqueConstrainViolation;
     }
 
-    static boolean uniqueConstraintViolation(String message) {
+    private static boolean uniqueConstraintViolation(String message) {
         return message.toLowerCase().contains("unique");
     }
 
