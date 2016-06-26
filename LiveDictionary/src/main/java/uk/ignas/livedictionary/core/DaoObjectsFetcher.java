@@ -15,11 +15,11 @@ public class DaoObjectsFetcher {
 
     private final LabelDao labelDao;
 
-    private TranslationDao translationDao;
+    private final AnswerDao answerDao;
 
-    public DaoObjectsFetcher(LabelDao labelDao, TranslationDao translationDao) {
+    public DaoObjectsFetcher(LabelDao labelDao, AnswerDao answerDao) {
         this.labelDao = labelDao;
-        this.translationDao = translationDao;
+        this.answerDao = answerDao;
     }
 
     public void fetchLabels(Collection<Translation> translations) {
@@ -74,7 +74,7 @@ public class DaoObjectsFetcher {
     public void fetchAnswersLog(List<Translation> allTranslations) {
         checkForNonNullIds(allTranslations);
 
-        ListMultimap<Integer, AnswerAtTime> answersLogByTranslationId = translationDao.getAnswersLogByTranslationId();
+        ListMultimap<Integer, AnswerAtTime> answersLogByTranslationId = answerDao.getAnswersLogByTranslationId();
         for (Translation translation : allTranslations) {
             List<AnswerAtTime> answersLog = answersLogByTranslationId.get(translation.getId());
             translation.getMetadata().getRecentAnswers().addAll(answersLog);

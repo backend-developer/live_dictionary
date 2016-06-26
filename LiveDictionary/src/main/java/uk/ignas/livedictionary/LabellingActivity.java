@@ -34,8 +34,9 @@ public class LabellingActivity extends Activity {
         try {
             Dao database = new Dao(LabellingActivity.this);
             LabelDao labelDao = new LabelDao(database);
-            this.dao = new TranslationDao(labelDao, database);
-            fetcher = new DaoObjectsFetcher(labelDao, this.dao);
+            AnswerDao answerDao = new AnswerDao(database);
+            this.dao = new TranslationDao(labelDao, database, answerDao);
+            fetcher = new DaoObjectsFetcher(labelDao, answerDao);
             labeler = new Labeler(this.dao, fetcher, labelDao);
         } catch (Exception e) {
             Log.e(TAG, "critical error ", e);

@@ -51,13 +51,13 @@ public class LiveDictionaryIntegrationTest {
 
     private TranslationDao dao = DaoCreator.createEmpty();
     private LabelDao labelDao = DaoCreator.clearDbAndCreateLabelDao();
-    private DaoObjectsFetcher fetcher = new DaoObjectsFetcher(labelDao, dao);
+    private AnswerDao answerDao = DaoCreator.clearDbAndCreateAnswerDao();
+    private DaoObjectsFetcher fetcher = new DaoObjectsFetcher(labelDao, answerDao);
     private Labeler labeler = new Labeler(dao, fetcher, labelDao);
-    private Dictionary dictionary = new Dictionary(dao, fetcher, labeler, clock);
+    private Dictionary dictionary = new Dictionary(dao, answerDao, fetcher, labeler, clock);
 
     @Test
     public void shouldThrowWhenIfThereAreNoTranslationToRetrieve() {
-        Dictionary dictionary = new Dictionary(dao, fetcher, labeler, clock);
         try {
             dictionary.getRandomTranslation();
             fail();
@@ -110,7 +110,7 @@ public class LiveDictionaryIntegrationTest {
 
         dictionary.mark(translation, Answer.INCORRECT);
 
-        Collection<AnswerAtTime> recentAnswers = dao.getAnswersLogByTranslationId().values();
+        Collection<AnswerAtTime> recentAnswers = answerDao.getAnswersLogByTranslationId().values();
         assertThat(getLast(recentAnswers).getAnswer(), is(equalTo(Answer.INCORRECT)));
     }
 
@@ -228,7 +228,7 @@ public class LiveDictionaryIntegrationTest {
         dao.insert(getNTranslationsWithNativeWordStartingWith(10, "DifficultWord"));
         for (Translation t : new HashSet<>(dao.getAllTranslations())) {
             if (t.getNativeWord().get().contains("DifficultWord")) {
-                dao.logAnswer(t, Answer.INCORRECT, new Date());
+                answerDao.logAnswer(t, Answer.INCORRECT, new Date());
             }
         }
         dictionary.reloadData();
@@ -332,7 +332,7 @@ public class LiveDictionaryIntegrationTest {
 
         dictionary.delete(translation);
 
-        assertThat(dao.getAnswersLogByTranslationId().get(translation.getId()), empty());
+        assertThat(answerDao.getAnswersLogByTranslationId().get(translation.getId()), empty());
     }
 
     @Test

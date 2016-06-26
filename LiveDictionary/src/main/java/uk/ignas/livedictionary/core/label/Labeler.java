@@ -4,8 +4,6 @@ import android.database.sqlite.SQLiteException;
 import uk.ignas.livedictionary.core.DaoObjectsFetcher;
 import uk.ignas.livedictionary.core.Translation;
 import uk.ignas.livedictionary.core.TranslationDao;
-import uk.ignas.livedictionary.core.label.Label;
-import uk.ignas.livedictionary.core.label.LabelDao;
 
 import java.util.ArrayList;
 import java.util.Collection;

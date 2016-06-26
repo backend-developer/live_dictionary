@@ -20,12 +20,14 @@ public class Dictionary {
     private List<Translation> veryEasyTranslations = new ArrayList<>();
     private final Random random = new Random();
     private TranslationDao dao;
+    private final AnswerDao answerDao;
     private DaoObjectsFetcher fetcher;
     private Labeler labeler;
     private Clock clock;
 
-    public Dictionary(TranslationDao dao, DaoObjectsFetcher fetcher, Labeler labeler, Clock clock) {
+    public Dictionary(TranslationDao dao, AnswerDao answerDao, DaoObjectsFetcher fetcher, Labeler labeler, Clock clock) {
         this.dao = dao;
+        this.answerDao = answerDao;
         this.fetcher = fetcher;
         this.labeler = labeler;
         this.clock = clock;
@@ -138,7 +140,7 @@ public class Dictionary {
         }
         boolean result;
         try {
-            result = dao.logAnswer(translation, answer, clock.getTime());
+            result = answerDao.logAnswer(translation, answer, clock.getTime());
         } catch (RuntimeException e) {
             return false;
         }

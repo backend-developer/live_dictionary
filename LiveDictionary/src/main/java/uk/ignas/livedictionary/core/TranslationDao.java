@@ -25,18 +25,7 @@ public class TranslationDao {
 
     private final Dao dao;
 
-    public static class AnswersLog {
-
-        public static final String TABLE_NAME = "answers_log";
-
-        public static final String ID = "id";
-
-        public static final String TRANSLATION_ID = "translation_id";
-
-        public static final String TIME_ANSWERED = "time_answered";
-
-        public static final String IS_CORRECT = "is_correct";
-    }
+    private final AnswerDao answerDao;
 
     public static class Translations {
         public static final String TABLE_NAME = "translations";
@@ -50,9 +39,10 @@ public class TranslationDao {
 
 
 
-    public TranslationDao(LabelDao labelDao, Dao dao) {
+    public TranslationDao(LabelDao labelDao, Dao dao, AnswerDao answerDao) {
         this.labelDao = labelDao;
         this.dao = dao;
+        this.answerDao = answerDao;
     }
 
 
@@ -133,7 +123,7 @@ public class TranslationDao {
             public Void perform() {
                 List<Integer> ids = collectIds(translations);
                 ids.removeAll(Collections.singleton(null));
-                deleteAnswersByTranslationIds(ids);
+                answerDao.deleteAnswersByTranslationIds(ids);
                 labelDao.deleteLabelledTranslationsByTranslationIds(ids);
                 for (Translation translation : translations) {
                     deleteSingle(translation);
@@ -144,11 +134,7 @@ public class TranslationDao {
         dao.doInTransaction(transactable);
     }
 
-    private void deleteAnswersByTranslationIds(List<Integer> translationIdsToDelete) {
-        String inClause = Joiner.on(", ").join(translationIdsToDelete);
-        dao.execSql("DELETE FROM " + AnswersLog.TABLE_NAME + " WHERE " +
-                    AnswersLog.TRANSLATION_ID + " IN (" + inClause + ") ");
-    }
+
 
 
     private List<Integer> collectIds(Collection<Translation> translations) {
@@ -203,41 +189,7 @@ public class TranslationDao {
         return translations;
     }
 
-    public boolean logAnswer(Translation translation, Answer answer, Date time) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(AnswersLog.TRANSLATION_ID, translation.getId());
-        contentValues.put(AnswersLog.TIME_ANSWERED, time.getTime());
-        contentValues.put(AnswersLog.IS_CORRECT, answer.isCorrect());
-        long id = dao.insert(AnswersLog.TABLE_NAME, contentValues);
-        return id != ERROR_OCURRED;
-    }
 
-    public ListMultimap<Integer, AnswerAtTime> getAnswersLogByTranslationId() {
-        ListMultimap<Integer, AnswerAtTime> answersLogByTranslationId = ArrayListMultimap.create();
 
-        Cursor res = null;
-        try {
-            String sql = "select " +
-                         AnswersLog.IS_CORRECT + ", " +
-                         AnswersLog.TRANSLATION_ID + ", " +
-                         AnswersLog.TIME_ANSWERED +
-                         " from " + AnswersLog.TABLE_NAME;
-            res = dao.rawQuery(sql);
-            res.moveToFirst();
 
-            while (!res.isAfterLast()) {
-                int newTranslationId = res.getInt(res.getColumnIndex(AnswersLog.TRANSLATION_ID));
-                Answer answer =
-                    res.getInt(res.getColumnIndex(AnswersLog.IS_CORRECT)) > 0 ? Answer.CORRECT : Answer.INCORRECT;
-                long timeOfAnswer = res.getLong(res.getColumnIndex(AnswersLog.TIME_ANSWERED));
-                answersLogByTranslationId.put(newTranslationId, new AnswerAtTime(answer, new Date(timeOfAnswer)));
-                res.moveToNext();
-            }
-        } finally {
-            if (res != null) {
-                res.close();
-            }
-        }
-        return answersLogByTranslationId;
-    }
 }

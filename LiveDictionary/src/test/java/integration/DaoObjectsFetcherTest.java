@@ -26,9 +26,11 @@ public class DaoObjectsFetcherTest {
 
     private TranslationDao dao = DaoCreator.createEmpty();
 
+    private AnswerDao answerDao = DaoCreator.clearDbAndCreateAnswerDao();
+
     private LabelDao labelDao = DaoCreator.clearDbAndCreateLabelDao();
 
-    private DaoObjectsFetcher fetcher = new DaoObjectsFetcher(labelDao, dao);
+    private DaoObjectsFetcher fetcher = new DaoObjectsFetcher(labelDao, answerDao);
 
     public static final int ID1 = 1;
 
@@ -137,8 +139,8 @@ public class DaoObjectsFetcherTest {
         Translation translation2 = new Translation(ID2, createForeignToNativeTranslation("la cocina", "a kitchen"));
         dao.insertSingle(translation1);
         dao.insertSingle(translation2);
-        dao.logAnswer(translation1, Answer.CORRECT, new Date());
-        dao.logAnswer(translation2, Answer.INCORRECT, new Date());
+        answerDao.logAnswer(translation1, Answer.CORRECT, new Date());
+        answerDao.logAnswer(translation2, Answer.INCORRECT, new Date());
 
         fetcher.fetchAnswersLog(asList(translation1, translation2));
 
@@ -154,8 +156,8 @@ public class DaoObjectsFetcherTest {
     public void shouldFetchMultipleAnswersForTranslation() {
         Translation translation = new Translation(ID1, createForeignToNativeTranslation("la palabra", "a word"));
         dao.insertSingle(translation);
-        dao.logAnswer(translation, Answer.CORRECT, new Date());
-        dao.logAnswer(translation, Answer.INCORRECT, new Date());
+        answerDao.logAnswer(translation, Answer.CORRECT, new Date());
+        answerDao.logAnswer(translation, Answer.INCORRECT, new Date());
 
         fetcher.fetchAnswersLog(asList(translation));
 

@@ -25,7 +25,8 @@ import static org.mockito.Mockito.mock;
 public class LabelerIntegrationTest {
     private TranslationDao dao = DaoCreator.createEmpty();
     private LabelDao labelDao = DaoCreator.clearDbAndCreateLabelDao();
-    private Labeler labeler = new Labeler(dao, new DaoObjectsFetcher(labelDao, dao), labelDao);
+    private AnswerDao answerDao = DaoCreator.clearDbAndCreateAnswerDao();
+    private Labeler labeler = new Labeler(dao, new DaoObjectsFetcher(labelDao, answerDao), labelDao);
 
     private Translation createForeignToNativeTranslation(String foreignWord, String nativeWord) {
         return new Translation(new ForeignWord(foreignWord), new NativeWord(nativeWord));

@@ -100,10 +100,11 @@ public class ExporterImporterIntegrationTest {
     public void newestTranslationsShouldBeAskedMoreOftenThanOldOnes() throws IOException, URISyntaxException {
         LabelDao labelDao = DaoCreator.createLabelDao();
         TranslationDao dao = DaoCreator.createTranslationDao();
+        AnswerDao answerDao = DaoCreator.createAnswerDao();
         createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, dao);
-        DaoObjectsFetcher fetcher = new DaoObjectsFetcher(labelDao, dao);
+        DaoObjectsFetcher fetcher = new DaoObjectsFetcher(labelDao, answerDao);
         Labeler labeler = new Labeler(dao, fetcher, labelDao);
-        Dictionary q = new Dictionary(dao, fetcher, labeler, clock);
+        Dictionary q = new Dictionary(dao, answerDao, fetcher, labeler, clock);
         List<Translation> translations = dao.getAllTranslations();
         int size = translations.size();
         List<Translation> eldestTranslations = translations.subList(0, 100);
