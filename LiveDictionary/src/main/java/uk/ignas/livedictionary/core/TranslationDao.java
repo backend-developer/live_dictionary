@@ -3,10 +3,9 @@ package uk.ignas.livedictionary.core;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
-import com.google.common.base.Joiner;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
 import org.apache.commons.lang.BooleanUtils;
+import uk.ignas.livedictionary.core.answer.AnswerAtTime;
+import uk.ignas.livedictionary.core.answer.AnswerDao;
 import uk.ignas.livedictionary.core.label.Label;
 import uk.ignas.livedictionary.core.label.LabelDao;
 import uk.ignas.livedictionary.core.util.Dao;
@@ -67,7 +66,8 @@ public class TranslationDao {
                 boolean result = (id != ERROR_OCURRED);
                 if (result) {
                     for (Label label : translation.getMetadata().getLabels()) {
-                        labelDao.addLabelledTranslation(new Translation((int) id, translation), label);
+                        final Translation translation1 = new Translation((int) id, translation);
+                        labelDao.addLabelledTranslation(translation1.getId(), label);
                     }
                 }
                 return result;
@@ -100,7 +100,7 @@ public class TranslationDao {
                 }
                 labelDao.deleteLabelledTranslationsByTranslationIds(asList(translation.getId()));
                 for (Label l : translation.getMetadata().getLabels()) {
-                    labelDao.addLabelledTranslation(translation, l);
+                    labelDao.addLabelledTranslation(translation.getId(), l);
                 }
                 return result;
             }

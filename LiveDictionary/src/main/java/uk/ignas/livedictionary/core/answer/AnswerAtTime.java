@@ -1,4 +1,4 @@
-package uk.ignas.livedictionary.core;
+package uk.ignas.livedictionary.core.answer;
 
 import java.util.Date;
 

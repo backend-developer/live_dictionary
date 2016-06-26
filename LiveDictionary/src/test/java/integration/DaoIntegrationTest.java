@@ -6,6 +6,8 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 import uk.ignas.livedictionary.BuildConfig;
 import uk.ignas.livedictionary.core.*;
+import uk.ignas.livedictionary.core.answer.Answer;
+import uk.ignas.livedictionary.core.answer.AnswerDao;
 import uk.ignas.livedictionary.core.label.Label;
 import uk.ignas.livedictionary.core.label.LabelDao;
 
@@ -96,7 +98,7 @@ public class DaoIntegrationTest {
         AnswerDao answerDao = DaoCreator.createAnswerDao();
         dao.insertSingle(new Translation(new ForeignWord("la palabra"), new NativeWord("a word")));
         Translation translation = dao.getAllTranslations().get(0);
-        answerDao.logAnswer(translation, Answer.CORRECT, new Date());
+        answerDao.logAnswer(translation.getId(), Answer.CORRECT, new Date());
 
         dao.delete(Collections.singleton(translation));
 
@@ -110,8 +112,8 @@ public class DaoIntegrationTest {
         AnswerDao answerDao = DaoCreator.createAnswerDao();
         dao.insertSingle(new Translation(new ForeignWord("la palabra"), new NativeWord("a word")));
         dao.insertSingle(new Translation(new ForeignWord("la otra"), new NativeWord("other")));
-        answerDao.logAnswer(dao.getAllTranslations().get(0), Answer.CORRECT, new Date());
-        answerDao.logAnswer(dao.getAllTranslations().get(1), Answer.CORRECT, new Date());
+        answerDao.logAnswer(dao.getAllTranslations().get(0).getId(), Answer.CORRECT, new Date());
+        answerDao.logAnswer(dao.getAllTranslations().get(1).getId(), Answer.CORRECT, new Date());
 
         dao.delete(dao.getAllTranslations());
 

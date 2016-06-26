@@ -2,7 +2,6 @@ package uk.ignas.livedictionary.core.label;
 
 import android.database.Cursor;
 import com.google.common.base.Joiner;
-import uk.ignas.livedictionary.core.Translation;
 import uk.ignas.livedictionary.core.util.Dao;
 
 import java.util.ArrayList;
@@ -34,12 +33,12 @@ public class LabelDao {
         this.dao = dao;
     }
 
-    public void addLabelledTranslation(Translation translation, uk.ignas.livedictionary.core.label.Label label) {
+    public void addLabelledTranslation(Integer translationId, uk.ignas.livedictionary.core.label.Label label) {
         dao.execSql("insert into " +
                     LabelledTranslation.TABLE_NAME + " (" +
                     LabelledTranslation.TRANSLATION_ID + ", " +
                     LabelledTranslation.LABEL_ID + ") " + "VALUES (" +
-                    translation.getId() + ", " +
+                    translationId + ", " +
                     label.getId() + ")");
     }
 
@@ -49,9 +48,9 @@ public class LabelDao {
                     LabelledTranslation.TRANSLATION_ID + " IN (" + inClause + ") ");
     }
 
-    public void deleteLabelledTranslation(Translation translation, uk.ignas.livedictionary.core.label.Label label) {
+    public void deleteLabelledTranslation(Integer translationId, uk.ignas.livedictionary.core.label.Label label) {
         dao.execSql("DELETE FROM " + LabelledTranslation.TABLE_NAME + " WHERE " +
-                    LabelledTranslation.TRANSLATION_ID + " = " + translation.getId() + " AND " +
+                    LabelledTranslation.TRANSLATION_ID + " = " + translationId + " AND " +
                     LabelledTranslation.LABEL_ID + " = " + label.getId());
     }
 

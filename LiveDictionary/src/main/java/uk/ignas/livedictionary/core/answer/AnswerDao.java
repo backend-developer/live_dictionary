@@ -1,4 +1,4 @@
-package uk.ignas.livedictionary.core;
+package uk.ignas.livedictionary.core.answer;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -38,9 +38,9 @@ public class AnswerDao {
                     AnswersLog.TRANSLATION_ID + " IN (" + inClause + ") ");
     }
 
-    public boolean logAnswer(Translation translation, Answer answer, Date time) {
+    public boolean logAnswer(Integer translationId, Answer answer, Date time) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(AnswersLog.TRANSLATION_ID, translation.getId());
+        contentValues.put(AnswersLog.TRANSLATION_ID, translationId);
         contentValues.put(AnswersLog.TIME_ANSWERED, time.getTime());
         contentValues.put(AnswersLog.IS_CORRECT, answer.isCorrect());
         long id = dao.insert(AnswersLog.TABLE_NAME, contentValues);

@@ -6,6 +6,9 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 import uk.ignas.livedictionary.BuildConfig;
 import uk.ignas.livedictionary.core.*;
+import uk.ignas.livedictionary.core.answer.Answer;
+import uk.ignas.livedictionary.core.answer.AnswerAtTime;
+import uk.ignas.livedictionary.core.answer.AnswerDao;
 import uk.ignas.livedictionary.core.label.Label;
 import uk.ignas.livedictionary.core.label.LabelDao;
 
@@ -60,7 +63,7 @@ public class DaoObjectsFetcherTest {
     public void shouldFetchLabel() {
         Translation translation = new Translation(ID1, createForeignToNativeTranslation("la palabra", "a word"));
         dao.insertSingle(translation);
-        labelDao.addLabelledTranslation(translation, Label.A);
+        labelDao.addLabelledTranslation(translation.getId(), Label.A);
 
         fetcher.fetchLabels(asList(translation));
 
@@ -72,8 +75,8 @@ public class DaoObjectsFetcherTest {
     public void shouldFetchMultipleLabels() {
         Translation translation = new Translation(ID1, createForeignToNativeTranslation("la palabra", "a word"));
         dao.insertSingle(translation);
-        labelDao.addLabelledTranslation(translation, Label.A);
-        labelDao.addLabelledTranslation(translation, Label.B);
+        labelDao.addLabelledTranslation(translation.getId(), Label.A);
+        labelDao.addLabelledTranslation(translation.getId(), Label.B);
 
         fetcher.fetchLabels(asList(translation));
 
@@ -87,8 +90,8 @@ public class DaoObjectsFetcherTest {
         Translation translation2 = new Translation(ID2, createForeignToNativeTranslation("la cocina", "a kitchen"));
         dao.insertSingle(translation1);
         dao.insertSingle(translation2);
-        labelDao.addLabelledTranslation(translation1, Label.A);
-        labelDao.addLabelledTranslation(translation2, Label.B);
+        labelDao.addLabelledTranslation(translation1.getId(), Label.A);
+        labelDao.addLabelledTranslation(translation2.getId(), Label.B);
 
         fetcher.fetchLabels(asList(translation1, translation2));
 
@@ -139,8 +142,8 @@ public class DaoObjectsFetcherTest {
         Translation translation2 = new Translation(ID2, createForeignToNativeTranslation("la cocina", "a kitchen"));
         dao.insertSingle(translation1);
         dao.insertSingle(translation2);
-        answerDao.logAnswer(translation1, Answer.CORRECT, new Date());
-        answerDao.logAnswer(translation2, Answer.INCORRECT, new Date());
+        answerDao.logAnswer(translation1.getId(), Answer.CORRECT, new Date());
+        answerDao.logAnswer(translation2.getId(), Answer.INCORRECT, new Date());
 
         fetcher.fetchAnswersLog(asList(translation1, translation2));
 
@@ -156,8 +159,8 @@ public class DaoObjectsFetcherTest {
     public void shouldFetchMultipleAnswersForTranslation() {
         Translation translation = new Translation(ID1, createForeignToNativeTranslation("la palabra", "a word"));
         dao.insertSingle(translation);
-        answerDao.logAnswer(translation, Answer.CORRECT, new Date());
-        answerDao.logAnswer(translation, Answer.INCORRECT, new Date());
+        answerDao.logAnswer(translation.getId(), Answer.CORRECT, new Date());
+        answerDao.logAnswer(translation.getId(), Answer.INCORRECT, new Date());
 
         fetcher.fetchAnswersLog(asList(translation));
 

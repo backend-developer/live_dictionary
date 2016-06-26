@@ -8,9 +8,12 @@ import org.robolectric.annotation.Config;
 import uk.ignas.livedictionary.BuildConfig;
 import uk.ignas.livedictionary.core.*;
 import uk.ignas.livedictionary.core.Dictionary;
+import uk.ignas.livedictionary.core.answer.Answer;
+import uk.ignas.livedictionary.core.answer.AnswerAtTime;
+import uk.ignas.livedictionary.core.answer.AnswerDao;
 import uk.ignas.livedictionary.core.label.Label;
 import uk.ignas.livedictionary.core.label.LabelDao;
-import uk.ignas.livedictionary.core.label.Labeler;
+import uk.ignas.livedictionary.core.Labeler;
 import uk.ignas.livedictionary.testutils.LiveDictionaryDsl;
 
 import java.util.*;
@@ -145,7 +148,7 @@ public class LiveDictionaryIntegrationTest {
         dao.insertSingle(createForeignToNativeTranslation("la palabra", "a word"));
         dao.insertSingle(createForeignToNativeTranslation("la cocina", "a kitchen"));
         Translation labelledTranslation = retrieveTranslationWithNativeWordFromDb("a kitchen");
-        labelDao.addLabelledTranslation(labelledTranslation, Label.A);
+        labelDao.addLabelledTranslation(labelledTranslation.getId(), Label.A);
         dictionary.reloadData();
 
         List<Translation> translations = LiveDictionaryDsl.retrieveTranslationsNTimes(dictionary, 10);
@@ -228,7 +231,7 @@ public class LiveDictionaryIntegrationTest {
         dao.insert(getNTranslationsWithNativeWordStartingWith(10, "DifficultWord"));
         for (Translation t : new HashSet<>(dao.getAllTranslations())) {
             if (t.getNativeWord().get().contains("DifficultWord")) {
-                answerDao.logAnswer(t, Answer.INCORRECT, new Date());
+                answerDao.logAnswer(t.getId(), Answer.INCORRECT, new Date());
             }
         }
         dictionary.reloadData();

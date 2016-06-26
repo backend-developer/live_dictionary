@@ -1,5 +1,6 @@
 package uk.ignas.livedictionary.core;
 
+import uk.ignas.livedictionary.core.answer.AnswerAtTime;
 import uk.ignas.livedictionary.core.label.Label;
 
 import java.util.ArrayList;

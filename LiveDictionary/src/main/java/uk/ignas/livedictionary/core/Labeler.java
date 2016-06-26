@@ -1,9 +1,8 @@
-package uk.ignas.livedictionary.core.label;
+package uk.ignas.livedictionary.core;
 
 import android.database.sqlite.SQLiteException;
-import uk.ignas.livedictionary.core.DaoObjectsFetcher;
-import uk.ignas.livedictionary.core.Translation;
-import uk.ignas.livedictionary.core.TranslationDao;
+import uk.ignas.livedictionary.core.label.Label;
+import uk.ignas.livedictionary.core.label.LabelDao;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,7 +24,7 @@ public class Labeler {
 
     public void addLabel(Translation translation, Label label) {
         try {
-            labelDao.addLabelledTranslation(translation, label);
+            labelDao.addLabelledTranslation(translation.getId(), label);
         } catch (Exception e) {
             rejectDuplicateLabelSilently(e);
         }
@@ -49,6 +48,6 @@ public class Labeler {
     }
 
     public void removeLabel(Translation translation, Label label) {
-        labelDao.deleteLabelledTranslation(translation, label);
+        labelDao.deleteLabelledTranslation(translation.getId(), label);
     }
 }

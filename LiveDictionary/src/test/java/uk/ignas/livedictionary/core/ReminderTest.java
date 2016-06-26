@@ -1,6 +1,8 @@
 package uk.ignas.livedictionary.core;
 
 import org.junit.Test;
+import uk.ignas.livedictionary.core.answer.Answer;
+import uk.ignas.livedictionary.core.answer.AnswerAtTime;
 import uk.ignas.livedictionary.testutils.PromotionPeriod;
 
 import java.util.ArrayList;

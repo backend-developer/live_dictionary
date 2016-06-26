@@ -13,9 +13,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import uk.ignas.livedictionary.core.*;
+import uk.ignas.livedictionary.core.answer.Answer;
+import uk.ignas.livedictionary.core.answer.AnswerDao;
 import uk.ignas.livedictionary.core.label.Label;
 import uk.ignas.livedictionary.core.label.LabelDao;
-import uk.ignas.livedictionary.core.label.Labeler;
+import uk.ignas.livedictionary.core.Labeler;
 import uk.ignas.livedictionary.core.util.Dao;
 
 public class LiveDictionaryActivity extends Activity implements ModifyDictionaryDialog.ModifyDictionaryListener {

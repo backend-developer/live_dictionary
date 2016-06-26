@@ -1,6 +1,8 @@
 package uk.ignas.livedictionary.core;
 
 import com.google.common.collect.ImmutableMap;
+import uk.ignas.livedictionary.core.answer.Answer;
+import uk.ignas.livedictionary.core.answer.AnswerAtTime;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;

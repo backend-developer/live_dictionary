@@ -3,7 +3,7 @@ package integration;
 
 import org.robolectric.Robolectric;
 import uk.ignas.livedictionary.LiveDictionaryActivity;
-import uk.ignas.livedictionary.core.AnswerDao;
+import uk.ignas.livedictionary.core.answer.AnswerDao;
 import uk.ignas.livedictionary.core.util.Dao;
 import uk.ignas.livedictionary.core.label.LabelDao;
 import uk.ignas.livedictionary.core.TranslationDao;

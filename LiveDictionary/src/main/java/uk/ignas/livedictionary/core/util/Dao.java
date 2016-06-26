@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import uk.ignas.livedictionary.core.util.Transactable;
 
 public class Dao extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "LiveDictionary.db";

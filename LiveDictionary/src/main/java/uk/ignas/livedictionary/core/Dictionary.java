@@ -1,7 +1,8 @@
 package uk.ignas.livedictionary.core;
 
+import uk.ignas.livedictionary.core.answer.Answer;
+import uk.ignas.livedictionary.core.answer.AnswerDao;
 import uk.ignas.livedictionary.core.label.Label;
-import uk.ignas.livedictionary.core.label.Labeler;
 
 import java.util.*;
 
@@ -140,7 +141,7 @@ public class Dictionary {
         }
         boolean result;
         try {
-            result = answerDao.logAnswer(translation, answer, clock.getTime());
+            result = answerDao.logAnswer(translation.getId(), answer, clock.getTime());
         } catch (RuntimeException e) {
             return false;
         }
