@@ -2,14 +2,14 @@ package uk.ignas.livedictionary.core.label;
 
 import android.database.Cursor;
 import com.google.common.base.Joiner;
-import uk.ignas.livedictionary.core.util.Dao;
+import uk.ignas.livedictionary.core.util.DatabaseFacade;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class LabelDao {
-    private final Dao dao;
+    private final DatabaseFacade databaseFacade;
 
     private static class LabelledTranslation {
         public static final String TABLE_NAME = "labelled_translation";
@@ -29,12 +29,12 @@ public class LabelDao {
         public static final String NAME = "translation_id";
     }
 
-    public LabelDao(Dao dao) {
-        this.dao = dao;
+    public LabelDao(DatabaseFacade databaseFacade) {
+        this.databaseFacade = databaseFacade;
     }
 
     public void addLabelledTranslation(Integer translationId, uk.ignas.livedictionary.core.label.Label label) {
-        dao.execSql("insert into " +
+        databaseFacade.execSql("insert into " +
                     LabelledTranslation.TABLE_NAME + " (" +
                     LabelledTranslation.TRANSLATION_ID + ", " +
                     LabelledTranslation.LABEL_ID + ") " + "VALUES (" +
@@ -44,12 +44,12 @@ public class LabelDao {
 
     public void deleteLabelledTranslationsByTranslationIds(List<Integer> translationIds) {
         String inClause = Joiner.on(", ").join(translationIds);
-        dao.execSql("DELETE FROM " + LabelledTranslation.TABLE_NAME + " WHERE " +
+        databaseFacade.execSql("DELETE FROM " + LabelledTranslation.TABLE_NAME + " WHERE " +
                     LabelledTranslation.TRANSLATION_ID + " IN (" + inClause + ") ");
     }
 
     public void deleteLabelledTranslation(Integer translationId, uk.ignas.livedictionary.core.label.Label label) {
-        dao.execSql("DELETE FROM " + LabelledTranslation.TABLE_NAME + " WHERE " +
+        databaseFacade.execSql("DELETE FROM " + LabelledTranslation.TABLE_NAME + " WHERE " +
                     LabelledTranslation.TRANSLATION_ID + " = " + translationId + " AND " +
                     LabelledTranslation.LABEL_ID + " = " + label.getId());
     }
@@ -63,7 +63,7 @@ public class LabelDao {
                          LabelledTranslation.TRANSLATION_ID + " " +
                          " from " + LabelledTranslation.TABLE_NAME + " where " +
                          LabelledTranslation.LABEL_ID + " = " + label.getId();
-            res = dao.rawQuery(sql);
+            res = databaseFacade.rawQuery(sql);
             res.moveToFirst();
 
             while (!res.isAfterLast()) {

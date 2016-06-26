@@ -4,7 +4,7 @@ package integration;
 import org.robolectric.Robolectric;
 import uk.ignas.livedictionary.LiveDictionaryActivity;
 import uk.ignas.livedictionary.core.answer.AnswerDao;
-import uk.ignas.livedictionary.core.util.Dao;
+import uk.ignas.livedictionary.core.util.DatabaseFacade;
 import uk.ignas.livedictionary.core.label.LabelDao;
 import uk.ignas.livedictionary.core.TranslationDao;
 
@@ -30,24 +30,24 @@ class DaoCreator {
     }
 
     static AnswerDao createAnswerDao() {
-        Dao database = createDatabase();
+        DatabaseFacade database = createDatabase();
         return new AnswerDao(database);
     }
 
     static LabelDao createLabelDao() {
-        Dao dao = createDatabase();
-        return new LabelDao(dao);
+        DatabaseFacade databaseFacade = createDatabase();
+        return new LabelDao(databaseFacade);
     }
 
     static TranslationDao createTranslationDao() {
-        Dao dao = createDatabase();
-        LabelDao labelDao = new LabelDao(dao);
-        AnswerDao answerDao = new AnswerDao(dao);
-        return new TranslationDao(labelDao, dao, answerDao);
+        DatabaseFacade databaseFacade = createDatabase();
+        LabelDao labelDao = new LabelDao(databaseFacade);
+        AnswerDao answerDao = new AnswerDao(databaseFacade);
+        return new TranslationDao(labelDao, databaseFacade, answerDao);
     }
 
-    private static Dao createDatabase() {
+    private static DatabaseFacade createDatabase() {
         LiveDictionaryActivity activity = Robolectric.setupActivity(LiveDictionaryActivity.class);
-        return new Dao(activity);
+        return new DatabaseFacade(activity);
     }
 }

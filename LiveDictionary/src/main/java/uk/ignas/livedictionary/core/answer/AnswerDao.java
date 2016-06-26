@@ -5,7 +5,7 @@ import android.database.Cursor;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-import uk.ignas.livedictionary.core.util.Dao;
+import uk.ignas.livedictionary.core.util.DatabaseFacade;
 
 import java.util.Date;
 import java.util.List;
@@ -26,15 +26,15 @@ public class AnswerDao {
         public static final String IS_CORRECT = "is_correct";
 
     }
-    private final Dao dao;
+    private final DatabaseFacade databaseFacade;
 
-    public AnswerDao(Dao dao) {
-        this.dao = dao;
+    public AnswerDao(DatabaseFacade databaseFacade) {
+        this.databaseFacade = databaseFacade;
     }
 
     public void deleteAnswersByTranslationIds(List<Integer> translationIdsToDelete) {
         String inClause = Joiner.on(", ").join(translationIdsToDelete);
-        dao.execSql("DELETE FROM " + AnswersLog.TABLE_NAME + " WHERE " +
+        databaseFacade.execSql("DELETE FROM " + AnswersLog.TABLE_NAME + " WHERE " +
                     AnswersLog.TRANSLATION_ID + " IN (" + inClause + ") ");
     }
 
@@ -43,7 +43,7 @@ public class AnswerDao {
         contentValues.put(AnswersLog.TRANSLATION_ID, translationId);
         contentValues.put(AnswersLog.TIME_ANSWERED, time.getTime());
         contentValues.put(AnswersLog.IS_CORRECT, answer.isCorrect());
-        long id = dao.insert(AnswersLog.TABLE_NAME, contentValues);
+        long id = databaseFacade.insert(AnswersLog.TABLE_NAME, contentValues);
         return id != ERROR_OCURRED;
     }
 
@@ -57,7 +57,7 @@ public class AnswerDao {
                          AnswersLog.TRANSLATION_ID + ", " +
                          AnswersLog.TIME_ANSWERED +
                          " from " + AnswersLog.TABLE_NAME;
-            res = dao.rawQuery(sql);
+            res = databaseFacade.rawQuery(sql);
             res.moveToFirst();
 
             while (!res.isAfterLast()) {

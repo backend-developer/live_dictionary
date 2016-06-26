@@ -25,7 +25,7 @@ import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.createForeignT
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class DaoObjectsFetcherTest {
+public class DatabaseFacadeObjectsFetcherTest {
 
     private TranslationDao dao = DaoCreator.createEmpty();
 

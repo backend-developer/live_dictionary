@@ -13,7 +13,7 @@ import uk.ignas.livedictionary.core.answer.AnswerDao;
 import uk.ignas.livedictionary.core.label.Label;
 import uk.ignas.livedictionary.core.label.LabelDao;
 import uk.ignas.livedictionary.core.Labeler;
-import uk.ignas.livedictionary.core.util.Dao;
+import uk.ignas.livedictionary.core.util.DatabaseFacade;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ public class LabellingActivity extends Activity {
 
         guiError = new GuiError(this);
         try {
-            Dao database = new Dao(LabellingActivity.this);
+            DatabaseFacade database = new DatabaseFacade(LabellingActivity.this);
             LabelDao labelDao = new LabelDao(database);
             AnswerDao answerDao = new AnswerDao(database);
             this.dao = new TranslationDao(labelDao, database, answerDao);

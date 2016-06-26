@@ -8,7 +8,7 @@ import uk.ignas.livedictionary.core.answer.AnswerAtTime;
 import uk.ignas.livedictionary.core.answer.AnswerDao;
 import uk.ignas.livedictionary.core.label.Label;
 import uk.ignas.livedictionary.core.label.LabelDao;
-import uk.ignas.livedictionary.core.util.Dao;
+import uk.ignas.livedictionary.core.util.DatabaseFacade;
 import uk.ignas.livedictionary.core.util.Transactable;
 
 import java.util.*;
@@ -22,7 +22,7 @@ public class TranslationDao {
 
     private final LabelDao labelDao;
 
-    private final Dao dao;
+    private final DatabaseFacade databaseFacade;
 
     private final AnswerDao answerDao;
 
@@ -38,9 +38,9 @@ public class TranslationDao {
 
 
 
-    public TranslationDao(LabelDao labelDao, Dao dao, AnswerDao answerDao) {
+    public TranslationDao(LabelDao labelDao, DatabaseFacade databaseFacade, AnswerDao answerDao) {
         this.labelDao = labelDao;
-        this.dao = dao;
+        this.databaseFacade = databaseFacade;
         this.answerDao = answerDao;
     }
 
@@ -56,7 +56,7 @@ public class TranslationDao {
                 return null;
             }
         };
-        dao.doInTransaction(runnable);
+        databaseFacade.doInTransaction(runnable);
     }
 
     public boolean insertSingle(final Translation translation) {
@@ -74,14 +74,14 @@ public class TranslationDao {
             }
         };
 
-        return BooleanUtils.isTrue(dao.doInTransaction(transactable));
+        return BooleanUtils.isTrue(databaseFacade.doInTransaction(transactable));
     }
 
     private long insertSingleUsingDb(Translation translation) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(Translations.NATIVE_WORD, translation.getNativeWord().get());
         contentValues.put(Translations.FOREIGN_WORD, translation.getForeignWord().get());
-        return dao.insert(Translations.TABLE_NAME, contentValues);
+        return databaseFacade.insert(Translations.TABLE_NAME, contentValues);
     }
 
 
@@ -106,14 +106,14 @@ public class TranslationDao {
             }
         };
 
-        return dao.doInTransaction(transactable);
+        return databaseFacade.doInTransaction(transactable);
     }
 
     private int updateSingleTranslation(Translation translation) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(Translations.NATIVE_WORD, translation.getNativeWord().get());
         contentValues.put(Translations.FOREIGN_WORD, translation.getForeignWord().get());
-        return dao.update(Translations.TABLE_NAME, contentValues, Translations.ID + " = ? ",
+        return databaseFacade.update(Translations.TABLE_NAME, contentValues, Translations.ID + " = ? ",
                           new String[]{String.valueOf(translation.getId())});
     }
 
@@ -131,7 +131,7 @@ public class TranslationDao {
                 return null;
             }
         };
-        dao.doInTransaction(transactable);
+        databaseFacade.doInTransaction(transactable);
     }
 
 
@@ -149,7 +149,7 @@ public class TranslationDao {
         String tableName = Translations.TABLE_NAME;
         String condition = Translations.ID + " = ? ";
         String[] args = {String.valueOf(id)};
-        return dao.delete(tableName, condition, args);
+        return databaseFacade.delete(tableName, condition, args);
     }
 
     private Integer deleteSingle(Translation translation) {
@@ -170,7 +170,7 @@ public class TranslationDao {
                            Translations.FOREIGN_WORD + ", " +
                            Translations.NATIVE_WORD +
                            " from " + Translations.TABLE_NAME;
-            res = dao.rawQuery(query);
+            res = databaseFacade.rawQuery(query);
             res.moveToFirst();
 
             while (!res.isAfterLast()) {

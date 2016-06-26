@@ -18,7 +18,7 @@ import uk.ignas.livedictionary.core.answer.AnswerDao;
 import uk.ignas.livedictionary.core.label.Label;
 import uk.ignas.livedictionary.core.label.LabelDao;
 import uk.ignas.livedictionary.core.Labeler;
-import uk.ignas.livedictionary.core.util.Dao;
+import uk.ignas.livedictionary.core.util.DatabaseFacade;
 
 public class LiveDictionaryActivity extends Activity implements ModifyDictionaryDialog.ModifyDictionaryListener {
     private static final String TAG = LiveDictionaryActivity.class.getName();
@@ -60,10 +60,10 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
 
         guiError = new GuiError(this);
         try {
-            Dao dao = new Dao(LiveDictionaryActivity.this);
-            LabelDao labelDao = new LabelDao(dao);
-            AnswerDao answerDao = new AnswerDao(dao);
-            this.dao = new TranslationDao(labelDao, dao, answerDao);
+            DatabaseFacade databaseFacade = new DatabaseFacade(LiveDictionaryActivity.this);
+            LabelDao labelDao = new LabelDao(databaseFacade);
+            AnswerDao answerDao = new AnswerDao(databaseFacade);
+            this.dao = new TranslationDao(labelDao, databaseFacade, answerDao);
             fetcher = new DaoObjectsFetcher(labelDao, answerDao);
             labeler = new Labeler(this.dao, fetcher, labelDao);
             dictionary = new Dictionary(this.dao, answerDao, fetcher, labeler, new Clock());

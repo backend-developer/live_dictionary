@@ -22,7 +22,7 @@ import static org.hamcrest.Matchers.*;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class DaoIntegrationTest {
+public class DatabaseFacadeIntegrationTest {
 
     @Test
     public void dbShouldHaveSeedData() {

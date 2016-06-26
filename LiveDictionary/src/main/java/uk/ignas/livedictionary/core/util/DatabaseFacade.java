@@ -6,10 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class Dao extends SQLiteOpenHelper {
+public class DatabaseFacade extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "LiveDictionary.db";
 
-    public Dao(Context context) {
+    public DatabaseFacade(Context context) {
         super(context, DATABASE_NAME, null, 3);
     }
 
