@@ -25,9 +25,9 @@ import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.createForeignT
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class DatabaseFacadeObjectsFetcherTest {
+public class DaoObjectsFetcherTest {
 
-    private TranslationDao dao = DaoCreator.createEmpty();
+    private TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao();
 
     private AnswerDao answerDao = DaoCreator.clearDbAndCreateAnswerDao();
 
@@ -62,7 +62,7 @@ public class DatabaseFacadeObjectsFetcherTest {
     @Test
     public void shouldFetchLabel() {
         Translation translation = new Translation(ID1, createForeignToNativeTranslation("la palabra", "a word"));
-        dao.insertSingle(translation);
+        translationDao.insertSingle(translation);
         labelDao.addLabelledTranslation(translation.getId(), Label.A);
 
         fetcher.fetchLabels(asList(translation));
@@ -74,7 +74,7 @@ public class DatabaseFacadeObjectsFetcherTest {
     @Test
     public void shouldFetchMultipleLabels() {
         Translation translation = new Translation(ID1, createForeignToNativeTranslation("la palabra", "a word"));
-        dao.insertSingle(translation);
+        translationDao.insertSingle(translation);
         labelDao.addLabelledTranslation(translation.getId(), Label.A);
         labelDao.addLabelledTranslation(translation.getId(), Label.B);
 
@@ -88,8 +88,8 @@ public class DatabaseFacadeObjectsFetcherTest {
     public void shouldFetchLabelsForMultipleTranslations() {
         Translation translation1 = new Translation(ID1, createForeignToNativeTranslation("la palabra", "a word"));
         Translation translation2 = new Translation(ID2, createForeignToNativeTranslation("la cocina", "a kitchen"));
-        dao.insertSingle(translation1);
-        dao.insertSingle(translation2);
+        translationDao.insertSingle(translation1);
+        translationDao.insertSingle(translation2);
         labelDao.addLabelledTranslation(translation1.getId(), Label.A);
         labelDao.addLabelledTranslation(translation2.getId(), Label.B);
 
@@ -105,8 +105,8 @@ public class DatabaseFacadeObjectsFetcherTest {
     public void shouldThrowForDataHavingInvalidIds() {
         Translation translation1 = new Translation(ID1, createForeignToNativeTranslation("la palabra", "a word"));
         Translation translation2 = new Translation(ID1, createForeignToNativeTranslation("la cocina", "a kitchen"));
-        dao.insertSingle(translation1);
-        dao.insertSingle(translation2);
+        translationDao.insertSingle(translation1);
+        translationDao.insertSingle(translation2);
 
         try {
             fetcher.fetchLabels(asList(translation1, translation2));
@@ -140,8 +140,8 @@ public class DatabaseFacadeObjectsFetcherTest {
     public void shouldFetchAnswersLogForMultipleTranslations() {
         Translation translation1 = new Translation(ID1, createForeignToNativeTranslation("la palabra", "a word"));
         Translation translation2 = new Translation(ID2, createForeignToNativeTranslation("la cocina", "a kitchen"));
-        dao.insertSingle(translation1);
-        dao.insertSingle(translation2);
+        translationDao.insertSingle(translation1);
+        translationDao.insertSingle(translation2);
         answerDao.logAnswer(translation1.getId(), Answer.CORRECT, new Date());
         answerDao.logAnswer(translation2.getId(), Answer.INCORRECT, new Date());
 
@@ -158,7 +158,7 @@ public class DatabaseFacadeObjectsFetcherTest {
     @Test
     public void shouldFetchMultipleAnswersForTranslation() {
         Translation translation = new Translation(ID1, createForeignToNativeTranslation("la palabra", "a word"));
-        dao.insertSingle(translation);
+        translationDao.insertSingle(translation);
         answerDao.logAnswer(translation.getId(), Answer.CORRECT, new Date());
         answerDao.logAnswer(translation.getId(), Answer.INCORRECT, new Date());
 

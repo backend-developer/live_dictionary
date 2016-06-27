@@ -20,14 +20,14 @@ public class Dictionary {
     private final Reminder reminder;
     private List<Translation> veryEasyTranslations = new ArrayList<>();
     private final Random random = new Random();
-    private TranslationDao dao;
+    private TranslationDao translationDao;
     private final AnswerDao answerDao;
     private DaoObjectsFetcher fetcher;
     private Labeler labeler;
     private Clock clock;
 
-    public Dictionary(TranslationDao dao, AnswerDao answerDao, DaoObjectsFetcher fetcher, Labeler labeler, Clock clock) {
-        this.dao = dao;
+    public Dictionary(TranslationDao translationDao, AnswerDao answerDao, DaoObjectsFetcher fetcher, Labeler labeler, Clock clock) {
+        this.translationDao = translationDao;
         this.answerDao = answerDao;
         this.fetcher = fetcher;
         this.labeler = labeler;
@@ -37,7 +37,7 @@ public class Dictionary {
     }
 
     private void reloadTranslations() {
-        List<Translation> translations = dao.getAllTranslations();
+        List<Translation> translations = translationDao.getAllTranslations();
         fetcher.fetchAnswersLog(translations);
         translations = filterNonLabelledTranslations(translations);
         Collections.reverse(translations);
@@ -150,12 +150,12 @@ public class Dictionary {
     }
 
     public void insert(Translation translation) {
-        dao.insertSingle(translation);
+        translationDao.insertSingle(translation);
         reloadTranslations();
     }
 
     public void delete(Translation translation) {
-        dao.delete(singleton(translation));
+        translationDao.delete(singleton(translation));
         reloadTranslations();
     }
 
@@ -174,10 +174,10 @@ public class Dictionary {
         for (Translation t : questions) {
             if (Objects.equals(t.getId(), translation.getId())) {
                 try {
-                    dao.update(translation);
+                    translationDao.update(translation);
                 } catch (Exception e) {
                     if (isUniqueConstraintViolation(e)) {
-                        dao.delete(asList(translation));
+                        translationDao.delete(asList(translation));
                     } else {
                         throw e;
                     }

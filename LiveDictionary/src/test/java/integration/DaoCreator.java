@@ -9,7 +9,7 @@ import uk.ignas.livedictionary.core.label.LabelDao;
 import uk.ignas.livedictionary.core.TranslationDao;
 
 class DaoCreator {
-    static TranslationDao createEmpty() {
+    static TranslationDao cleanDbAndCreateTranslationDao() {
         clearDb();
         return createTranslationDao();
     }

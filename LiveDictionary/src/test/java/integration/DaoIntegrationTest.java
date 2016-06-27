@@ -22,37 +22,28 @@ import static org.hamcrest.Matchers.*;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class DatabaseFacadeIntegrationTest {
-
-    @Test
-    public void dbShouldHaveSeedData() {
-        TranslationDao dao = DaoCreator.createTranslationDao();
-
-        List<Translation> allTranslations = dao.getAllTranslations();
-
-        assertThat(allTranslations, hasSize(17));
-    }
+public class DaoIntegrationTest {
 
     @Test
     public void shouldSilentlyIgnoreDeletingWithoutId() {
-        TranslationDao dao = DaoCreator.createEmpty();
+        TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao();
         Translation translation = new Translation(new ForeignWord("la palabra"), new NativeWord("a word"));
 
-        dao.delete(Collections.singleton(translation));
+        translationDao.delete(Collections.singleton(translation));
 
-        assertThat(dao.getAllTranslations(), empty());
+        assertThat(translationDao.getAllTranslations(), empty());
     }
 
     @Test
     public void shouldInsertTranslationAlongWithLabels() {
-        TranslationDao dao = DaoCreator.createEmpty();
+        TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao();
         LabelDao labelDao = DaoCreator.clearDbAndCreateLabelDao();
         Translation translationToInsert = new Translation(new ForeignWord("la palabra"), new NativeWord("a word"));
         translationToInsert.getMetadata().getLabels().add(Label.C);
 
-        dao.insertSingle(translationToInsert);
+        translationDao.insertSingle(translationToInsert);
 
-        Translation translation = dao.getAllTranslations().get(0);
+        Translation translation = translationDao.getAllTranslations().get(0);
         Collection<Integer> translationIds = labelDao.getTranslationIdsWithLabel(Label.C);
         assertThat(translationIds, hasSize(1));
         assertThat(getLast(translationIds), notNullValue());
@@ -61,14 +52,14 @@ public class DatabaseFacadeIntegrationTest {
 
     @Test
     public void updatingTranslationShouldAddLabels() {
-        TranslationDao dao = DaoCreator.createEmpty();
+        TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao();
         LabelDao labelDao = DaoCreator.clearDbAndCreateLabelDao();
         Translation translationToInsert = new Translation(new ForeignWord("la palabra"), new NativeWord("a word"));
-        dao.insertSingle(translationToInsert);
-        Translation insertedTranslation = getLast(dao.getAllTranslations());
+        translationDao.insertSingle(translationToInsert);
+        Translation insertedTranslation = getLast(translationDao.getAllTranslations());
         insertedTranslation.getMetadata().getLabels().add(Label.D);
 
-        dao.update(insertedTranslation);
+        translationDao.update(insertedTranslation);
 
         Collection<Integer> translationIds = labelDao.getTranslationIdsWithLabel(Label.D);
         assertThat(translationIds, hasSize(1));
@@ -78,15 +69,15 @@ public class DatabaseFacadeIntegrationTest {
 
     @Test
     public void updatingTranslationShouldDeleteLabels() {
-        TranslationDao dao = DaoCreator.createEmpty();
+        TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao();
         LabelDao labelDao = DaoCreator.clearDbAndCreateLabelDao();
         Translation translationToInsert = new Translation(new ForeignWord("la palabra"), new NativeWord("a word"));
         translationToInsert.getMetadata().getLabels().add(Label.C);
-        dao.insertSingle(translationToInsert);
-        Translation insertedTranslation = getLast(dao.getAllTranslations());
+        translationDao.insertSingle(translationToInsert);
+        Translation insertedTranslation = getLast(translationDao.getAllTranslations());
         insertedTranslation.getMetadata().getLabels().remove(Label.C);
 
-        dao.update(insertedTranslation);
+        translationDao.update(insertedTranslation);
 
         Collection<Integer> translationIds = labelDao.getTranslationIdsWithLabel(Label.C);
         assertThat(translationIds, hasSize(0));
@@ -94,30 +85,30 @@ public class DatabaseFacadeIntegrationTest {
 
     @Test
     public void deletingSingleTranslationShouldCascadeDeleteAnswers() {
-        TranslationDao dao = DaoCreator.createEmpty();
+        TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao();
         AnswerDao answerDao = DaoCreator.createAnswerDao();
-        dao.insertSingle(new Translation(new ForeignWord("la palabra"), new NativeWord("a word")));
-        Translation translation = dao.getAllTranslations().get(0);
+        translationDao.insertSingle(new Translation(new ForeignWord("la palabra"), new NativeWord("a word")));
+        Translation translation = translationDao.getAllTranslations().get(0);
         answerDao.logAnswer(translation.getId(), Answer.CORRECT, new Date());
 
-        dao.delete(Collections.singleton(translation));
+        translationDao.delete(Collections.singleton(translation));
 
-        assertThat(dao.getAllTranslations(), empty());
+        assertThat(translationDao.getAllTranslations(), empty());
         assertThat(answerDao.getAnswersLogByTranslationId().values(), empty());
     }
 
     @Test
     public void deletingMultipleTranslationShouldCascadeDeleteAnswers() {
-        TranslationDao dao = DaoCreator.createEmpty();
+        TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao();
         AnswerDao answerDao = DaoCreator.createAnswerDao();
-        dao.insertSingle(new Translation(new ForeignWord("la palabra"), new NativeWord("a word")));
-        dao.insertSingle(new Translation(new ForeignWord("la otra"), new NativeWord("other")));
-        answerDao.logAnswer(dao.getAllTranslations().get(0).getId(), Answer.CORRECT, new Date());
-        answerDao.logAnswer(dao.getAllTranslations().get(1).getId(), Answer.CORRECT, new Date());
+        translationDao.insertSingle(new Translation(new ForeignWord("la palabra"), new NativeWord("a word")));
+        translationDao.insertSingle(new Translation(new ForeignWord("la otra"), new NativeWord("other")));
+        answerDao.logAnswer(translationDao.getAllTranslations().get(0).getId(), Answer.CORRECT, new Date());
+        answerDao.logAnswer(translationDao.getAllTranslations().get(1).getId(), Answer.CORRECT, new Date());
 
-        dao.delete(dao.getAllTranslations());
+        translationDao.delete(translationDao.getAllTranslations());
 
-        assertThat(dao.getAllTranslations(), empty());
+        assertThat(translationDao.getAllTranslations(), empty());
         assertThat(answerDao.getAnswersLogByTranslationId().values(), empty());
     }
 

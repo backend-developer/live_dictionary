@@ -21,7 +21,7 @@ import java.util.List;
 public class LabellingActivity extends Activity {
     private static final String TAG = LabellingActivity.class.getName();
 
-    private TranslationDao dao;
+    private TranslationDao translationDao;
     private DaoObjectsFetcher fetcher;
     private GuiError guiError;
     private Labeler labeler;
@@ -36,9 +36,9 @@ public class LabellingActivity extends Activity {
             DatabaseFacade database = new DatabaseFacade(LabellingActivity.this);
             LabelDao labelDao = new LabelDao(database);
             AnswerDao answerDao = new AnswerDao(database);
-            this.dao = new TranslationDao(labelDao, database, answerDao);
+            this.translationDao = new TranslationDao(labelDao, database, answerDao);
             fetcher = new DaoObjectsFetcher(labelDao, answerDao);
-            labeler = new Labeler(this.dao, fetcher, labelDao);
+            labeler = new Labeler(this.translationDao, fetcher, labelDao);
         } catch (Exception e) {
             Log.e(TAG, "critical error ", e);
             guiError.showErrorDialogAndExitActivity(e);

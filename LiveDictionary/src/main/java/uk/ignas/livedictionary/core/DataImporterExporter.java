@@ -5,10 +5,10 @@ import java.util.*;
 
 public class DataImporterExporter {
     private TranslationParser translationParser = new TranslationParser();
-    private TranslationDao dao;
+    private TranslationDao translationDao;
 
-    public DataImporterExporter(TranslationDao dao) {
-        this.dao = dao;
+    public DataImporterExporter(TranslationDao translationDao) {
+        this.translationDao = translationDao;
     }
 
     public void importFromFile(String planeTextFilePath) {
@@ -36,10 +36,10 @@ public class DataImporterExporter {
             }
         }
 
-        List<Translation> translationsFromDb = dao.getAllTranslations();
-        dao.delete(translationsFromDb);
+        List<Translation> translationsFromDb = translationDao.getAllTranslations();
+        translationDao.delete(translationsFromDb);
 
-        dao.insert(new ArrayList<>(translationsToInsert));
+        translationDao.insert(new ArrayList<>(translationsToInsert));
     }
 
     public void export(String planeTextExportedPath) {
@@ -50,7 +50,7 @@ public class DataImporterExporter {
         }
 
         try {
-            writeTranslations(planeTextExportedPath, dao.getAllTranslations());
+            writeTranslations(planeTextExportedPath, translationDao.getAllTranslations());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

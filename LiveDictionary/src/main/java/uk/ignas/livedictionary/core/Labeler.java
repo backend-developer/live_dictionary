@@ -11,13 +11,13 @@ import java.util.List;
 import static uk.ignas.livedictionary.core.util.ExceptionAnalyser.isUniqueConstraintViolation;
 
 public class Labeler {
-    private final TranslationDao dao;
+    private final TranslationDao translationDao;
     private final DaoObjectsFetcher fetcher;
 
     private final LabelDao labelDao;
 
-    public Labeler(TranslationDao dao, DaoObjectsFetcher fetcher, LabelDao labelDao) {
-        this.dao = dao;
+    public Labeler(TranslationDao translationDao, DaoObjectsFetcher fetcher, LabelDao labelDao) {
+        this.translationDao = translationDao;
         this.fetcher = fetcher;
         this.labelDao = labelDao;
     }
@@ -37,7 +37,7 @@ public class Labeler {
     }
 
     public Collection<Translation> getLabelled(Label label) {
-        List<Translation> translations = dao.getAllTranslations();
+        List<Translation> translations = translationDao.getAllTranslations();
         fetcher.fetchLabels(translations);
         for (Translation t : new ArrayList<>(translations)) {
             if (!t.getMetadata().getLabels().contains(label)) {

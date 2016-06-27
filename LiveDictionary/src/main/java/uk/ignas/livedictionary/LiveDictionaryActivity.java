@@ -34,7 +34,7 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
 
     private volatile Translation currentTranslation = EMPTY_TRANSLATION;
     private Dictionary dictionary;
-    private TranslationDao dao;
+    private TranslationDao translationDao;
     private DaoObjectsFetcher fetcher;
     private Labeler labeler;
 
@@ -63,11 +63,11 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
             DatabaseFacade databaseFacade = new DatabaseFacade(LiveDictionaryActivity.this);
             LabelDao labelDao = new LabelDao(databaseFacade);
             AnswerDao answerDao = new AnswerDao(databaseFacade);
-            this.dao = new TranslationDao(labelDao, databaseFacade, answerDao);
+            this.translationDao = new TranslationDao(labelDao, databaseFacade, answerDao);
             fetcher = new DaoObjectsFetcher(labelDao, answerDao);
-            labeler = new Labeler(this.dao, fetcher, labelDao);
-            dictionary = new Dictionary(this.dao, answerDao, fetcher, labeler, new Clock());
-            importExportActivity = new ImportExportActivity(new DataImporterExporter(this.dao), dictionary, guiError);
+            labeler = new Labeler(this.translationDao, fetcher, labelDao);
+            dictionary = new Dictionary(this.translationDao, answerDao, fetcher, labeler, new Clock());
+            importExportActivity = new ImportExportActivity(new DataImporterExporter(this.translationDao), dictionary, guiError);
 
             publishNextTranslation();
             showTranslationButton.setOnClickListener(new View.OnClickListener() {
