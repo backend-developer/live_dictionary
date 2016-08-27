@@ -27,7 +27,7 @@ import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.createForeignT
 @Config(constants = BuildConfig.class, sdk = 21)
 public class DaoObjectsFetcherTest {
 
-    private TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao();
+    private TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao(false);
 
     private AnswerDao answerDao = DaoCreator.clearDbAndCreateAnswerDao();
 

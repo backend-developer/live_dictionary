@@ -67,7 +67,7 @@ function initializeAppFiles {
 	adb shell am force-stop uk.ignas.livedictionary
 }
 
-dbBackup=~/Documents/liveDictionaryBackup/AppDatabase$(date +%s).db
+dbBackup=~/Downloads/liveDictionaryBackup/AppDatabase$(date +%s).db
 verifyPreviousBackups $(dirname $dbBackup) 
 tryExtractDatabaseFromAndroid $dbBackup
 ./gradlew installDebug 

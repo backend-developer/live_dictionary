@@ -3,15 +3,15 @@ package integration;
 
 import org.robolectric.Robolectric;
 import uk.ignas.livedictionary.LiveDictionaryActivity;
+import uk.ignas.livedictionary.core.*;
 import uk.ignas.livedictionary.core.answer.AnswerDao;
 import uk.ignas.livedictionary.core.util.DatabaseFacade;
 import uk.ignas.livedictionary.core.label.LabelDao;
-import uk.ignas.livedictionary.core.TranslationDao;
 
 class DaoCreator {
-    static TranslationDao cleanDbAndCreateTranslationDao() {
+    static TranslationDao cleanDbAndCreateTranslationDao(boolean isStub) {
         clearDb();
-        return createTranslationDao();
+        return createTranslationDao(false);
     }
 
     static AnswerDao clearDbAndCreateAnswerDao() {
@@ -25,7 +25,7 @@ class DaoCreator {
     }
 
     private static void clearDb() {
-        TranslationDao translationDao = createTranslationDao();
+        TranslationDao translationDao = createTranslationDao(false);
         translationDao.delete(translationDao.getAllTranslations());
     }
 
@@ -39,11 +39,17 @@ class DaoCreator {
         return new LabelDao(databaseFacade);
     }
 
-    static TranslationDao createTranslationDao() {
-        DatabaseFacade databaseFacade = createDatabase();
-        LabelDao labelDao = new LabelDao(databaseFacade);
-        AnswerDao answerDao = new AnswerDao(databaseFacade);
-        return new TranslationDao(labelDao, databaseFacade, answerDao);
+    static TranslationDao createTranslationDao(boolean isStub) {
+        if (isStub) {
+            LabelDaoStub labelDao = new LabelDaoStub();
+            AnswewrDaoStub answewrDaoStub = new AnswewrDaoStub();
+            return new TranslationDaoStub(labelDao, answewrDaoStub);
+        } else {
+            DatabaseFacade databaseFacade = createDatabase();
+            LabelDao labelDao = new LabelDao(databaseFacade);
+            AnswerDao answerDao = new AnswerDao(databaseFacade);
+            return new SqliteTranslationDao(labelDao, databaseFacade, answerDao);
+        }
     }
 
     private static DatabaseFacade createDatabase() {

@@ -57,7 +57,7 @@ public class ExporterImporterIntegrationTest {
     @Test
     public void exportFileShouldContainSameNumberOfLines() throws IOException, URISyntaxException {
         DataImporterExporter dataImporterExporter = createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME,
-                                                                                     DaoCreator.cleanDbAndCreateTranslationDao());
+                                                                                     DaoCreator.cleanDbAndCreateTranslationDao(false));
 
         dataImporterExporter.export(EXPORT_FILE_NAME);
 
@@ -70,7 +70,7 @@ public class ExporterImporterIntegrationTest {
     @Test
     public void exportAndImportFilesShouldHaveSameOrderOfRecords() throws IOException, URISyntaxException {
         DataImporterExporter dataImporterExporter = createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME,
-                                                                                     DaoCreator.cleanDbAndCreateTranslationDao());
+                                                                                     DaoCreator.cleanDbAndCreateTranslationDao(false));
         dataImporterExporter.export(EXPORT_FILE_NAME);
 
         assertThat(readFile(IMPORT_FILE_NAME).get(0), is(equalTo("morado - purple")));
@@ -79,7 +79,7 @@ public class ExporterImporterIntegrationTest {
 
     @Test
     public void importedDataToDbShouldPreserveAnOrderInFile() throws IOException, URISyntaxException {
-        TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao();
+        TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao(false);
 
         createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, translationDao);
 
@@ -88,7 +88,7 @@ public class ExporterImporterIntegrationTest {
 
     @Test
     public void importedDataReplaceDbContents() throws IOException, URISyntaxException {
-        TranslationDao translationDao = DaoCreator.createTranslationDao();
+        TranslationDao translationDao = DaoCreator.createTranslationDao(false);
         Translation translationsToBeReplaced = new Translation(new ForeignWord("palabra para borrar"), new NativeWord("word to delete"));
         translationDao.insertSingle(translationsToBeReplaced);
 
@@ -100,7 +100,7 @@ public class ExporterImporterIntegrationTest {
     @Test
     public void newestTranslationsShouldBeAskedMoreOftenThanOldOnes() throws IOException, URISyntaxException {
         LabelDao labelDao = DaoCreator.createLabelDao();
-        TranslationDao translationDao = DaoCreator.createTranslationDao();
+        TranslationDao translationDao = DaoCreator.createTranslationDao(false);
         AnswerDao answerDao = DaoCreator.createAnswerDao();
         createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, translationDao);
         DaoObjectsFetcher fetcher = new DaoObjectsFetcher(labelDao, answerDao);

@@ -24,7 +24,7 @@ import static org.mockito.Mockito.mock;
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class LabelerIntegrationTest {
-    private TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao();
+    private TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao(true);
     private LabelDao labelDao = DaoCreator.clearDbAndCreateLabelDao();
     private AnswerDao answerDao = DaoCreator.clearDbAndCreateAnswerDao();
     private Labeler labeler = new Labeler(translationDao, new DaoObjectsFetcher(labelDao, answerDao), labelDao);

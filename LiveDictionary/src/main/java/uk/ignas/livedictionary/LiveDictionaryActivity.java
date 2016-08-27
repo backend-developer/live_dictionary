@@ -63,7 +63,7 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
             DatabaseFacade databaseFacade = new DatabaseFacade(LiveDictionaryActivity.this);
             LabelDao labelDao = new LabelDao(databaseFacade);
             AnswerDao answerDao = new AnswerDao(databaseFacade);
-            this.translationDao = new TranslationDao(labelDao, databaseFacade, answerDao);
+            this.translationDao = new SqliteTranslationDao(labelDao, databaseFacade, answerDao);
             fetcher = new DaoObjectsFetcher(labelDao, answerDao);
             labeler = new Labeler(this.translationDao, fetcher, labelDao);
             dictionary = new Dictionary(this.translationDao, answerDao, fetcher, labeler, new Clock());

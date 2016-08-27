@@ -13,7 +13,6 @@ import uk.ignas.livedictionary.core.answer.AnswerAtTime;
 import uk.ignas.livedictionary.core.answer.AnswerDao;
 import uk.ignas.livedictionary.core.label.Label;
 import uk.ignas.livedictionary.core.label.LabelDao;
-import uk.ignas.livedictionary.core.Labeler;
 import uk.ignas.livedictionary.testutils.LiveDictionaryDsl;
 
 import java.util.*;
@@ -21,18 +20,18 @@ import java.util.*;
 import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static java.util.Collections.singletonList;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern;
-import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.createForeignToNativeTranslation;
-import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.retrieveTranslationsNTimes;
+import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.*;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -52,7 +51,7 @@ public class LiveDictionaryIntegrationTest {
 
     private static int uniqueSequence = 0;
 
-    private TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao();
+    private TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao(false);
     private LabelDao labelDao = DaoCreator.clearDbAndCreateLabelDao();
     private AnswerDao answerDao = DaoCreator.clearDbAndCreateAnswerDao();
     private DaoObjectsFetcher fetcher = new DaoObjectsFetcher(labelDao, answerDao);
@@ -144,11 +143,25 @@ public class LiveDictionaryIntegrationTest {
     }
 
     @Test
-    public void shouldNotRetrieveLabelledWords() {
+    public void shouldNotRetrieveLabelledByAWords() {
         translationDao.insertSingle(createForeignToNativeTranslation("la palabra", "a word"));
         translationDao.insertSingle(createForeignToNativeTranslation("la cocina", "a kitchen"));
         Translation labelledTranslation = retrieveTranslationWithNativeWordFromDb("a kitchen");
         labelDao.addLabelledTranslation(labelledTranslation.getId(), Label.A);
+        dictionary.reloadData();
+
+        List<Translation> translations = LiveDictionaryDsl.retrieveTranslationsNTimes(dictionary, 10);
+
+        int percentage = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern(translations, "a word");
+        assertThat(percentage, is(100));
+    }
+
+    @Test
+    public void shouldNotRetrieveLabelledByBWords() {
+        translationDao.insertSingle(createForeignToNativeTranslation("la palabra", "a word"));
+        translationDao.insertSingle(createForeignToNativeTranslation("la cocina", "a kitchen"));
+        Translation labelledTranslation = retrieveTranslationWithNativeWordFromDb("a kitchen");
+        labelDao.addLabelledTranslation(labelledTranslation.getId(), Label.B);
         dictionary.reloadData();
 
         List<Translation> translations = LiveDictionaryDsl.retrieveTranslationsNTimes(dictionary, 10);

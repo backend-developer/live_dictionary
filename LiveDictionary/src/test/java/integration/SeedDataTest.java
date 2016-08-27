@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.hasSize;
 public class SeedDataTest {
     @Test
     public void dbShouldHaveSeedData() {
-        TranslationDao translationDao = DaoCreator.createTranslationDao();
+        TranslationDao translationDao = DaoCreator.createTranslationDao(false);
 
         List<Translation> allTranslations = translationDao.getAllTranslations();
 

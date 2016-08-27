@@ -36,7 +36,7 @@ public class LabellingActivity extends Activity {
             DatabaseFacade database = new DatabaseFacade(LabellingActivity.this);
             LabelDao labelDao = new LabelDao(database);
             AnswerDao answerDao = new AnswerDao(database);
-            this.translationDao = new TranslationDao(labelDao, database, answerDao);
+            this.translationDao = new SqliteTranslationDao(labelDao, database, answerDao);
             fetcher = new DaoObjectsFetcher(labelDao, answerDao);
             labeler = new Labeler(this.translationDao, fetcher, labelDao);
         } catch (Exception e) {

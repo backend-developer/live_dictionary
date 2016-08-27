@@ -1,11 +1,10 @@
 package integration;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.annotation.Config;
-import uk.ignas.livedictionary.BuildConfig;
-import uk.ignas.livedictionary.core.*;
+import uk.ignas.livedictionary.core.ForeignWord;
+import uk.ignas.livedictionary.core.NativeWord;
+import uk.ignas.livedictionary.core.Translation;
+import uk.ignas.livedictionary.core.TranslationDao;
 import uk.ignas.livedictionary.core.answer.Answer;
 import uk.ignas.livedictionary.core.answer.AnswerDao;
 import uk.ignas.livedictionary.core.label.Label;
@@ -14,19 +13,22 @@ import uk.ignas.livedictionary.core.label.LabelDao;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 import static com.google.common.collect.Iterables.getLast;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
-public class DaoIntegrationTest {
+public abstract class DaoIntegrationTest {
+
+    private final boolean isStub;
+
+    public DaoIntegrationTest(boolean isStub) {
+        this.isStub = isStub;
+    }
 
     @Test
     public void shouldSilentlyIgnoreDeletingWithoutId() {
-        TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao();
+        TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao(isStub);
         Translation translation = new Translation(new ForeignWord("la palabra"), new NativeWord("a word"));
 
         translationDao.delete(Collections.singleton(translation));
@@ -36,7 +38,7 @@ public class DaoIntegrationTest {
 
     @Test
     public void shouldInsertTranslationAlongWithLabels() {
-        TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao();
+        TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao(false);
         LabelDao labelDao = DaoCreator.clearDbAndCreateLabelDao();
         Translation translationToInsert = new Translation(new ForeignWord("la palabra"), new NativeWord("a word"));
         translationToInsert.getMetadata().getLabels().add(Label.C);
@@ -52,7 +54,7 @@ public class DaoIntegrationTest {
 
     @Test
     public void updatingTranslationShouldAddLabels() {
-        TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao();
+        TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao(false);
         LabelDao labelDao = DaoCreator.clearDbAndCreateLabelDao();
         Translation translationToInsert = new Translation(new ForeignWord("la palabra"), new NativeWord("a word"));
         translationDao.insertSingle(translationToInsert);
@@ -69,7 +71,7 @@ public class DaoIntegrationTest {
 
     @Test
     public void updatingTranslationShouldDeleteLabels() {
-        TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao();
+        TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao(false);
         LabelDao labelDao = DaoCreator.clearDbAndCreateLabelDao();
         Translation translationToInsert = new Translation(new ForeignWord("la palabra"), new NativeWord("a word"));
         translationToInsert.getMetadata().getLabels().add(Label.C);
@@ -85,7 +87,7 @@ public class DaoIntegrationTest {
 
     @Test
     public void deletingSingleTranslationShouldCascadeDeleteAnswers() {
-        TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao();
+        TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao(false);
         AnswerDao answerDao = DaoCreator.createAnswerDao();
         translationDao.insertSingle(new Translation(new ForeignWord("la palabra"), new NativeWord("a word")));
         Translation translation = translationDao.getAllTranslations().get(0);
@@ -99,7 +101,7 @@ public class DaoIntegrationTest {
 
     @Test
     public void deletingMultipleTranslationShouldCascadeDeleteAnswers() {
-        TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao();
+        TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao(false);
         AnswerDao answerDao = DaoCreator.createAnswerDao();
         translationDao.insertSingle(new Translation(new ForeignWord("la palabra"), new NativeWord("a word")));
         translationDao.insertSingle(new Translation(new ForeignWord("la otra"), new NativeWord("other")));

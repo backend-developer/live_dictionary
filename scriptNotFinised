@@ -1,0 +1,2 @@
+sqlite3 ~/Downloads/delete/AppDatabase1471810852.db "SELECT * FROM translations" > /tmp/translations
+while read -u 10 myline ; do echo $myline; read userinput; [[ "$userinput" == 'y' ]] && sqlite3 ~/Downloads/delete/AppDatabase1471810852.db "INSERT INTO labelled_translation (translation_id, label_id) VALUES ($(echo $myline | awk -F'|' '{print $1}'), 2)" ; done 10</tmp/translations

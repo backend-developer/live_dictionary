@@ -54,8 +54,8 @@ public class Dictionary {
 
     private List<Translation> filterNonLabelledTranslations(List<Translation> translations) {
         List<Translation> nonLabelledTranslations = new ArrayList<>(translations);
-        Collection<Translation> labelled = labeler.getLabelled(Label.A);
-        nonLabelledTranslations.removeAll(labelled);
+        nonLabelledTranslations.removeAll(labeler.getLabelled(Label.A));
+        nonLabelledTranslations.removeAll(labeler.getLabelled(Label.B));
         return nonLabelledTranslations;
     }
 
