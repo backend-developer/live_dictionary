@@ -17,25 +17,35 @@ import uk.ignas.livedictionary.core.answer.Answer;
 import uk.ignas.livedictionary.core.answer.AnswerDao;
 import uk.ignas.livedictionary.core.label.Label;
 import uk.ignas.livedictionary.core.label.LabelDao;
-import uk.ignas.livedictionary.core.Labeler;
 import uk.ignas.livedictionary.core.util.DatabaseFacade;
 
 public class LiveDictionaryActivity extends Activity implements ModifyDictionaryDialog.ModifyDictionaryListener {
     private static final String TAG = LiveDictionaryActivity.class.getName();
+
     private static final Translation EMPTY_TRANSLATION = new Translation(new ForeignWord(""), new NativeWord(""));
+
     private static final int PICK_IMPORT_FILE_RESULT_CODE = 1;
+
     private static final int PICK_EXPORT_FILE_RESULT_CODE = 2;
 
     private Button showTranslationButton;
+
     private Button markTranslationAsEasyButton;
+
     private Button markTranslationAsDifficultButton;
+
     private TextView correctAnswerView;
+
     private TextView questionLabel;
 
     private volatile Translation currentTranslation = EMPTY_TRANSLATION;
+
     private Dictionary dictionary;
+
     private TranslationDao translationDao;
+
     private DaoObjectsFetcher fetcher;
+
     private Labeler labeler;
 
     private GuiError guiError;
@@ -66,8 +76,11 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
             this.translationDao = new SqliteTranslationDao(labelDao, databaseFacade, answerDao);
             fetcher = new DaoObjectsFetcher(labelDao, answerDao);
             labeler = new Labeler(this.translationDao, fetcher, labelDao);
-            dictionary = new Dictionary(this.translationDao, answerDao, fetcher, labeler, new Clock());
-            importExportActivity = new ImportExportActivity(new DataImporterExporter(this.translationDao), dictionary, guiError);
+            Clock clock = new Clock();
+            dictionary = new Dictionary(this.translationDao, answerDao, fetcher, labeler, clock,
+                                        new PreferNewestTranslationSelectionStrategy(clock));
+            importExportActivity =
+                new ImportExportActivity(new DataImporterExporter(this.translationDao), dictionary, guiError);
 
             publishNextTranslation();
             showTranslationButton.setOnClickListener(new View.OnClickListener() {
@@ -92,7 +105,7 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
                     publishNextTranslation();
                 }
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.e(TAG, "critical error ", e);
             guiError.showErrorDialogAndExitActivity(e);
         }
@@ -152,32 +165,33 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_translation_button:
-                ModifyDictionaryDialog
-                        .onInsertingTranslation(this)
-                        .show();
+                ModifyDictionaryDialog.onInsertingTranslation(this).show();
                 return true;
             case R.id.update_translation_button:
-                ModifyDictionaryDialog
-                        .onUpdatingTranslation(this, currentTranslation)
-                        .show();
+                ModifyDictionaryDialog.onUpdatingTranslation(this, currentTranslation).show();
                 return true;
             case R.id.delete_translation_button:
-                new AlertDialog.Builder(LiveDictionaryActivity.this)
-                        .setMessage("Delete this translation?")
-                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dictionary.delete(currentTranslation);
-                                publishNextTranslation();
-                            }
-                        })
-                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .show();
+                new AlertDialog.Builder(LiveDictionaryActivity.this).setMessage("Delete this translation?")
+                                                                    .setPositiveButton(R.string.yes,
+                                                                                       new DialogInterface.OnClickListener() {
+                                                                                           @Override
+                                                                                           public void onClick(
+                                                                                               DialogInterface dialog,
+                                                                                               int which) {
+                                                                                               dictionary.delete(
+                                                                                                   currentTranslation);
+                                                                                               publishNextTranslation();
+                                                                                           }
+                                                                                       }).setNegativeButton(R.string.no,
+                                                                                                            new DialogInterface.OnClickListener() {
+                                                                                                                @Override
+                                                                                                                public void onClick(
+                                                                                                                    DialogInterface dialog,
+                                                                                                                    int which) {
+                                                                                                                    dialog
+                                                                                                                        .dismiss();
+                                                                                                                }
+                                                                                                            }).show();
                 return true;
             case R.id.import_data_button:
                 importExportActivity.startActivity(this, PICK_IMPORT_FILE_RESULT_CODE);
@@ -199,7 +213,7 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch(requestCode){
+        switch (requestCode) {
             case PICK_IMPORT_FILE_RESULT_CODE:
                 importExportActivity.handleImportResult(resultCode, data);
                 break;

@@ -18,8 +18,6 @@ import static org.mockito.Mockito.when;
 import static uk.ignas.livedictionary.testutils.PromotionPeriod.*;
 
 public class ReminderTest {
-    private static final Answer ANY_ANSWER = Answer.CORRECT;
-
     @Test
     public void brandNewTranslationShouldBeReminded() {
         Clock clock = mock(Clock.class);

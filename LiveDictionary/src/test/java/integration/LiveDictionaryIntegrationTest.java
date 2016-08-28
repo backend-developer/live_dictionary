@@ -1,13 +1,12 @@
 package integration;
 
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 import uk.ignas.livedictionary.BuildConfig;
 import uk.ignas.livedictionary.core.*;
-import uk.ignas.livedictionary.core.Dictionary;
 import uk.ignas.livedictionary.core.answer.Answer;
 import uk.ignas.livedictionary.core.answer.AnswerAtTime;
 import uk.ignas.livedictionary.core.answer.AnswerDao;
@@ -15,48 +14,33 @@ import uk.ignas.livedictionary.core.label.Label;
 import uk.ignas.livedictionary.core.label.LabelDao;
 import uk.ignas.livedictionary.testutils.LiveDictionaryDsl;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 
 import static com.google.common.collect.Iterables.getLast;
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static java.util.Collections.singletonList;
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.*;
+import static org.mockito.Mockito.verify;
+import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.createForeignToNativeTranslation;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class LiveDictionaryIntegrationTest {
-    private static final Date NOW;
 
     private Clock clock = new Clock();
 
-    static {
-        Calendar c = Calendar.getInstance();
-        c.set(2015, Calendar.JANUARY, 1, 12, 0);
-        NOW = c.getTime();
-    }
-
-    public static final Date LEVEL_1_STAGING_PERIOD_NOT_YET_PASSED =
-        createDateDifferingBy(NOW, 3 * 60 + 59, Calendar.MINUTE);
-
-    private static int uniqueSequence = 0;
 
     private TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao(false);
     private LabelDao labelDao = DaoCreator.clearDbAndCreateLabelDao();
     private AnswerDao answerDao = DaoCreator.clearDbAndCreateAnswerDao();
     private DaoObjectsFetcher fetcher = new DaoObjectsFetcher(labelDao, answerDao);
     private Labeler labeler = new Labeler(translationDao, fetcher, labelDao);
-    private Dictionary dictionary = new Dictionary(translationDao, answerDao, fetcher, labeler, clock);
+    private Dictionary dictionary = new Dictionary(translationDao, answerDao, fetcher, labeler, clock, new SequentialSelectionStrategy());
 
     @Test
     public void shouldThrowWhenIfThereAreNoTranslationToRetrieve() {
@@ -68,31 +52,24 @@ public class LiveDictionaryIntegrationTest {
         }
     }
 
-
     @Test
-    public void shouldNotCrashWhenThereAreFewTranslations() {
-        translationDao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
-        dictionary.reloadData();
-
-        Translation translation = dictionary.getRandomTranslation();
-
-        assertThat(translation.getForeignWord().get(), is(equalTo("palabra")));
-    }
-
-    @Test
-    public void shouldNotCrashWhenAllTheWordsAreIncorrectlyAnswered() {
+    public void shouldInstructStrategyWithAnswersOfTranslation() {
+        ArgumentCaptor<List<Translation>> translationCaptor = ArgumentCaptor.forClass((Class)List.class);
+        TranslationSelectionStrategy strategy = mock(TranslationSelectionStrategy.class);
+        Dictionary dictionary = new Dictionary(translationDao, answerDao, fetcher, labeler, clock, strategy);
         translationDao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
         Translation translation = translationDao.getAllTranslations().get(0);
         dictionary.reloadData();
+
         dictionary.mark(translation, Answer.INCORRECT);
 
-        List<Translation> translations = LiveDictionaryDsl.retrieveTranslationsNTimes(dictionary, 10);
-
-        int percentage =
-            LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern(translations, "word");
-        assertThat(percentage, is(100));
+        verify(strategy, atLeastOnce()).updateState(translationCaptor.capture());
+        assertThat(translationCaptor.getAllValues(), hasSize(greaterThanOrEqualTo(1)));
+        List<Translation> lastStateUpdate = getLast(translationCaptor.getAllValues());
+        Translation theOnlyWord = lastStateUpdate.get(0);
+        assertThat(theOnlyWord.getMetadata(), org.hamcrest.Matchers.notNullValue());
+        assertThat(getLast(theOnlyWord.getMetadata().getRecentAnswers()).getAnswer(), is(Answer.INCORRECT));
     }
-
 
     @Test
     public void shouldSynchronizeWithDbOnDemand() {
@@ -114,32 +91,6 @@ public class LiveDictionaryIntegrationTest {
 
         Collection<AnswerAtTime> recentAnswers = answerDao.getAnswersLogByTranslationId().values();
         assertThat(getLast(recentAnswers).getAnswer(), is(equalTo(Answer.INCORRECT)));
-    }
-
-    @Test
-    public void shouldGetNewest100TranslationsWith80PercentProbability() {
-        translationDao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
-        translationDao.insert(getNTranslationsWithNativeWordStartingWith(100, "LastQ"));
-        dictionary.reloadData();
-
-        final List<Translation> retrievedTranslations = retrieveTranslationsNTimes(dictionary, 1000);
-
-        int percentage = countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrievedTranslations, "LastQ");
-        assertThat(percentage, allOf(greaterThan(75), lessThan(85)));
-    }
-
-    @Test
-    public void shouldHandle100Translations() {
-        for (int i = 0; i < 100; i++) {
-            translationDao.insert(getNTranslationsWithNativeWordStartingWith(100, "Any"));
-            dictionary.reloadData();
-
-            List<Translation> translations = LiveDictionaryDsl.retrieveTranslationsNTimes(dictionary, 100);
-
-            int percentage =
-                LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern(translations, "Any");
-            assertThat(percentage, is(100));
-        }
     }
 
     @Test
@@ -170,139 +121,12 @@ public class LiveDictionaryIntegrationTest {
         assertThat(percentage, is(100));
     }
 
-    private Translation retrieveTranslationWithNativeWordFromDb(String nativeWord) {
-        for (Translation t : translationDao.getAllTranslations()) {
-            if (t.getNativeWord().get().equals(nativeWord)) {
-                return t;
-            }
-        }
-        throw new RuntimeException("no such word: '" + nativeWord + "' in database");
-    }
 
-    @Test
-    public void afterFinding20DifficultTranslationsShouldNeverAskForOthers() {
-        translationDao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
-        translationDao.insert(getNTranslationsWithNativeWordStartingWith(20, "DifficultWord"));
-        dictionary.reloadData();
-        for (Translation t : new HashSet<>(translationDao.getAllTranslations())) {
-            if (t.getNativeWord().get().contains("DifficultWord")) {
-                dictionary.mark(t, Answer.INCORRECT);
-            }
-        }
 
-        final List<Translation> retrievedTranslations = retrieveTranslationsNTimes(dictionary, 100);
 
-        int percentage =
-            countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrievedTranslations, "DifficultWord");
-        assertThat(percentage, is(equalTo(100)));
-    }
 
-    @Test
-    public void diffucultTranslationsWhichAreAlreadyBecameEasyShouldStopBeingAskedEvery20thTime() {
-        translationDao.insert(getNTranslationsWithNativeWordStartingWith(80, "Other"));
-        translationDao.insert(getNTranslationsWithNativeWordStartingWith(10, "DifficultWord"));
-        translationDao.insert(getNTranslationsWithNativeWordStartingWith(10, "WasDifficultButNowEasyWord"));
-        dictionary.reloadData();
-        for (Translation t : new HashSet<>(translationDao.getAllTranslations())) {
-            if (t.getNativeWord().get().contains("DifficultWord")) {
-                dictionary.mark(t, Answer.INCORRECT);
-            }
-            if (t.getNativeWord().get().contains("WasDifficultButNowEasyWord")) {
-                dictionary.mark(t, Answer.INCORRECT);
-                dictionary.mark(t, Answer.CORRECT);
-            }
-        }
 
-        final List<Translation> retrievedTranslations = retrieveTranslationsNTimes(dictionary, 1000);
 
-        int percentage =
-            countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrievedTranslations, "DifficultWord");
-        assertThat(percentage, allOf(greaterThan(45), lessThan(55)));
-    }
-
-    @Test
-    public void difficultTranslationsShouldBeAskedEvery20thTime() {
-        translationDao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
-        translationDao.insert(getNTranslationsWithNativeWordStartingWith(10, "DifficultWord"));
-        dictionary.reloadData();
-        for (Translation t : new HashSet<>(translationDao.getAllTranslations())) {
-            if (t.getNativeWord().get().contains("DifficultWord")) {
-                dictionary.mark(t, Answer.INCORRECT);
-            }
-        }
-
-        final List<Translation> retrievedTranslations = retrieveTranslationsNTimes(dictionary, 1000);
-
-        int percentage =
-            countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrievedTranslations, "DifficultWord");
-        assertThat(percentage, allOf(greaterThan(45), lessThan(55)));
-    }
-
-    @Test
-    public void difficultTranslationsShouldBeAskedEvery20thTimeEvenIfTheyWerePassedInitially() {
-        translationDao.insert(getNTranslationsWithNativeWordStartingWith(100, "Other"));
-        translationDao.insert(getNTranslationsWithNativeWordStartingWith(10, "DifficultWord"));
-        for (Translation t : new HashSet<>(translationDao.getAllTranslations())) {
-            if (t.getNativeWord().get().contains("DifficultWord")) {
-                answerDao.logAnswer(t.getId(), Answer.INCORRECT, new Date());
-            }
-        }
-        dictionary.reloadData();
-
-        final List<Translation> retrievedTranslations = retrieveTranslationsNTimes(dictionary, 1000);
-
-        int percentage =
-            countPercentageOfRetrievedNativeWordsHadExpectedPattern(retrievedTranslations, "DifficultWord");
-        assertThat(percentage, allOf(greaterThan(45), lessThan(55)));
-    }
-
-    @Test
-    public void mistakenTranslationShouldBeAsked3TimesToBeRestrictedFromBeingAskedByPromotionPeriod() {
-        translationDao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
-        Translation translation = translationDao.getAllTranslations().get(0);
-        dictionary.reloadData();
-        dictionary.mark(translation, Answer.CORRECT);
-        dictionary.mark(translation, Answer.INCORRECT);
-        dictionary.mark(translation, Answer.CORRECT);
-        dictionary.mark(translation, Answer.CORRECT);
-        dictionary.mark(translation, Answer.CORRECT);
-
-        gettingNextTranslationShouldThroughLDEwithMessage(dictionary, "There are no more difficult words");
-    }
-
-    @Test
-    public void onceRestrictedByPromotionZerothLevelTranslationShouldNotBeAsked() {
-        translationDao.insertSingle(createForeignToNativeTranslation("palabra", "word"));
-        Translation translation = translationDao.getAllTranslations().get(0);
-        Clock clock = mock(Clock.class);
-        dictionary.reloadData();
-        when(clock.getTime()).thenReturn(NOW);
-        dictionary.mark(translation, Answer.CORRECT);
-        dictionary.mark(translation, Answer.CORRECT);
-        when(clock.getTime()).thenReturn(LEVEL_1_STAGING_PERIOD_NOT_YET_PASSED);
-
-        gettingNextTranslationShouldThroughLDEwithMessage(dictionary, "There are no more difficult words");
-        gettingNextTranslationShouldThroughLDEwithMessage(dictionary, "There are no more difficult words");
-    }
-
-    @Test
-    public void onceZerothLevelTranslationIsRestrictedByPromotionOtherTranslationsShouldBeAsked() {
-        translationDao.insertSingle(createForeignToNativeTranslation("la palabra", "word"));
-        translationDao.insertSingle(createForeignToNativeTranslation("la frase", "phrase"));
-        Translation easyTranslation = translationDao.getAllTranslations().get(0);
-        Translation otherTranslation = translationDao.getAllTranslations().get(1);
-        dictionary.reloadData();
-
-        dictionary.mark(easyTranslation, Answer.CORRECT);
-        dictionary.mark(easyTranslation, Answer.CORRECT);
-
-        List<Translation> notYetStaged = LiveDictionaryDsl.retrieveTranslationsNTimes(dictionary, 10);
-        int percentage = LiveDictionaryDsl.countPercentageOfRetrievedNativeWordsHadExpectedPattern(notYetStaged,
-                                                                                                   otherTranslation
-                                                                                                       .getNativeWord()
-                                                                                                       .get());
-        assertThat(percentage, is(equalTo(100)));
-    }
 
     @Test
     public void shouldInsertTranslation() {
@@ -415,32 +239,13 @@ public class LiveDictionaryIntegrationTest {
         assertThat(modifiedWord.getForeignWord().get(), is(equalTo("la palabra")));
     }
 
-    private static Date createDateDifferingBy(Date now, int amount, int calendarField) {
-        Calendar c = Calendar.getInstance();
-        c.setTime(now);
-        c.add(calendarField, amount);
-        return c.getTime();
-    }
-
-    private void gettingNextTranslationShouldThroughLDEwithMessage(Dictionary dictionary, String message) {
-        try {
-            dictionary.getRandomTranslation();
-            fail();
-        } catch (LiveDictionaryException e) {
-            assertThat(e.getMessage(), Matchers.containsString(message));
+    private Translation retrieveTranslationWithNativeWordFromDb(String nativeWord) {
+        for (Translation t : translationDao.getAllTranslations()) {
+            if (t.getNativeWord().get().equals(nativeWord)) {
+                return t;
+            }
         }
+        throw new RuntimeException("no such word: '" + nativeWord + "' in database");
     }
 
-    public List<Translation> getNTranslationsWithNativeWordStartingWith(int n, String prefix) {
-        List<Translation> translations = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            translations.add(new Translation(new ForeignWord("desconocido" + getUniqueInt()),
-                                             new NativeWord(prefix + getUniqueInt())));
-        }
-        return translations;
-    }
-
-    private int getUniqueInt() {
-        return uniqueSequence++;
-    }
 }

@@ -1,6 +1,10 @@
 package integration;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
+import uk.ignas.livedictionary.BuildConfig;
 import uk.ignas.livedictionary.core.ForeignWord;
 import uk.ignas.livedictionary.core.NativeWord;
 import uk.ignas.livedictionary.core.Translation;
@@ -18,13 +22,12 @@ import static com.google.common.collect.Iterables.getLast;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-public abstract class DaoIntegrationTest {
 
-    private final boolean isStub;
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21)
+public  class DaoIntegrationTest {
 
-    public DaoIntegrationTest(boolean isStub) {
-        this.isStub = isStub;
-    }
+    private final boolean isStub = false;
 
     @Test
     public void shouldSilentlyIgnoreDeletingWithoutId() {

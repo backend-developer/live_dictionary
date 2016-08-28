@@ -1,9 +1,6 @@
 package uk.ignas.livedictionary.testutils;
 
-import uk.ignas.livedictionary.core.Dictionary;
-import uk.ignas.livedictionary.core.ForeignWord;
-import uk.ignas.livedictionary.core.NativeWord;
-import uk.ignas.livedictionary.core.Translation;
+import uk.ignas.livedictionary.core.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +15,14 @@ public class LiveDictionaryDsl {
         final List<Translation> retrievedTranslations = new ArrayList<>();
         for (int i = 0; i < timesToExecute; i++) {
             retrievedTranslations.add(dictionary.getRandomTranslation());
+        }
+        return retrievedTranslations;
+    }
+
+    public static List<Translation> retrieveTranslationsNTimes(TranslationSelectionStrategy strategy, int timesToExecute) {
+        final List<Translation> retrievedTranslations = new ArrayList<>();
+        for (int i = 0; i < timesToExecute; i++) {
+            retrievedTranslations.add(strategy.selectTranslation().get());
         }
         return retrievedTranslations;
     }

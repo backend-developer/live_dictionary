@@ -5,6 +5,8 @@ import java.util.List;
 
 public class TranslationDaoStub implements TranslationDao {
 
+
+
     public TranslationDaoStub(LabelDaoStub dao, AnswewrDaoStub stub) {
 
     }

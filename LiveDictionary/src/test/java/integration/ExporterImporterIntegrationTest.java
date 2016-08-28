@@ -105,7 +105,7 @@ public class ExporterImporterIntegrationTest {
         createImportedAndimportDataToDao(LIVE_DATA_RESOURCE_NAME, translationDao);
         DaoObjectsFetcher fetcher = new DaoObjectsFetcher(labelDao, answerDao);
         Labeler labeler = new Labeler(translationDao, fetcher, labelDao);
-        Dictionary q = new Dictionary(translationDao, answerDao, fetcher, labeler, clock);
+        Dictionary q = new Dictionary(translationDao, answerDao, fetcher, labeler, clock, new PreferNewestTranslationSelectionStrategy(clock));
         List<Translation> translations = translationDao.getAllTranslations();
         int size = translations.size();
         List<Translation> eldestTranslations = translations.subList(0, 100);
