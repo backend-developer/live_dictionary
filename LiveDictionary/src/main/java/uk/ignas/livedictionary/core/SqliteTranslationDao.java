@@ -52,7 +52,7 @@ public class SqliteTranslationDao implements TranslationDao {
         Transactable<Void> runnable = new Transactable<Void>() {
             public Void perform() {
                 for (Translation translation : translations) {
-                    if (!insertSingle(translation)) {
+                    if (!insertSingleWithLabels(translation)) {
                         throw new RuntimeException("could not insert all values");
                     }
                 }
@@ -62,7 +62,7 @@ public class SqliteTranslationDao implements TranslationDao {
         databaseFacade.doInTransaction(runnable);
     }
 
-    public boolean insertSingle(final Translation translation) {
+    public boolean insertSingleWithLabels(final Translation translation) {
         Transactable<Boolean> transactable = new Transactable<Boolean>() {
             public Boolean perform() {
                 long id = insertSingleUsingDb(translation);
@@ -88,7 +88,7 @@ public class SqliteTranslationDao implements TranslationDao {
     }
 
 
-    public int update(final Translation translation) {
+    public int updateAlongWithLabels(final Translation translation) {
         Transactable<Integer> transactable = new Transactable<Integer>() {
             @Override
             public Integer perform() {

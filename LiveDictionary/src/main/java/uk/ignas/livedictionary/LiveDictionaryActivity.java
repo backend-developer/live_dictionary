@@ -15,8 +15,10 @@ import android.widget.TextView;
 import uk.ignas.livedictionary.core.*;
 import uk.ignas.livedictionary.core.answer.Answer;
 import uk.ignas.livedictionary.core.answer.AnswerDao;
+import uk.ignas.livedictionary.core.answer.SqliteAnswerDao;
 import uk.ignas.livedictionary.core.label.Label;
 import uk.ignas.livedictionary.core.label.LabelDao;
+import uk.ignas.livedictionary.core.label.SqliteLabelDao;
 import uk.ignas.livedictionary.core.util.DatabaseFacade;
 
 public class LiveDictionaryActivity extends Activity implements ModifyDictionaryDialog.ModifyDictionaryListener {
@@ -71,8 +73,8 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
         guiError = new GuiError(this);
         try {
             DatabaseFacade databaseFacade = new DatabaseFacade(LiveDictionaryActivity.this);
-            LabelDao labelDao = new LabelDao(databaseFacade);
-            AnswerDao answerDao = new AnswerDao(databaseFacade);
+            LabelDao labelDao = new SqliteLabelDao(databaseFacade);
+            AnswerDao answerDao = new SqliteAnswerDao(databaseFacade);
             this.translationDao = new SqliteTranslationDao(labelDao, databaseFacade, answerDao);
             fetcher = new DaoObjectsFetcher(labelDao, answerDao);
             labeler = new Labeler(this.translationDao, fetcher, labelDao);
@@ -156,9 +158,13 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
 
     @Override
     public void updateTranslation(Translation translation) {
-        dictionary.update(translation);
-        currentTranslation = translation;
-        showTranslation();
+        try {
+            dictionary.update(translation);
+            currentTranslation = translation;
+            showTranslation();
+        } catch (RuntimeException e) {
+            guiError.showErrorDialogAndContinue(e);
+        }
     }
 
     @Override

@@ -7,6 +7,7 @@ import org.robolectric.annotation.Config;
 import uk.ignas.livedictionary.BuildConfig;
 import uk.ignas.livedictionary.core.Translation;
 import uk.ignas.livedictionary.core.TranslationDao;
+import uk.ignas.livedictionary.testutils.DaoCreator;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ import static org.hamcrest.Matchers.hasSize;
 public class SeedDataTest {
     @Test
     public void dbShouldHaveSeedData() {
-        TranslationDao translationDao = DaoCreator.createTranslationDao(false);
+        TranslationDao translationDao = DaoCreator.createTranslationDao();
 
         List<Translation> allTranslations = translationDao.getAllTranslations();
 

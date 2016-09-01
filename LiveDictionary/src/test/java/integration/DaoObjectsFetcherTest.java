@@ -11,6 +11,7 @@ import uk.ignas.livedictionary.core.answer.AnswerAtTime;
 import uk.ignas.livedictionary.core.answer.AnswerDao;
 import uk.ignas.livedictionary.core.label.Label;
 import uk.ignas.livedictionary.core.label.LabelDao;
+import uk.ignas.livedictionary.testutils.DaoCreator;
 
 import java.util.*;
 
@@ -27,7 +28,7 @@ import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.createForeignT
 @Config(constants = BuildConfig.class, sdk = 21)
 public class DaoObjectsFetcherTest {
 
-    private TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao(false);
+    private TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao();
 
     private AnswerDao answerDao = DaoCreator.clearDbAndCreateAnswerDao();
 
@@ -62,7 +63,7 @@ public class DaoObjectsFetcherTest {
     @Test
     public void shouldFetchLabel() {
         Translation translation = new Translation(ID1, createForeignToNativeTranslation("la palabra", "a word"));
-        translationDao.insertSingle(translation);
+        translationDao.insertSingleWithLabels(translation);
         labelDao.addLabelledTranslation(translation.getId(), Label.A);
 
         fetcher.fetchLabels(asList(translation));
@@ -74,7 +75,7 @@ public class DaoObjectsFetcherTest {
     @Test
     public void shouldFetchMultipleLabels() {
         Translation translation = new Translation(ID1, createForeignToNativeTranslation("la palabra", "a word"));
-        translationDao.insertSingle(translation);
+        translationDao.insertSingleWithLabels(translation);
         labelDao.addLabelledTranslation(translation.getId(), Label.A);
         labelDao.addLabelledTranslation(translation.getId(), Label.B);
 
@@ -88,8 +89,8 @@ public class DaoObjectsFetcherTest {
     public void shouldFetchLabelsForMultipleTranslations() {
         Translation translation1 = new Translation(ID1, createForeignToNativeTranslation("la palabra", "a word"));
         Translation translation2 = new Translation(ID2, createForeignToNativeTranslation("la cocina", "a kitchen"));
-        translationDao.insertSingle(translation1);
-        translationDao.insertSingle(translation2);
+        translationDao.insertSingleWithLabels(translation1);
+        translationDao.insertSingleWithLabels(translation2);
         labelDao.addLabelledTranslation(translation1.getId(), Label.A);
         labelDao.addLabelledTranslation(translation2.getId(), Label.B);
 
@@ -105,8 +106,8 @@ public class DaoObjectsFetcherTest {
     public void shouldThrowForDataHavingInvalidIds() {
         Translation translation1 = new Translation(ID1, createForeignToNativeTranslation("la palabra", "a word"));
         Translation translation2 = new Translation(ID1, createForeignToNativeTranslation("la cocina", "a kitchen"));
-        translationDao.insertSingle(translation1);
-        translationDao.insertSingle(translation2);
+        translationDao.insertSingleWithLabels(translation1);
+        translationDao.insertSingleWithLabels(translation2);
 
         try {
             fetcher.fetchLabels(asList(translation1, translation2));
@@ -140,8 +141,8 @@ public class DaoObjectsFetcherTest {
     public void shouldFetchAnswersLogForMultipleTranslations() {
         Translation translation1 = new Translation(ID1, createForeignToNativeTranslation("la palabra", "a word"));
         Translation translation2 = new Translation(ID2, createForeignToNativeTranslation("la cocina", "a kitchen"));
-        translationDao.insertSingle(translation1);
-        translationDao.insertSingle(translation2);
+        translationDao.insertSingleWithLabels(translation1);
+        translationDao.insertSingleWithLabels(translation2);
         answerDao.logAnswer(translation1.getId(), Answer.CORRECT, new Date());
         answerDao.logAnswer(translation2.getId(), Answer.INCORRECT, new Date());
 
@@ -158,7 +159,7 @@ public class DaoObjectsFetcherTest {
     @Test
     public void shouldFetchMultipleAnswersForTranslation() {
         Translation translation = new Translation(ID1, createForeignToNativeTranslation("la palabra", "a word"));
-        translationDao.insertSingle(translation);
+        translationDao.insertSingleWithLabels(translation);
         answerDao.logAnswer(translation.getId(), Answer.CORRECT, new Date());
         answerDao.logAnswer(translation.getId(), Answer.INCORRECT, new Date());
 

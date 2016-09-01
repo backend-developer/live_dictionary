@@ -5,8 +5,8 @@ import java.util.List;
 
 public interface TranslationDao {
     void insert(final List<Translation> translations);
-    boolean insertSingle(final Translation translation);
-    int update(final Translation translation);
+    boolean insertSingleWithLabels(final Translation translation);
+    int updateAlongWithLabels(final Translation translation);
     void delete(final Collection<Translation> translations);
     List<Translation> getAllTranslations();
 }

@@ -10,6 +10,7 @@ import uk.ignas.livedictionary.core.answer.AnswerDao;
 import uk.ignas.livedictionary.core.label.Label;
 import uk.ignas.livedictionary.core.label.LabelDao;
 import uk.ignas.livedictionary.core.Labeler;
+import uk.ignas.livedictionary.testutils.DaoCreator;
 
 import java.util.*;
 
@@ -24,7 +25,7 @@ import static org.mockito.Mockito.mock;
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class LabelerIntegrationTest {
-    private TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao(true);
+    private TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao();
     private LabelDao labelDao = DaoCreator.clearDbAndCreateLabelDao();
     private AnswerDao answerDao = DaoCreator.clearDbAndCreateAnswerDao();
     private Labeler labeler = new Labeler(translationDao, new DaoObjectsFetcher(labelDao, answerDao), labelDao);

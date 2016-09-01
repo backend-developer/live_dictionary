@@ -68,22 +68,16 @@ public class Dictionary {
         }
     }
 
-    public boolean mark(Translation translation, Answer answer) {
-        if (translation.getId() == null) {
-            return false;
-        }
-        boolean result;
-        try {
-            result = answerDao.logAnswer(translation.getId(), answer, clock.getTime());
-        } catch (RuntimeException e) {
-            return false;
+    public void mark(Translation translation, Answer answer) {
+        boolean logged = answerDao.logAnswer(translation.getId(), answer, clock.getTime());
+        if (!logged) {
+            throw new IllegalArgumentException("answered not logged. translationId = " + translation.getId());
         }
         reloadData();
-        return result;
     }
 
     public void insert(Translation translation) {
-        translationDao.insertSingle(translation);
+        translationDao.insertSingleWithLabels(translation);
         reloadTranslations();
     }
 
@@ -93,10 +87,6 @@ public class Dictionary {
     }
 
     public boolean update(Translation translation) {
-        if (translation.getId() == null) {
-            return false;
-        }
-
         boolean updated = updateSingle(translation);
         reloadTranslations();
         return updated;
@@ -107,7 +97,7 @@ public class Dictionary {
 
         boolean updated = getIds(translations).contains(translation.getId());
         try {
-            translationDao.update(translation);
+            translationDao.updateAlongWithLabels(translation);
         } catch (Exception e) {
             if (isUniqueConstraintViolation(e)) {
                 translationDao.delete(asList(translation));
