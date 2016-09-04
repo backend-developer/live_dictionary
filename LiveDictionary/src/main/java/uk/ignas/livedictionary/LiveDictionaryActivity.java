@@ -36,6 +36,8 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
 
     private Button markTranslationAsDifficultButton;
 
+    private Button markTranslationAskedTooOftenButton;
+
     private TextView correctAnswerView;
 
     private TextView questionLabel;
@@ -69,6 +71,8 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
         showTranslationButton = (Button) findViewById(R.id.show_translation_button);
         markTranslationAsEasyButton = (Button) findViewById(R.id.submit_translation_as_easy_button);
         markTranslationAsDifficultButton = (Button) findViewById(R.id.submit_translation_as_difficult_button);
+        markTranslationAskedTooOftenButton = (Button) findViewById(R.id.submit_translation_asked_too_often_button);
+
 
         guiError = new GuiError(this);
         try {
@@ -104,6 +108,13 @@ public class LiveDictionaryActivity extends Activity implements ModifyDictionary
                 @Override
                 public void onClick(View view) {
                     dictionary.mark(currentTranslation, Answer.INCORRECT);
+                    publishNextTranslation();
+                }
+            });
+            markTranslationAskedTooOftenButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dictionary.markAsAskedTooOften(currentTranslation);
                     publishNextTranslation();
                 }
             });

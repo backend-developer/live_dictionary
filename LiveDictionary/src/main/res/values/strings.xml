@@ -19,5 +19,6 @@
     <string name="import_data">Import Data</string>
     <string name="delete_label">Delete Label</string>
     <string name="labeled">Labelled</string>
+    <string name="asked_too_often_translation">asked too often</string>
 </resources>
 

@@ -9,16 +9,16 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseFacade extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "LiveDictionary.db";
 
-    public DatabaseFacade(Context context) {
-        super(context, DATABASE_NAME, null, 3);
-    }
+    public static final int CURRENT_DB_VERSION = 4;
 
+    public DatabaseFacade(Context context) {
+        super(context, DATABASE_NAME, null, CURRENT_DB_VERSION);
+    }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         prepareDbV1(db);
-        prepareDbV2(db);
-        prepareDbV3(db);
+        onUpgrade(db, 1, CURRENT_DB_VERSION);
     }
 
     private void prepareDbV1(SQLiteDatabase db) {
@@ -100,6 +100,10 @@ public class DatabaseFacade extends SQLiteOpenHelper {
         db.insert("label", null, contentValues);
     }
 
+    private void prepareDbV4(SQLiteDatabase db) {
+        db.execSQL("alter table answers_log add column feedback text");
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < 2) {
@@ -107,6 +111,9 @@ public class DatabaseFacade extends SQLiteOpenHelper {
         }
         if (oldVersion < 3) {
             prepareDbV3(db);
+        }
+        if (oldVersion < 4) {
+            prepareDbV4(db);
         }
     }
 

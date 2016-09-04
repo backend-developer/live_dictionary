@@ -28,6 +28,10 @@ import static uk.ignas.livedictionary.testutils.LiveDictionaryDsl.createForeignT
 @Config(constants = BuildConfig.class, sdk = 21)
 public class DaoObjectsFetcherTest {
 
+    public static final AnswerAtTime CORRECT_NOW = new AnswerAtTime(Answer.CORRECT, new Date());
+
+    public static final AnswerAtTime INCORRECT_NOW = new AnswerAtTime(Answer.INCORRECT, new Date());
+
     private TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao();
 
     private AnswerDao answerDao = DaoCreator.clearDbAndCreateAnswerDao();
@@ -143,8 +147,8 @@ public class DaoObjectsFetcherTest {
         Translation translation2 = new Translation(ID2, createForeignToNativeTranslation("la cocina", "a kitchen"));
         translationDao.insertSingleWithLabels(translation1);
         translationDao.insertSingleWithLabels(translation2);
-        answerDao.logAnswer(translation1.getId(), Answer.CORRECT, new Date());
-        answerDao.logAnswer(translation2.getId(), Answer.INCORRECT, new Date());
+        answerDao.logAnswer(translation1.getId(), CORRECT_NOW);
+        answerDao.logAnswer(translation2.getId(), INCORRECT_NOW);
 
         fetcher.fetchAnswersLog(asList(translation1, translation2));
 
@@ -160,8 +164,8 @@ public class DaoObjectsFetcherTest {
     public void shouldFetchMultipleAnswersForTranslation() {
         Translation translation = new Translation(ID1, createForeignToNativeTranslation("la palabra", "a word"));
         translationDao.insertSingleWithLabels(translation);
-        answerDao.logAnswer(translation.getId(), Answer.CORRECT, new Date());
-        answerDao.logAnswer(translation.getId(), Answer.INCORRECT, new Date());
+        answerDao.logAnswer(translation.getId(), CORRECT_NOW);
+        answerDao.logAnswer(translation.getId(), INCORRECT_NOW);
 
         fetcher.fetchAnswersLog(asList(translation));
 

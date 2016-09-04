@@ -24,7 +24,10 @@ public class SqliteAnswerDao implements AnswerDao {
         public static final String TIME_ANSWERED = "time_answered";
 
         public static final String IS_CORRECT = "is_correct";
+
+        public static final String FEEDBACK = "feedback";
     }
+
     private final DatabaseFacade databaseFacade;
 
     public SqliteAnswerDao(DatabaseFacade databaseFacade) {
@@ -37,11 +40,15 @@ public class SqliteAnswerDao implements AnswerDao {
                                AnswersLog.TRANSLATION_ID + " IN (" + inClause + ") ");
     }
 
-    public boolean logAnswer(Integer translationId, Answer answer, Date time) {
+    @Override
+    public boolean logAnswer(Integer translationId, AnswerAtTime answerAtTime) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(AnswersLog.TRANSLATION_ID, translationId);
-        contentValues.put(AnswersLog.TIME_ANSWERED, time.getTime());
-        contentValues.put(AnswersLog.IS_CORRECT, answer.isCorrect());
+        if (answerAtTime.getFeedback() != null) {
+            contentValues.put(AnswersLog.FEEDBACK, answerAtTime.getFeedback().name());
+        }
+        contentValues.put(AnswersLog.TIME_ANSWERED, answerAtTime.getTimepoint().getTime());
+        contentValues.put(AnswersLog.IS_CORRECT, answerAtTime.getAnswer().isCorrect());
         long id = databaseFacade.insert(AnswersLog.TABLE_NAME, contentValues);
         return id != ERROR_OCURRED;
     }
@@ -54,7 +61,8 @@ public class SqliteAnswerDao implements AnswerDao {
             String sql = "select " +
                          AnswersLog.IS_CORRECT + ", " +
                          AnswersLog.TRANSLATION_ID + ", " +
-                         AnswersLog.TIME_ANSWERED +
+                         AnswersLog.TIME_ANSWERED + ", " +
+                         AnswersLog.FEEDBACK +
                          " from " + AnswersLog.TABLE_NAME;
             res = databaseFacade.rawQuery(sql);
             res.moveToFirst();
@@ -64,7 +72,10 @@ public class SqliteAnswerDao implements AnswerDao {
                 Answer answer =
                     res.getInt(res.getColumnIndex(AnswersLog.IS_CORRECT)) > 0 ? Answer.CORRECT : Answer.INCORRECT;
                 long timeOfAnswer = res.getLong(res.getColumnIndex(AnswersLog.TIME_ANSWERED));
-                answersLogByTranslationId.put(newTranslationId, new AnswerAtTime(answer, new Date(timeOfAnswer)));
+                String feedbackString = res.getString(res.getColumnIndex(AnswersLog.FEEDBACK));
+                Feedback feedback = feedbackString != null ? Feedback.valueOf(feedbackString) : null;
+                answersLogByTranslationId
+                    .put(newTranslationId, new AnswerAtTime(answer, new Date(timeOfAnswer), feedback));
                 res.moveToNext();
             }
         } finally {
@@ -74,5 +85,4 @@ public class SqliteAnswerDao implements AnswerDao {
         }
         return answersLogByTranslationId;
     }
-
 }

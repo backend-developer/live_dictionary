@@ -10,7 +10,9 @@ import uk.ignas.livedictionary.core.NativeWord;
 import uk.ignas.livedictionary.core.Translation;
 import uk.ignas.livedictionary.core.TranslationDao;
 import uk.ignas.livedictionary.core.answer.Answer;
+import uk.ignas.livedictionary.core.answer.AnswerAtTime;
 import uk.ignas.livedictionary.core.answer.AnswerDao;
+import uk.ignas.livedictionary.core.answer.Feedback;
 import uk.ignas.livedictionary.core.label.Label;
 import uk.ignas.livedictionary.core.label.LabelDao;
 import uk.ignas.livedictionary.testutils.DaoCreator;
@@ -28,6 +30,8 @@ import static org.hamcrest.Matchers.*;
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class DaoIntegrationTest {
+
+    public static final AnswerAtTime CORRECT_NOW = new AnswerAtTime(Answer.CORRECT, new Date());
 
     @Test
     public void shouldInsertTranslations() {
@@ -62,9 +66,22 @@ public class DaoIntegrationTest {
         translationDao.insertSingleWithLabels(new Translation(new ForeignWord("la palabra"), new NativeWord("a word")));
         Integer translationId = translationDao.getAllTranslations().get(0).getId();
 
-        boolean inserted = answersDao.logAnswer(translationId, Answer.CORRECT, new Date());
+        boolean inserted = answersDao.logAnswer(translationId, CORRECT_NOW);
 
         assertThat(inserted, is(true));
+    }
+
+    @Test
+    public void shouldLogFeedbackAnswer() {
+        TranslationDao translationDao = DaoCreator.cleanDbAndCreateTranslationDao();
+        AnswerDao answersDao = DaoCreator.createAnswerDao();
+        translationDao.insertSingleWithLabels(new Translation(new ForeignWord("la palabra"), new NativeWord("a word")));
+        Integer translationId = translationDao.getAllTranslations().get(0).getId();
+
+        boolean inserted = answersDao.logAnswer(translationId, new AnswerAtTime(Answer.CORRECT, new Date(), Feedback.ASKED_TOO_OFTEN));
+
+        assertThat(inserted, is(true));
+        assertThat(answersDao.getAnswersLogByTranslationId().get(translationId).get(0).getFeedback(), is(Feedback.ASKED_TOO_OFTEN));
     }
 
     @Test
@@ -72,7 +89,7 @@ public class DaoIntegrationTest {
         AnswerDao answersDao = DaoCreator.clearDbAndCreateAnswerDao();
         int unexistentTranslationId = 15;
 
-        boolean inserted = answersDao.logAnswer(unexistentTranslationId, Answer.CORRECT, new Date());
+        boolean inserted = answersDao.logAnswer(unexistentTranslationId, CORRECT_NOW);
 
         assertThat(inserted, is(false));
     }
@@ -81,7 +98,7 @@ public class DaoIntegrationTest {
     public void shouldNotInsertAnswerWithNullTranslationId() {
         AnswerDao answersDao = DaoCreator.clearDbAndCreateAnswerDao();
 
-        boolean inserted = answersDao.logAnswer(null, Answer.CORRECT, new Date());
+        boolean inserted = answersDao.logAnswer(null, CORRECT_NOW);
 
         assertThat(inserted, is(false));
     }
@@ -191,7 +208,7 @@ public class DaoIntegrationTest {
         AnswerDao answerDao = DaoCreator.createAnswerDao();
         translationDao.insertSingleWithLabels(new Translation(new ForeignWord("la palabra"), new NativeWord("a word")));
         Translation translation = translationDao.getAllTranslations().get(0);
-        answerDao.logAnswer(translation.getId(), Answer.CORRECT, new Date());
+        answerDao.logAnswer(translation.getId(), CORRECT_NOW);
 
         translationDao.delete(Collections.singleton(translation));
 
@@ -205,8 +222,8 @@ public class DaoIntegrationTest {
         AnswerDao answerDao = DaoCreator.createAnswerDao();
         translationDao.insertSingleWithLabels(new Translation(new ForeignWord("la palabra"), new NativeWord("a word")));
         translationDao.insertSingleWithLabels(new Translation(new ForeignWord("la otra"), new NativeWord("other")));
-        answerDao.logAnswer(translationDao.getAllTranslations().get(0).getId(), Answer.CORRECT, new Date());
-        answerDao.logAnswer(translationDao.getAllTranslations().get(1).getId(), Answer.CORRECT, new Date());
+        answerDao.logAnswer(translationDao.getAllTranslations().get(0).getId(), CORRECT_NOW);
+        answerDao.logAnswer(translationDao.getAllTranslations().get(1).getId(), CORRECT_NOW);
 
         translationDao.delete(translationDao.getAllTranslations());
 

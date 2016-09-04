@@ -4,7 +4,9 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 import uk.ignas.livedictionary.core.answer.Answer;
+import uk.ignas.livedictionary.core.answer.AnswerAtTime;
 import uk.ignas.livedictionary.core.answer.AnswerDao;
+import uk.ignas.livedictionary.core.answer.Feedback;
 import uk.ignas.livedictionary.core.label.Label;
 
 import java.util.ArrayList;
@@ -68,8 +70,15 @@ public class Dictionary {
         }
     }
 
+    public void markAsAskedTooOften(Translation translation) {
+        boolean logged = answerDao.logAnswer(translation.getId(), new AnswerAtTime(Answer.CORRECT, clock.getTime(), Feedback.ASKED_TOO_OFTEN));
+        if (!logged) {
+            throw new IllegalArgumentException("answered not logged. translationId = " + translation.getId());
+        }
+    }
+
     public void mark(Translation translation, Answer answer) {
-        boolean logged = answerDao.logAnswer(translation.getId(), answer, clock.getTime());
+        boolean logged = answerDao.logAnswer(translation.getId(), new AnswerAtTime(answer, clock.getTime()));
         if (!logged) {
             throw new IllegalArgumentException("answered not logged. translationId = " + translation.getId());
         }
