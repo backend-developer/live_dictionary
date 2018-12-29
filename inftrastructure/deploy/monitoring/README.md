@@ -1,3 +1,4 @@
-# download dockerised terraform
+# build docker image for deploy build monitoring
 
-docker pull hashicorp/terraform:0.11.11
+docker build -t terra-deploy-monitoring-of-builds .
+docker run --entrypoint sh terra-deploy-monitoring-of-builds -c "terraform init; terraform plan /"
